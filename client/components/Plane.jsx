@@ -2,14 +2,20 @@ import React, {Component} from 'react'
 import {default as THREE} from 'three'
 import {default as dragControls} from './controls/DragControls'
 
+//initialise pointer that will track mouse position
 var mouse = new THREE.Vector2()
+//container for all 3d objects that will be affected by event
 let objects = []
-window.addEventListener('mousemove', onMouseMove, false)
-
+//renders the scene, camera, and cubes using webGL
 const renderer = new THREE.WebGLRenderer()
-renderer.setClearColor(0xbada55)
+const color = new THREE.Color('rgb(186, 218, 85)')
+//sets the world background color
+renderer.setClearColor(color)
+//sets the resolution of the view
 renderer.setSize(window.innerWidth, window.innerHeight)
+//helps to detect an object in the current view between the camera and the mouse
 const raycaster = new THREE.Raycaster()
+//create a perspective camera (field-of-view, aspect ratio, min distance, max distance)
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -23,15 +29,17 @@ camera.position.y = 3
 // controls.lookSpeed = 0.125
 // controls.lookVertical = true
 
+//create a new scene
 const scene = new THREE.Scene()
+//allows for moving 3d objects with mouse drag
 const controls = new dragControls(objects, camera, renderer.domElement, scene)
+
 const light = new THREE.AmbientLight(0xffffff, 0.8)
 scene.add(light)
 const pointLight = new THREE.PointLight(0xffffff, 0.8)
 pointLight.position.set(0, 8, 2)
 scene.add(pointLight)
 raycaster.setFromCamera(mouse, camera)
-
 function onMouseMove(event) {
   mouse.x = event.clientX / window.innerWidth * 2 - 1
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
@@ -46,7 +54,7 @@ for (let z = -10; z < 10; z += 1) {
     objects.push(cube)
   }
 }
-
+window.addEventListener('mousemove', onMouseMove, false)
 window.addEventListener('keydown', event => {
   //add movement
   switch (event.which) {
