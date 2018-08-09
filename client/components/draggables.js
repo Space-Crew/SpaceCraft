@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import DragControls from '../controls/DragControls';
+import DragControls from './controls/DragControls';
 
 
 import React, { Component } from 'react';
@@ -9,7 +9,6 @@ var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeig
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
 
 var mx = 1.5;
 var objects = [];
@@ -41,11 +40,12 @@ animate();
 
 class Draggables extends Component {
   componentDidMount() {
+    document.getElementById('three').appendChild( renderer.domElement );
     animate();
   }
   render() {
     return (
-      <div>
+      <div id="three">
         Hello World!
       </div>
     )

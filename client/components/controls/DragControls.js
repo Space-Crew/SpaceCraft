@@ -64,14 +64,18 @@ THREE.DragControls = function ( _objects, _camera, _domElement, _scene) {
 		var rect = _domElement.getBoundingClientRect();
 		_mouse.x = ( ( event.clientX - rect.left ) / rect.width ) * 2 - 1;
 		_mouse.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
-
+    console.log(_mouse.x, _mouse.y);
 		_raycaster.setFromCamera( _mouse, _camera );
 
 		if ( _selected && scope.enabled ) {
 
 			if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
 
-				_selected.position.copy( _intersection.sub( _offset ) );
+        _selected.position.copy( _intersection.sub( _offset ) );
+        _selected.position.round();
+        // _selected.position.x = Math.round(_selected.position.x);
+        // _selected.position.y = Math.round(_selected.position.y);
+        // _selected.position.z = Math.round(_selected.position.z);
 
 			}
 
@@ -112,11 +116,11 @@ THREE.DragControls = function ( _objects, _camera, _domElement, _scene) {
   function onDocumentKeyDown(event) {
     if (event.which === 87) {
       _selected.position.z -= 1;
-      _intersection.z -= 1;
+      // _intersection.z -= 1;
       _offset.z += 1;
     } else if (event.which === 83) {
       _selected.position.z += 1;
-      _intersection.z += 1;
+      // _intersection.z += 1;
       _offset.z -= 1;
     }
   }
