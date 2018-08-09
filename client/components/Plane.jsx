@@ -100,6 +100,7 @@ class Plane extends Component {
 
 export default Plane
 
+//helper function to create a cube but does not add to scene
 function makeUnitCube(x, y, z, color = 0x0) {
   const geometry = new THREE.BoxGeometry(1, 1, 1)
   const material = new THREE.MeshLambertMaterial({color}) //Lambert is so that the material can be affected by light
