@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {default as THREE} from 'three'
 import {default as dragControls} from './controls/DragControls'
+import {constructSelectedBox} from './controls/selectedBox'
 
 //initialise pointer that will track mouse position
 var mouse = new THREE.Vector2()
@@ -41,6 +42,10 @@ const pointLight = new THREE.PointLight(0xffffff, 0.8)
 pointLight.position.set(0, 8, 2)
 scene.add(pointLight)
 raycaster.setFromCamera(mouse, camera)
+
+const boxThatHoldsMouse = constructSelectedBox(renderer.domElement, camera)
+scene.add(boxThatHoldsMouse)
+
 function onMouseMove(event) {
   mouse.x = event.clientX / window.innerWidth * 2 - 1
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
