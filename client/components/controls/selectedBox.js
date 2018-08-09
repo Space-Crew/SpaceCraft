@@ -25,7 +25,7 @@ export function constructSelectedBox(DOMElement, camera) {
     const mouseVectorForBox = new THREE.Vector3()
     raycaster.setFromCamera(mouse, camera)
     mouseVectorForBox.copy(camera.position)
-    mouseVectorForBox.addScaledVector(raycaster.ray.direction, 5)
+    mouseVectorForBox.addScaledVector(raycaster.ray.direction, 4)
     mesh.position.copy(mouseVectorForBox)
     mesh.position.round()
   })
