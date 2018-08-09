@@ -64,7 +64,6 @@ THREE.DragControls = function ( _objects, _camera, _domElement, _scene) {
 		var rect = _domElement.getBoundingClientRect();
 		_mouse.x = ( ( event.clientX - rect.left ) / rect.width ) * 2 - 1;
 		_mouse.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
-    console.log(_mouse.x, _mouse.y);
 		_raycaster.setFromCamera( _mouse, _camera );
 
 		if ( _selected && scope.enabled ) {
@@ -133,8 +132,8 @@ THREE.DragControls = function ( _objects, _camera, _domElement, _scene) {
 		var intersects = _raycaster.intersectObjects( _objects );
 
 		if ( intersects.length > 0 ) {
+      _selected = intersects[ 0 ].object;
 
-			_selected = intersects[ 0 ].object;
 			if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
 
         _offset.copy( _intersection ).sub( _selected.position );
@@ -145,21 +144,7 @@ THREE.DragControls = function ( _objects, _camera, _domElement, _scene) {
 			_domElement.style.cursor = 'move';
       
 
-		} else {
-      var box = new THREE.BoxGeometry( 1, 1, 1 );
-      var boxMaterial = new THREE.MeshBasicMaterial({ color: 0xff7373});
-      var cube = new THREE.Mesh( box, boxMaterial );
-      var geo = new THREE.EdgesGeometry( cube.geometry );
-      var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 1 } );
-      var wireframe = new THREE.LineSegments( geo, mat );
-      wireframe.renderOrder = 1;
-      cube.add( wireframe );
-      _scene.add( cube );
-      cube.position.x = event.clientX;
-      cube.position.y = event.clientY;
-      _objects.push(cube);
-    }
-
+		} 
 
 	}
 
@@ -177,7 +162,23 @@ THREE.DragControls = function ( _objects, _camera, _domElement, _scene) {
 
 		}
 
-		_domElement.style.cursor = _hovered ? 'pointer' : 'auto';
+    _domElement.style.cursor = _hovered ? 'pointer' : 'auto';
+    var rect = _domElement.getBoundingClientRect();
+    var box = new THREE.BoxGeometry( 1, 1, 1 );
+    var boxMaterial = new THREE.MeshNormalMaterial();
+    var cube = new THREE.Mesh( box, boxMaterial );
+    var geo = new THREE.EdgesGeometry( cube.geometry );
+    var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 1 } );
+    var wireframe = new THREE.LineSegments( geo, mat );
+    wireframe.renderOrder = 1;
+    cube.add( wireframe );
+    cube.position.x = _raycaster.ray.direction.x*5 + _camera.position.x;
+    cube.position.y = _raycaster.ray.direction.y*5 + _camera.position.y;
+    cube.position.z = _raycaster.ray.direction.z*5 + _camera.position.z;
+    cube.position.round();
+    cube.overdraw = true;
+    _scene.add( cube );
+    _objects.push(cube);
 
 	}
 
