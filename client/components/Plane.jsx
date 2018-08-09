@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {default as THREE} from 'three'
 import {default as dragControls} from './controls/DragControls'
+import {default as pointerLockControls} from './controls/PointerLockControls'
 
 var mouse = new THREE.Vector2();
 let objects = [];
@@ -25,14 +26,13 @@ camera.position.z = 5;
 // controls.lookVertical = true
 
 const scene = new THREE.Scene()
-const controls = new dragControls(objects, camera, renderer.domElement, scene);
 const light = new THREE.AmbientLight(0xffffff, 0.8)
 scene.add(light)
 const pointLight = new THREE.PointLight(0xffffff, 0.8)
 pointLight.position.set(0, 8, 2)
 scene.add(pointLight)
 raycaster.setFromCamera( mouse, camera );
-
+const controls = new dragControls(objects, camera, renderer.domElement, scene);
 function onMouseMove( event ) {
   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
   mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
@@ -71,6 +71,10 @@ window.addEventListener('keydown', event => {
       camera.position.y -= 1
       break
   }
+})
+
+window.addEventListener('mousemove', event => {
+  
 })
 
 // const clock = new THREE.Clock() //needed for controls
