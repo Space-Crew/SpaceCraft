@@ -35,14 +35,16 @@ camera.position.z = 5
 const scene = new THREE.Scene()
 //allows for moving 3d objects with mouse drag
 const controls = new dragControls(objects, camera, renderer.domElement, scene)
-
 const light = new THREE.AmbientLight(0xffffff, 0.8)
 scene.add(light)
 const pointLight = new THREE.PointLight(0xffffff, 0.8)
 pointLight.position.set(0, 8, 2)
 scene.add(pointLight)
-raycaster.setFromCamera(mouse, camera)
-
+raycaster.setFromCamera( mouse, camera );
+const controls = new dragControls(objects, camera, renderer.domElement, scene);
+function onMouseMove( event ) {
+  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 const boxThatHoldsMouse = constructSelectedBox(renderer.domElement, camera)
 scene.add(boxThatHoldsMouse)
 
@@ -83,6 +85,10 @@ window.addEventListener('keydown', event => {
       camera.position.y -= 1
       break
   }
+})
+
+window.addEventListener('mousemove', event => {
+  
 })
 
 // const clock = new THREE.Clock() //needed for controls
