@@ -22,7 +22,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 )
-camera.position.y = 3
+camera.position.y = 3;
+camera.position.z = 5;
 //This is hopefuly to enable the ghost perspective
 // const controls = new THREE.FirstPersonControls(camera)
 // controls.movementSpeed = 1000
