@@ -2,7 +2,11 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {withRouter, Route, Switch} from 'react-router-dom'
 import PropTypes from 'prop-types'
+<<<<<<< HEAD
 import {Login, Signup, UserHome, Draggables} from './components'
+=======
+import {Login, Signup, UserHome, Plane} from './components'
+>>>>>>> 561b7d3a5c6959466c1c9e5234e07a9d606c5ff1
 import {me} from './store'
 
 /**
@@ -29,7 +33,7 @@ class Routes extends Component {
           </Switch>
         )}
         {/* Displays our Login component as a fallback */}
-        <Route component={Login} />
+        <Route path="/" component={Plane} />
       </Switch>
     )
   }
