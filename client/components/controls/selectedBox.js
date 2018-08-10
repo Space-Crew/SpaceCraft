@@ -3,12 +3,12 @@ import THREE from 'three'
 export function constructSelectedBox(DOMElement, camera) {
   //build cube
   const geometry = new THREE.BoxGeometry(1, 1, 1)
-  const material = new THREE.MeshBasicMaterial({color: 0xa52a2a})
+  const material = new THREE.MeshBasicMaterial({color: 0xb9c4c0})
   material.transparent = true
   material.opacity = 0.3
   const mesh = new THREE.Mesh(geometry, material)
   var geo = new THREE.EdgesGeometry(mesh.geometry)
-  var mat = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 2})
+  var mat = new THREE.LineBasicMaterial({color: 0xb9d4c0, linewidth: 1})
   var wireframe = new THREE.LineSegments(geo, mat)
   wireframe.renderOrder = 1
   mesh.add(wireframe)
