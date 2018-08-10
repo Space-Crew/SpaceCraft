@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
-import DragControls from './controls/DragControls'
-import {constructSelectedBox} from './controls/selectedBox'
+import DragControls from '../3d/controls/DragControls'
+import {constructSelectedBox} from '../3d/controls/selectedBox'
+import {makeUnitCube} from '../3d/meshes'
 
 //container for all 3d objects that will be affected by event
 let objects = []
@@ -22,16 +23,16 @@ const camera = new THREE.PerspectiveCamera(
 )
 camera.position.y = 3
 camera.position.z = 5
-//This is hopefuly to enable the ghost perspective
-// const controls = new THREE.FirstPersonControls(camera)
-// controls.movementSpeed = 1000
-// controls.lookSpeed = 0.125
-// controls.lookVertical = true
 
 //create a new scene
 const scene = new THREE.Scene()
 //allows for adding, deleting, and moving 3d objects with mouse drag
-const dragControl = new DragControls(objects, camera, renderer.domElement, scene)
+const dragControl = new DragControls(
+  objects,
+  camera,
+  renderer.domElement,
+  scene
+)
 
 const light = new THREE.AmbientLight(0xffffff, 0.8)
 scene.add(light)
@@ -42,23 +43,10 @@ scene.add(pointLight)
 const previewBox = constructSelectedBox(renderer.domElement, camera)
 scene.add(previewBox)
 
-//helper function to create a cube but does not add to scene
-function makeUnitCube(x, y, z, color = 0x0) {
-  const geometry = new THREE.BoxGeometry(1, 1, 1)
-  const material = new THREE.MeshLambertMaterial({color}) //Lambert is so that the material can be affected by light
-  const mesh = new THREE.Mesh(geometry, material)
-  var geo = new THREE.EdgesGeometry(mesh.geometry)
-  var mat = new THREE.LineBasicMaterial({color: 0xb9d4c0, linewidth: 2})
-  var wireframe = new THREE.LineSegments(geo, mat)
-  wireframe.renderOrder = 1
-  mesh.add(wireframe)
-  mesh.position.set(x, y, z)
-  return mesh
-}
-
 for (let z = -10; z < 10; z += 1) {
   for (let x = -10; x <= 10; x += 1) {
     const y = 1
+
     let cube = makeUnitCube(x, y, z, 0xb9c4c0)
     scene.add(cube)
     objects.push(cube)
@@ -100,11 +88,11 @@ class Plane extends Component {
           break
       }
     })
-    document.getElementById('plane').appendChild(renderer.domElement);
+    document.getElementById('plane').appendChild(renderer.domElement)
     animate()
   }
   render() {
-    return <div id="plane"></div>;
+    return <div id="plane" />
   }
 }
 
