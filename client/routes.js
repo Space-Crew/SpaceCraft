@@ -4,6 +4,7 @@ import {withRouter, Route, Switch} from 'react-router-dom'
 import PropTypes from 'prop-types'
 import {Login, Signup, UserHome, Draggables, Plane} from './components'
 import {me} from './store'
+import PointerLockDemo from './components/PointerLockDemo'
 
 /**
  * COMPONENT
@@ -19,6 +20,7 @@ class Routes extends Component {
     return (
       <Switch>
         {/* Routes placed here are available to all visitors */}
+        <Route exact path="/demo" component={PointerLockDemo} />
         <Route exact path="/" component={Plane} />
         {/* <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} /> */}

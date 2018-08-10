@@ -1,4 +1,4 @@
-import THREE from 'three'
+import * as THREE from 'three'
 
 export function constructSelectedBox(DOMElement, camera) {
   //build cube

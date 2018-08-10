@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {default as THREE} from 'three'
+import * as THREE from 'three'
 import {default as dragControls} from './controls/DragControls'
 import {constructSelectedBox} from './controls/selectedBox'
 
