@@ -1,4 +1,6 @@
 import * as THREE from 'three'
+import {makeUnitCube} from '../meshes'
+
 THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   if (_objects instanceof THREE.Camera) {
     console.warn(
@@ -19,7 +21,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
 
   var _selected = null,
     _hovered = null
-  //
 
   var scope = this
 
@@ -29,11 +30,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     _domElement.addEventListener('mouseup', onDocumentMouseCancel, false) //able to release
     _domElement.addEventListener('mouseleave', onDocumentMouseCancel, false)
 
-    // _domElement.addEventListener( 'touchend', onDocumentTouchEnd, false );
-    // _domElement.addEventListener( 'scroll', onDocumentscroll, false );
-    // _domElement.addEventListener( 'gesturechange', onDocumentGestureChange, false );
-    // _domElement.addEventListener( 'gestureend', onDocumentGestureEnd, false );
-    // _domElement.addEventListener( 'dblclick', onDoubleClick, false );
     window.addEventListener('keydown', onDocumentOptionDown, false)
     window.addEventListener('keyup', onDocumentOptionUp, false)
   }
@@ -101,6 +97,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       _domElement.style.cursor = 'auto'
       _hovered = null
     }
+    // _camera.rotation.
+    _camera.rotation.y = -1 * _mouse.x * Math.PI // left or counterclockwise
+    // _camera.rotation.z =0; // world tilt right
   }
 
   function onDocumentKeyDown(event) {
@@ -136,19 +135,14 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     }
     if (_shiftIsDown) {
       _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
-      var box = new THREE.BoxGeometry(1, 1, 1)
-      var boxMaterial = new THREE.MeshNormalMaterial()
-      var cube = new THREE.Mesh(box, boxMaterial)
-      var geo = new THREE.EdgesGeometry(cube.geometry)
-      var mat = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 1})
-      var wireframe = new THREE.LineSegments(geo, mat)
-      wireframe.renderOrder = 1
-      cube.add(wireframe)
-      cube.position.x = _raycaster.ray.direction.x * 4 + _camera.position.x
-      cube.position.y = _raycaster.ray.direction.y * 4 + _camera.position.y
-      cube.position.z = _raycaster.ray.direction.z * 4 + _camera.position.z
+      const cubeColor = 0xb9c4c0
+      const cube = makeUnitCube(
+        _raycaster.ray.direction.x * 4 + _camera.position.x,
+        _raycaster.ray.direction.y * 4 + _camera.position.y,
+        _raycaster.ray.direction.z * 4 + _camera.position.z,
+        cubeColor
+      )
       cube.position.round()
-      cube.overdraw = true
       _scene.add(cube)
       _objects.push(cube)
     }
