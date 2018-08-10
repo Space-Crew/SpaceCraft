@@ -13,9 +13,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   var _plane = new THREE.Plane()
   var _raycaster = new THREE.Raycaster()
 
-  var _plane = new THREE.Plane()
-  var _raycaster = new THREE.Raycaster()
-
   var _mouse = new THREE.Vector2()
   var _offset = new THREE.Vector3()
   var _intersection = new THREE.Vector3()
@@ -61,8 +58,8 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     _domElement.removeEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.removeEventListener('mouseup', onDocumentMouseCancel, false)
     _domElement.removeEventListener('mouseleave', onDocumentMouseCancel, false)
-    window.removeEventListener('keydown', onDocumentShiftDown, false)
-    window.removeEventListener('keyup', onDocumentShiftUp, false)
+    window.removeEventListener('keydown', onDocumentOptionDown, false)
+    window.removeEventListener('keyup', onDocumentOptionUp, false)
   }
 
   function dispose() {
@@ -81,15 +78,10 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       if (_raycaster.ray.intersectPlane(_plane, _intersection)) {
         _selected.position.copy(_intersection.sub(_offset))
         _selected.position.round()
-        // _selected.position.x = Math.round(_selected.position.x);
-        // _selected.position.y = Math.round(_selected.position.y);
-        // _selected.position.z = Math.round(_selected.position.z);
       }
 
       return
     }
-
-    _raycaster.setFromCamera(_mouse, _camera)
 
     var intersects = _raycaster.intersectObjects(_objects)
 
@@ -105,11 +97,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
         _domElement.style.cursor = 'pointer'
         _hovered = object
       }
-    } else {
-      if (_hovered !== null) {
-        _domElement.style.cursor = 'auto'
-        _hovered = null
-      }
+    } else if (_hovered !== null) {
+      _domElement.style.cursor = 'auto'
+      _hovered = null
     }
   }
 
@@ -136,15 +126,16 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       window.addEventListener('keydown', onDocumentKeyDown, false)
       if (_commandIsDown) {
         _scene.remove(_selected)
+        _selected.geometry.dispose()
+        _selected.material.dispose()
+        _selected = undefined
         _objects = _scene.children
-        console.log(intersects)
       }
 
       _domElement.style.cursor = 'move'
     }
     if (_shiftIsDown) {
       _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
-      var rect = _domElement.getBoundingClientRect()
       var box = new THREE.BoxGeometry(1, 1, 1)
       var boxMaterial = new THREE.MeshNormalMaterial()
       var cube = new THREE.Mesh(box, boxMaterial)
@@ -167,10 +158,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     event.preventDefault()
 
     if (_selected) {
-      scope.dispatchEvent({type: 'dragend', object: _selected})
-
       window.removeEventListener('keydown', onDocumentKeyDown, false)
-
       _selected = null
     }
 
