@@ -14,7 +14,6 @@ export function constructSelectedBox(DOMElement, camera) {
   mesh.add(wireframe)
   mesh.position.set(0, 3, 4)
 
-  console.log(DOMElement)
   DOMElement.addEventListener('mousemove', event => {
     const mouse = new THREE.Vector2()
     mouse.x = event.clientX / window.innerWidth * 2 - 1
