@@ -20,17 +20,14 @@ class Routes extends Component {
     return (
       <Switch>
         {/* Routes placed here are available to all visitors */}
-<<<<<<< HEAD
         <Route exact path="/" component={Home} />
         <Route exact path="/plane" component={Plane} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
-=======
         <Route exact path="/demo" component={PointerLockDemo} />
         <Route exact path="/" component={Plane} />
         {/* <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} /> */}
->>>>>>> a681a0df09bc5b1ef3a55a0dfbc9f5f3c668aff4
         <Route exact path="/three" component={Draggables} />
       </Switch>
     )
