@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import DragControls from './controls/DragControls'
+import DragControls from '../3d/controls/DragControls'
 
 import React, {Component} from 'react'
 

@@ -4,13 +4,11 @@ export function makeUnitCube(
   x,
   y,
   z,
-  color = 0x0,
-  texture = '/textures/moon.jpg'
+  color = 0xb9c4c0
 ) {
   const geometry = new THREE.BoxGeometry(1, 1, 1)
   const material = new THREE.MeshLambertMaterial({
-    color,
-    map: new THREE.TextureLoader().load(texture)
+    color
   }) //Lambert is so that the material can be affected by light
   const mesh = new THREE.Mesh(geometry, material)
   var geo = new THREE.EdgesGeometry(mesh.geometry)
