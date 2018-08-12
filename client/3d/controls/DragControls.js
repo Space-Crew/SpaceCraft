@@ -18,7 +18,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   yawObject.position.y = 0
   yawObject.add(pitchObject)
 
-  var pointerLockControlOn = true;
   var PI_2 = Math.PI / 2
   var _shiftIsDown = false
   var _commandIsDown = false
@@ -31,6 +30,8 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   var _offset = new THREE.Vector3()
   var _intersection = new THREE.Vector3()
   let previewBox = makeUnitCube(0,3,4,0xb9c4c0, 0.3);
+  let previewId = previewBox.uuid;
+  console.log(previewId)
   _scene.add(previewBox);
 
   var _selected = null,
@@ -57,7 +58,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     }
   }
   function onDocumentOptionUp(event) {
-    onDocumentKeyDown(event)
+    // onDocumentKeyDown(event)
     if (event.which === 16) {
       _shiftIsDown = false
     }
@@ -79,7 +80,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   }
 
   function onDocumentMouseMove(event) {
-    console.log(_camera.position, _camera.rotation)
+    console.log(_selected, scope.enabled)
     event.preventDefault()
     var rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
@@ -100,11 +101,11 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     )
 
     if (_selected && scope.enabled) {
-      if (_raycaster.ray.intersectPlane(_plane, _intersection)) {
-        _selected.position.copy(_intersection.sub(_offset))
-        _selected.position.round()
-      }
-      return
+      console.log("I AM HERE");
+      
+      _selected.position.copy(previewBox.position);
+      console.log(_selected.position);
+      
     }
 
     var intersects = _raycaster.intersectObjects(_objects)
@@ -126,12 +127,11 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       _hovered = null
     }
     // _camera.rotation.
-    const origin = new THREE.Vector3(0,0,0)
-    mouseVectorForBox.copy(origin)
+    mouseVectorForBox.copy(yawObject.position)
     mouseVectorForBox.addScaledVector(_raycaster.ray.direction, scale)
     previewBox.position.copy(mouseVectorForBox)
     previewBox.position.round()
-    console.log(previewBox.position)
+    // console.log(previewBox.position)
     // _camera.rotation.y = -1 * _mouse.x * Math.PI // left or counterclockwise
     // _camera.rotation.z =0; // world tilt right
   }
@@ -139,44 +139,43 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   function onDocumentKeyDown(event) {
     switch (event.which) {
       case 87: //W
-        _camera.position.z -= 1
+        yawObject.position.z -= 1
         break
       case 83: // S
-        _camera.position.z += 1
+        yawObject.position.z += 1
         break
       case 65: //A
-        _camera.position.x -= 1
+        yawObject.position.x -= 1
         break
       case 68: //D
-        _camera.position.x += 1
+        yawObject.position.x += 1
         break
       case 69: //Q
-        _camera.position.y += 1
+        yawObject.position.y += 1
         break
       case 81: //E
-        _camera.position.y -= 1
+        yawObject.position.y -= 1
         break
     }
   }
 
   function onDocumentMouseDown(event) {
-    var v = _raycaster.ray.direction;
-    var direction = new THREE.Vector3(0, 0, -1)
-    var rotation = new THREE.Euler(0, 0, 0, 'YXZ')
-    rotation.set(pitchObject.rotation.x, yawObject.rotation.y, 0)
-    v.copy(direction).applyEuler(rotation)
-    console.log(v);
+    // var v = _raycaster.ray.direction;
+    // var direction = new THREE.Vector3(0, 0, -1)
+    // var rotation = new THREE.Euler(0, 0, 0, 'YXZ')
+    // rotation.set(pitchObject.rotation.x, yawObject.rotation.y, 0)
+    // v.copy(direction).applyEuler(rotation)
     event.preventDefault()
     _raycaster.setFromCamera(_mouse, _camera)
 
-    var intersects = _raycaster.intersectObjects(_objects)
+    var intersects = _raycaster.intersectObjects(_objects).filter(e=>e.object.uuid !== previewId)
 
     if (intersects.length > 0) {
       _selected = intersects[0].object
+      console.log(_selected)
       _domElement.style.cursor = 'move'
     }
     if (_shiftIsDown) {
-      console.log('trying to add cube')
       _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
       const cubeColor = 0xb9c4c0
       const cube = makeUnitCube(
