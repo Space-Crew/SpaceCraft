@@ -26,8 +26,6 @@ class Routes extends Component {
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/demo" component={PointerLockDemo} />
         <Route exact path="/" component={Plane} />
-        {/* <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} /> */}
         <Route exact path="/three" component={Draggables} />
       </Switch>
     )

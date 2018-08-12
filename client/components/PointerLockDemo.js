@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
-import PointerLockControls from './controls/PointerLockControls'
+import PointerLockControls from '../3d/controls/PointerLockControls'
 
 function startDemo() {
   var camera, scene, renderer, controls
