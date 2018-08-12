@@ -32,7 +32,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   let previewBox = makeUnitCube(0,3,4,0xb9c4c0, 0.3);
   let previewId = previewBox.uuid;
   previewBox.visible = false;
-  console.log(previewId)
+  // console.log(previewId)
   _scene.add(previewBox);
 
   var _selected = null,
@@ -84,7 +84,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   }
 
   function onDocumentMouseMove(event) {
-    console.log(_camera.position, yawObject.position)
+    // console.log(_camera.position, yawObject.position)
     event.preventDefault()
     var rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
@@ -145,28 +145,34 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   function onDocumentKeyDown(event) {
     switch (event.which) {
       case 87: //W
-        yawObject.position.z -= 1
-        // _camera.position.z -= 1
+        // yawObject.position.z -= 1
+        yawObject.translateZ(-1)
+        // _camera.position.z -= 1;
         break
       case 83: // S
-        yawObject.position.z += 1
-        // _camera.position.z += 1
+        // yawObject.position.z += 1
+        yawObject.translateZ(1)
+        // _camera.position.z -= 1
         break
       case 65: //A
-        yawObject.position.x -= 1
-        // _camera.position.x -= 1
-        break
-      case 68: //D
-        yawObject.position.x += 1
+        // yawObject.position.x -= 1
+        yawObject.translateX(-1)
         // _camera.position.x += 1
         break
+      case 68: //D
+        // yawObject.position.x += 1
+        yawObject.translateX(1)
+        // _camera.position.x -= 1
+        break
       case 69: //Q
-        yawObject.position.y += 1
-        // _camera.position.y += 1
+        // yawObject.position.y += 1
+        yawObject.translateY(1)
+        // _camera.position.y -= 1
         break
       case 81: //E
-        yawObject.position.y -= 1
-        // _camera.position.y -= 1
+        // yawObject.position.y -= 1
+        yawObject.translateY(-1)
+        // _camera.position.y += 1
         break
     }
   }
