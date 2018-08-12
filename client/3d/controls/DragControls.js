@@ -24,13 +24,14 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   var _plane = new THREE.Plane()
   var _raycaster = new THREE.Raycaster()
   const mouseVectorForBox = new THREE.Vector3()
-  var scale = 4;
+  const mouseVector = new THREE.Vector3()
+  var scale = 6;
+  let distanceToSelected;
 
   var _mouse = new THREE.Vector2()
-  var _offset = new THREE.Vector3()
-  var _intersection = new THREE.Vector3()
   let previewBox = makeUnitCube(0,3,4,0xb9c4c0, 0.3);
   let previewId = previewBox.uuid;
+  previewBox.visible = false;
   console.log(previewId)
   _scene.add(previewBox);
 
@@ -52,15 +53,18 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     onDocumentKeyDown(event)
     if (event.which === 16) {
       _shiftIsDown = true
+      previewBox.visible = true
     }
     if (event.which === 91) {
       _commandIsDown = true
+      previewBox.visible = false;
     }
   }
   function onDocumentOptionUp(event) {
     // onDocumentKeyDown(event)
     if (event.which === 16) {
       _shiftIsDown = false
+      previewBox.visible = false
     }
     if (event.which === 91) {
       _commandIsDown = false
@@ -80,7 +84,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   }
 
   function onDocumentMouseMove(event) {
-    console.log(_selected, scope.enabled)
+    console.log(_camera.position, yawObject.position)
     event.preventDefault()
     var rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
@@ -101,10 +105,12 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     )
 
     if (_selected && scope.enabled) {
-      console.log("I AM HERE");
+
+      mouseVector.copy(yawObject.position)
+      mouseVector.addScaledVector(_raycaster.ray.direction, distanceToSelected)
       
-      _selected.position.copy(previewBox.position);
-      console.log(_selected.position);
+      _selected.position.copy(mouseVector);
+      _selected.position.round();
       
     }
 
@@ -140,21 +146,27 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     switch (event.which) {
       case 87: //W
         yawObject.position.z -= 1
+        // _camera.position.z -= 1
         break
       case 83: // S
         yawObject.position.z += 1
+        // _camera.position.z += 1
         break
       case 65: //A
         yawObject.position.x -= 1
+        // _camera.position.x -= 1
         break
       case 68: //D
         yawObject.position.x += 1
+        // _camera.position.x += 1
         break
       case 69: //Q
         yawObject.position.y += 1
+        // _camera.position.y += 1
         break
       case 81: //E
         yawObject.position.y -= 1
+        // _camera.position.y -= 1
         break
     }
   }
@@ -172,7 +184,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
 
     if (intersects.length > 0) {
       _selected = intersects[0].object
-      console.log(_selected)
+      distanceToSelected = yawObject.position.distanceTo(_selected.position);
       _domElement.style.cursor = 'move'
     }
     if (_shiftIsDown) {
