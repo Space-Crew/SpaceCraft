@@ -59,6 +59,7 @@ function startPlane() {
   }
   function animate() {
     requestAnimationFrame(animate)
+    
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
