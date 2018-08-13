@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {default as THREE} from 'three'
+import * as THREE from 'three'
 
 // main scene //
 const scene = new THREE.Scene()
@@ -78,8 +78,8 @@ backgroundMesh.material.depthWrite = false
 scene.add(backgroundMesh)
 
 // background scene //
-var backgroundScene = new THREE.Scene()
-var backgroundCamera = new THREE.Camera()
+const backgroundScene = new THREE.Scene()
+const backgroundCamera = new THREE.Camera()
 backgroundScene.add(backgroundCamera)
 backgroundScene.add(backgroundMesh)
 
