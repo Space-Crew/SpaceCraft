@@ -16,15 +16,9 @@ class Routes extends Component {
   }
 
   render() {
+    // Example to access worlds column in db //
     const usersRef = db.ref('worlds')
     usersRef.on('value', snapshot => console.log(snapshot.val()))
-    // console.log(usersRef)
-    // leadsRef.on('value', function(snapshot) {
-    //   console.log(snapshot)
-    //   snapshot.forEach(function(childSnapshot) {
-    //     var childData = childSnapshot.val()
-    //   })
-    // })
 
     const {isLoggedIn} = this.props
 

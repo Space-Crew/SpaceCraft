@@ -2,9 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
 
-// import fbKey from '../secrets'
-
-// initialize firebase
+// initialize firebase //
 var config = {
   apiKey: 'AIzaSyD-wIw2XP-wlc6oqJOTzOCziYVSk1Y5khE',
   authDomain: 'spacecraft-1806.firebaseapp.com',
