@@ -1,10 +1,17 @@
 import * as THREE from 'three'
 
-export function makeUnitCube(position, color = 0xb9c4c0, texture) {
+export function makeUnitCube(
+  position,
+  color = 0xb9c4c0,
+  opacity,
+  texture
+) {
   const geometry = new THREE.BoxGeometry(1, 1, 1)
   const material = new THREE.MeshLambertMaterial({
     color
   }) //Lambert is so that the material can be affected by light
+  material.transparent = true
+  material.opacity = opacity
   if (texture) {
     //     from stack overlfow
     // mesh.material.map = THREE.ImageUtils.loadTexture( src ); //assumes you've pre-loaded your images, for now will ignore
