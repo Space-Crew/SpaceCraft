@@ -145,44 +145,27 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   function onDocumentKeyDown(event) {
     switch (event.which) {
       case 87: //W
-        // yawObject.position.z -= 1
         yawObject.translateZ(-1)
-        // _camera.position.z -= 1;
         break
       case 83: // S
-        // yawObject.position.z += 1
         yawObject.translateZ(1)
-        // _camera.position.z -= 1
         break
       case 65: //A
-        // yawObject.position.x -= 1
         yawObject.translateX(-1)
-        // _camera.position.x += 1
         break
       case 68: //D
-        // yawObject.position.x += 1
         yawObject.translateX(1)
-        // _camera.position.x -= 1
         break
       case 69: //Q
-        // yawObject.position.y += 1
         yawObject.translateY(1)
-        // _camera.position.y -= 1
         break
       case 81: //E
-        // yawObject.position.y -= 1
         yawObject.translateY(-1)
-        // _camera.position.y += 1
         break
     }
   }
 
   function onDocumentMouseDown(event) {
-    // var v = _raycaster.ray.direction;
-    // var direction = new THREE.Vector3(0, 0, -1)
-    // var rotation = new THREE.Euler(0, 0, 0, 'YXZ')
-    // rotation.set(pitchObject.rotation.x, yawObject.rotation.y, 0)
-    // v.copy(direction).applyEuler(rotation)
     event.preventDefault()
     _raycaster.setFromCamera(_mouse, _camera)
 
@@ -197,12 +180,10 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
       const cubeColor = 0xb9c4c0
       const cube = makeUnitCube(
-        previewBox.position.x,
-        previewBox.position.y,
-        previewBox.position.z,
+        previewBox.position,
         cubeColor,
         1
-      );
+      )
       _scene.add(cube)
       _objects = _scene.children
     } else if (_commandIsDown) {
