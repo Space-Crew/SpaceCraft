@@ -35,10 +35,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   const position = new THREE.Vector3(0, 0, 0)
   let previewBox = makeUnitCube(position, 0xb9c4c0, 0.3)
   previewBox.unselectable = true
-  console.log(previewBox)
-  let previewId = previewBox.uuid
   previewBox.visible = false
-  // console.log(previewId)
   _scene.add(previewBox)
 
   var _selected = null,

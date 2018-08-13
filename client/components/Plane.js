@@ -66,11 +66,15 @@ function startPlane() {
   }
   document.getElementById('plane').appendChild(renderer.domElement)
   animate()
+  return dragControl.dispose
 }
 
 class Plane extends Component {
   componentDidMount() {
-    startPlane()
+    this.unsubscribe = startPlane()
+  }
+  componentWillUnmount() {
+    this.unsubscribe()
   }
   render() {
     return <div id="plane" />
