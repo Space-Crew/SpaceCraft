@@ -12,8 +12,7 @@ var camera = new THREE.PerspectiveCamera(
 )
 
 // lights //
-// Create lights
-var rightLight = new THREE.PointLight(0xeeeeee)
+var rightLight = new THREE.PointLight(0xeeeeee, 0.6)
 rightLight.position.set(20, 0, 20)
 scene.add(rightLight)
 const leftLight = new THREE.PointLight(0xeeeeee, 0.6)
@@ -28,40 +27,43 @@ const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
 
 // add 3D text //
-const group = new THREE.Group()
-// PlayfairDisplayRegular.json
-let material, textGeom, textMesh
 const fontLoader = new THREE.FontLoader()
 fontLoader.load('/fonts/gentilis_regular.typeface.json', font => {
-  material = new THREE.MeshNormalMaterial /* {color: '#F9EDEB'} */()
-  textGeom = new THREE.TextGeometry('unleash your', {
-    font: font,
-    size: 2,
-    height: 1
+  let material, geom, mesh, letterWidth, x, y, z, letter
+  let nextLine = false
+  let textWidth = 0
+  const text = 'unleash your imagination'
+  material = new THREE.MeshPhongMaterial({
+    color: '#F9EDEB',
+    side: THREE.DoubleSide,
+    reflectivity: 0.5
   })
-  textMesh = new THREE.Mesh(textGeom, material)
-  // textMesh.position.set(-5, 0, -5)
-  textGeom.computeBoundingBox()
-  // let textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x
-  textMesh.position.set(-10, 2, -5)
-  // scene.add(textMesh)
-  group.add(textMesh)
-})
-
-let mat, geom, mesh
-fontLoader.load('/fonts/gentilis_regular.typeface.json', font => {
-  mat = new THREE.MeshNormalMaterial /* {color: '#F9EDEB'} */()
-  geom = new THREE.TextGeometry('imagination', {
-    font: font,
-    size: 2,
-    height: 1
-  })
-  mesh = new THREE.Mesh(geom, mat)
-  geom.computeBoundingBox()
-  // let textWidth = geom.boundingBox.max.x - geom.boundingBox.min.x
-  mesh.position.set(-5, -3, -5)
-  group.add(mesh)
-  scene.add(group)
+  for (let i = 0; i < text.length; i++) {
+    letter = text[i]
+    if (letter === ' ') {
+      textWidth += 1
+      continue
+    }
+    z = -5
+    x = -10 + textWidth
+    y = 2
+    if (letter === 'i') nextLine = true
+    if (nextLine) {
+      x = -8 + textWidth - 'unleash your'.length
+      y = -3
+    }
+    geom = new THREE.TextGeometry(letter, {
+      font: font,
+      size: 2,
+      height: 1
+    })
+    mesh = new THREE.Mesh(geom, material)
+    geom.computeBoundingBox()
+    letterWidth = geom.boundingBox.max.x - geom.boundingBox.min.x
+    textWidth += letterWidth
+    mesh.position.set(x, y, z)
+    scene.add(mesh)
+  }
 })
 
 // Set up the main camera
@@ -84,15 +86,33 @@ var backgroundCamera = new THREE.Camera()
 backgroundScene.add(backgroundCamera)
 backgroundScene.add(backgroundMesh)
 
+let theta = 0
+let radius = 10
+
 const renderThree = () => {
   // update 3D text rotations //
   setTimeout(() => {
-    if (group) {
-      group.rotation.x -= 0.005
-      group.rotation.z -= 0.005
-      group.rotation.y += 0.005
-    }
-  }, 5000)
+    const timer = Date.now() * 0.0001
+    // camera.position.x = Math.cos(timer) * 10
+    // camera.position.z = Math.sin(timer) * 10
+    // camera.lookAt(scene.position)
+    theta += 0.1
+    camera.position.x = radius * Math.sin(THREE.Math.degToRad(theta))
+    camera.position.y = radius * Math.sin(THREE.Math.degToRad(theta))
+    camera.position.z = radius * Math.cos(THREE.Math.degToRad(theta))
+    camera.lookAt(scene.position)
+    camera.updateMatrixWorld(true)
+    scene.traverse(object => {
+      object.rotation.x = timer * 2.5
+      object.rotation.y = timer * 3.5
+      object.rotation.z = timer * 2.5
+      // position values, -15 -> 25
+      /* object.position.x = Math.random() * 15 - 25
+      object.position.y = Math.random() * 15 - 25
+      object.position.z = Math.random() * 15 - 25 */
+    })
+  }, 3000)
+
   renderer.autoClear = false
   renderer.clear()
   renderer.render(backgroundScene, backgroundCamera)
@@ -114,3 +134,5 @@ class Home extends Component {
 }
 
 export default Home
+
+// var material = new THREE.MeshPhongMaterial({ map: map, side: THREE.DoubleSide });
