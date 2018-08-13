@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import {Login, Signup, UserHome, Home, Draggables, Plane} from './components'
 import {me} from './store'
 import PointerLockDemo from './components/PointerLockDemo'
+import WorldList from './components/WorldList'
 
 /**
  * COMPONENT
@@ -22,6 +23,7 @@ class Routes extends Component {
         {/* Routes placed here are available to all visitors */}
         <Route exact path="/" component={Home} />
         <Route path="/plane" component={Plane} />
+        <Route path="/worlds" component={WorldList} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/demo" component={PointerLockDemo} />
