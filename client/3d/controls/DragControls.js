@@ -137,9 +137,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
       const cubeColor = 0xb9c4c0
       const cube = makeUnitCube(
-        _raycaster.ray.direction.x * 4 + _camera.position.x,
-        _raycaster.ray.direction.y * 4 + _camera.position.y,
-        _raycaster.ray.direction.z * 4 + _camera.position.z,
+        _raycaster.ray.direction.addScaledVector(_camera.position, 4),
         cubeColor
       )
       cube.position.round()
