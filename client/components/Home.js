@@ -10,6 +10,8 @@ var camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 )
+camera.position.z = 5
+camera.position.x = -2
 
 // lights //
 var rightLight = new THREE.PointLight(0xeeeeee, 0.6)
@@ -18,7 +20,6 @@ scene.add(rightLight)
 const leftLight = new THREE.PointLight(0xeeeeee, 0.6)
 leftLight.position.set(-20, 0, 20)
 scene.add(leftLight)
-
 var lightAmb = new THREE.AmbientLight(0x777777)
 scene.add(lightAmb)
 
@@ -66,10 +67,6 @@ fontLoader.load('/fonts/gentilis_regular.typeface.json', font => {
   }
 })
 
-// Set up the main camera
-camera.position.z = 5
-camera.position.x = -2
-
 // load background texture //
 const texture = new THREE.TextureLoader().load('starrybackground.png')
 const backgroundMesh = new THREE.Mesh(
@@ -86,6 +83,7 @@ var backgroundCamera = new THREE.Camera()
 backgroundScene.add(backgroundCamera)
 backgroundScene.add(backgroundMesh)
 
+// render function //
 let theta = 0
 let radius = 10
 
@@ -93,9 +91,6 @@ const renderThree = () => {
   // update 3D text rotations //
   setTimeout(() => {
     const timer = Date.now() * 0.0001
-    // camera.position.x = Math.cos(timer) * 10
-    // camera.position.z = Math.sin(timer) * 10
-    // camera.lookAt(scene.position)
     theta += 0.1
     camera.position.x = radius * Math.sin(THREE.Math.degToRad(theta))
     camera.position.y = radius * Math.sin(THREE.Math.degToRad(theta))
@@ -106,10 +101,6 @@ const renderThree = () => {
       object.rotation.x = timer * 2.5
       object.rotation.y = timer * 3.5
       object.rotation.z = timer * 2.5
-      // position values, -15 -> 25
-      /* object.position.x = Math.random() * 15 - 25
-      object.position.y = Math.random() * 15 - 25
-      object.position.z = Math.random() * 15 - 25 */
     })
   }, 3000)
 
@@ -134,5 +125,3 @@ class Home extends Component {
 }
 
 export default Home
-
-// var material = new THREE.MeshPhongMaterial({ map: map, side: THREE.DoubleSide });
