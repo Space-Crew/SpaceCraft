@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import PointerLockControls from '../3d/controls/PointerLockControls'
 import {makeUnitCube} from '../3d/meshes'
+import addBlock from '../3d/controls/addBlock'
 
 function startPlane() {
   //container for all 3d objects that will be affected by event
@@ -45,10 +46,12 @@ function startPlane() {
   for (let z = -10; z < 10; z += 1) {
     for (let x = -10; x <= 10; x += 1) {
       const y = -1
-      const position = new THREE.Vector3(x, y, z)
-      let cube = makeUnitCube(position, 0xb9c4c0, 1)
-      scene.add(cube)
-      objects.push(cube)
+      addBlock(new THREE.Vector3(x, y, z), 0xb9c4c0, scene, objects)
+      // objects.push(cube)
+      // const position = new THREE.Vector3(x, y, z)
+      // let cube = makeUnitCube(position, 0xb9c4c0, 1)
+      // scene.add(cube)
+      // objects.push(cube)
     }
   }
   // const clock = new THREE.Clock() //needed for controls

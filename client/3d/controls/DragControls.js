@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import {makeUnitCube} from '../meshes'
+import addBlock from './addBlock'
+import deleteBlock from './deleteBlock'
 
 THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   if (_objects instanceof THREE.Camera) {
@@ -113,24 +115,24 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       _selected.position.round()
     }
 
-    var intersects = _raycaster.intersectObjects(_objects)
+    // var intersects = _raycaster.intersectObjects(_objects)
 
-    if (intersects.length > 0) {
-      var object = intersects[0].object
+    // if (intersects.length > 0) {
+    //   var object = intersects[0].object
 
-      _plane.setFromNormalAndCoplanarPoint(
-        _camera.getWorldDirection(_plane.normal),
-        object.position
-      )
+    //   _plane.setFromNormalAndCoplanarPoint(
+    //     _camera.getWorldDirection(_plane.normal),
+    //     object.position
+    //   )
 
-      if (_hovered !== object) {
-        _domElement.style.cursor = 'pointer'
-        _hovered = object
-      }
-    } else if (_hovered !== null) {
-      _domElement.style.cursor = 'auto'
-      _hovered = null
-    }
+    //   if (_hovered !== object) {
+    //     _domElement.style.cursor = 'pointer'
+    //     _hovered = object
+    //   }
+    // } else if (_hovered !== null) {
+    //   _domElement.style.cursor = 'auto'
+    //   _hovered = null
+    // }
     // _camera.rotation.
     mouseVectorForBox.copy(yawObject.position)
     mouseVectorForBox.addScaledVector(_raycaster.ray.direction, scale)
@@ -178,17 +180,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       _domElement.style.cursor = 'move'
     }
     if (_shiftIsDown) {
-      _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
-      const cubeColor = 0xb9c4c0
-      const cube = makeUnitCube(previewBox.position, cubeColor, 1)
-      _scene.add(cube)
-      _objects = _scene.children
+      addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
     } else if (_commandIsDown) {
-      _scene.remove(_selected)
-      _selected.geometry.dispose()
-      _selected.material.dispose()
-      _selected = undefined
-      _objects = _scene.children
+      deleteBlock(_selected, _scene, _objects)
     }
   }
 
