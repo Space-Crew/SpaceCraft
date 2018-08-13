@@ -45,16 +45,12 @@ function startPlane() {
   for (let z = -10; z < 10; z += 1) {
     for (let x = -10; x <= 10; x += 1) {
       const y = -1
-
-for (let z = -10; z < 10; z += 1) {
-  for (let x = -10; x <= 10; x += 1) {
-    const y = -1
-    const position = new THREE.Vector3(x, y, z)
-    let cube = makeUnitCube(position, 0xb9c4c0, 1)
-    scene.add(cube)
-    objects.push(cube)
+      const position = new THREE.Vector3(x, y, z)
+      let cube = makeUnitCube(position, 0xb9c4c0, 1)
+      scene.add(cube)
+      objects.push(cube)
+    }
   }
-
   // const clock = new THREE.Clock() //needed for controls
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
@@ -62,7 +58,7 @@ for (let z = -10; z < 10; z += 1) {
   }
   function animate() {
     requestAnimationFrame(animate)
-    
+
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
