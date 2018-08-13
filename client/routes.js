@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import {Login, Signup, UserHome, Home, Draggables, Plane} from './components'
 import {me} from './store'
 import PointerLockDemo from './components/PointerLockDemo'
+import {db} from './firebase'
 
 /**
  * COMPONENT
@@ -15,6 +16,16 @@ class Routes extends Component {
   }
 
   render() {
+    const usersRef = db.ref('worlds')
+    usersRef.on('value', snapshot => console.log(snapshot.val()))
+    // console.log(usersRef)
+    // leadsRef.on('value', function(snapshot) {
+    //   console.log(snapshot)
+    //   snapshot.forEach(function(childSnapshot) {
+    //     var childData = childSnapshot.val()
+    //   })
+    // })
+
     const {isLoggedIn} = this.props
 
     return (
