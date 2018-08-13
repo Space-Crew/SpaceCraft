@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import {makeUnitCube} from '../meshes'
 import addBlock from './addBlock'
 import deleteBlock from './deleteBlock'
+import selectBlock from './selectBlock'
 
 THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   if (_objects instanceof THREE.Camera) {
@@ -33,6 +34,8 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   var _mouse = new THREE.Vector2()
   const position = new THREE.Vector3(0, 0, 0)
   let previewBox = makeUnitCube(position, 0xb9c4c0, 0.3)
+  previewBox.unselectable = true
+  console.log(previewBox)
   let previewId = previewBox.uuid
   previewBox.visible = false
   // console.log(previewId)
@@ -87,7 +90,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   }
 
   function onDocumentMouseMove(event) {
-    // console.log(_camera.position, yawObject.position)
     event.preventDefault()
     var rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
@@ -114,33 +116,10 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       _selected.position.copy(mouseVector)
       _selected.position.round()
     }
-
-    // var intersects = _raycaster.intersectObjects(_objects)
-
-    // if (intersects.length > 0) {
-    //   var object = intersects[0].object
-
-    //   _plane.setFromNormalAndCoplanarPoint(
-    //     _camera.getWorldDirection(_plane.normal),
-    //     object.position
-    //   )
-
-    //   if (_hovered !== object) {
-    //     _domElement.style.cursor = 'pointer'
-    //     _hovered = object
-    //   }
-    // } else if (_hovered !== null) {
-    //   _domElement.style.cursor = 'auto'
-    //   _hovered = null
-    // }
-    // _camera.rotation.
     mouseVectorForBox.copy(yawObject.position)
     mouseVectorForBox.addScaledVector(_raycaster.ray.direction, scale)
     previewBox.position.copy(mouseVectorForBox)
     previewBox.position.round()
-    // console.log(previewBox.position)
-    // _camera.rotation.y = -1 * _mouse.x * Math.PI // left or counterclockwise
-    // _camera.rotation.z =0; // world tilt right
   }
 
   function onDocumentKeyDown(event) {
@@ -168,14 +147,14 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
 
   function onDocumentMouseDown(event) {
     event.preventDefault()
-    _raycaster.setFromCamera(_mouse, _camera)
+    // _raycaster.setFromCamera(_mouse, _camera)
 
-    var intersects = _raycaster
-      .intersectObjects(_objects)
-      .filter(e => e.object.uuid !== previewId)
-
-    if (intersects.length > 0) {
-      _selected = intersects[0].object
+    // var intersects = _raycaster
+    //   .intersectObjects(_objects)
+    //   .filter(e => e.object.uuid !== previewId)
+    _selected = selectBlock(_mouse, _camera, _objects)
+    if (_selected) {
+      // _selected = intersects[0].object
       distanceToSelected = yawObject.position.distanceTo(_selected.position)
       _domElement.style.cursor = 'move'
     }
