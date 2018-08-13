@@ -48,7 +48,7 @@ function startPlane() {
 
 for (let z = -10; z < 10; z += 1) {
   for (let x = -10; x <= 10; x += 1) {
-    const y = 1
+    const y = -1
     const position = new THREE.Vector3(x, y, z)
     let cube = makeUnitCube(position, 0xb9c4c0, 1)
     scene.add(cube)
