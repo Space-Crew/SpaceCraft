@@ -1,10 +1,8 @@
 import * as THREE from 'three'
 
 export function makeUnitCube(
-  x,
-  y,
-  z,
-  color = 0x0,
+  position,
+  color = 0xb9c4c0,
   texture = '/textures/moon.jpg'
 ) {
   const geometry = new THREE.BoxGeometry(1, 1, 1)
@@ -18,6 +16,6 @@ export function makeUnitCube(
   var wireframe = new THREE.LineSegments(geo, mat)
   wireframe.renderOrder = 1
   mesh.add(wireframe)
-  mesh.position.set(x, y, z)
+  mesh.position.copy(position)
   return mesh
 }
