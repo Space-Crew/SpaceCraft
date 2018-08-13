@@ -21,7 +21,7 @@ class Routes extends Component {
       <Switch>
         {/* Routes placed here are available to all visitors */}
         <Route exact path="/" component={Home} />
-        <Route exact path="/plane" component={Plane} />
+        <Route path="/plane" component={Plane} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/demo" component={PointerLockDemo} />
