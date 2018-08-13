@@ -2,10 +2,17 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {withRouter, Route, Switch} from 'react-router-dom'
 import PropTypes from 'prop-types'
-import {Login, Signup, UserHome, Home, Draggables, Plane} from './components'
+import {
+  Login,
+  Signup,
+  UserHome,
+  Home,
+  Draggables,
+  Plane,
+  WorldList
+} from './components'
 import {me} from './store'
 import PointerLockDemo from './components/PointerLockDemo'
-import WorldList from './components/WorldList'
 
 /**
  * COMPONENT

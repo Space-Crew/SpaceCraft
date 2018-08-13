@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import WorldListPresentation from './WorldListPresentation'
+import ListPresentation from './ListPresentation'
 
 export default class WorldList extends Component {
   constructor(props) {
@@ -15,7 +15,6 @@ export default class WorldList extends Component {
       .database()
       .ref('worlds')
       .limit(10)
-    console.log(worlds)
     this.setState({worlds})
   }
   handleClick(id) {
@@ -23,8 +22,8 @@ export default class WorldList extends Component {
   }
   render() {
     return (
-      <WorldListPresentation
-        worlds={this.state.worlds}
+      <ListPresentation
+        items={this.state.worlds}
         handleClick={this.handleClick}
       />
     )
