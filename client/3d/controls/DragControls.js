@@ -12,7 +12,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   }
   var pitchObject = new THREE.Object3D()
   pitchObject.add(_camera)
-  pitchObject.rotation.x = Math.PI/2;
+  pitchObject.rotation.x = Math.PI / 2
 
   var yawObject = new THREE.Object3D()
   yawObject.position.y = 0
@@ -25,15 +25,16 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   var _raycaster = new THREE.Raycaster()
   const mouseVectorForBox = new THREE.Vector3()
   const mouseVector = new THREE.Vector3()
-  var scale = 6;
-  let distanceToSelected;
+  var scale = 6
+  let distanceToSelected
 
   var _mouse = new THREE.Vector2()
-  let previewBox = makeUnitCube(0,3,4,0xb9c4c0, 0.3);
-  let previewId = previewBox.uuid;
-  previewBox.visible = false;
+  const position = new THREE.Vector3(0, 0, 0)
+  let previewBox = makeUnitCube(position, 0xb9c4c0, 0.3)
+  let previewId = previewBox.uuid
+  previewBox.visible = false
   // console.log(previewId)
-  _scene.add(previewBox);
+  _scene.add(previewBox)
 
   var _selected = null,
     _hovered = null
@@ -57,7 +58,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     }
     if (event.which === 91) {
       _commandIsDown = true
-      previewBox.visible = false;
+      previewBox.visible = false
     }
   }
   function onDocumentOptionUp(event) {
@@ -92,9 +93,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     _raycaster.setFromCamera(_mouse, _camera)
 
     var movementX =
-    event.movementX || event.mozMovementX || event.webkitMovementX || 0
+      event.movementX || event.mozMovementX || event.webkitMovementX || 0
     var movementY =
-    event.movementY || event.mozMovementY || event.webkitMovementY || 0
+      event.movementY || event.mozMovementY || event.webkitMovementY || 0
 
     yawObject.rotation.y -= movementX * 0.002
     pitchObject.rotation.x -= movementY * 0.004
@@ -105,13 +106,11 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     )
 
     if (_selected && scope.enabled) {
-
       mouseVector.copy(yawObject.position)
       mouseVector.addScaledVector(_raycaster.ray.direction, distanceToSelected)
-      
-      _selected.position.copy(mouseVector);
-      _selected.position.round();
-      
+
+      _selected.position.copy(mouseVector)
+      _selected.position.round()
     }
 
     var intersects = _raycaster.intersectObjects(_objects)
@@ -169,21 +168,19 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     event.preventDefault()
     _raycaster.setFromCamera(_mouse, _camera)
 
-    var intersects = _raycaster.intersectObjects(_objects).filter(e=>e.object.uuid !== previewId)
+    var intersects = _raycaster
+      .intersectObjects(_objects)
+      .filter(e => e.object.uuid !== previewId)
 
     if (intersects.length > 0) {
       _selected = intersects[0].object
-      distanceToSelected = yawObject.position.distanceTo(_selected.position);
+      distanceToSelected = yawObject.position.distanceTo(_selected.position)
       _domElement.style.cursor = 'move'
     }
     if (_shiftIsDown) {
       _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
       const cubeColor = 0xb9c4c0
-      const cube = makeUnitCube(
-        previewBox.position,
-        cubeColor,
-        1
-      )
+      const cube = makeUnitCube(previewBox.position, cubeColor, 1)
       _scene.add(cube)
       _objects = _scene.children
     } else if (_commandIsDown) {
