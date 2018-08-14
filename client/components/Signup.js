@@ -12,7 +12,8 @@ export default class Signup extends Component {
       email: '',
       password: '',
       confirmPW: '',
-      error: ''
+      error: '',
+      signupSuccess: false
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
@@ -24,9 +25,11 @@ export default class Signup extends Component {
         this.state.email,
         this.state.password
       )
-      console.log('sucessfully signed up!')
+      this.setState({signupSuccess: true})
+      setTimeout(() => this.props.history.push('/plane'), 1500)
     } catch (err) {
       console.log('there is an error', err)
+      this.setState({error: 'There was a problem creating an account'})
     }
   }
   handleChange(event) {
@@ -36,7 +39,7 @@ export default class Signup extends Component {
   }
 
   render() {
-    const {email, password, confirmPW} = this.state
+    const {email, password, confirmPW, signupSuccess, error} = this.state
     const isInvalid = email === '' || password === '' || confirmPW === ''
     const passwordsMatch = password === confirmPW
     return (
@@ -58,9 +61,10 @@ export default class Signup extends Component {
           verticalAlign="middle"
         >
           <Grid.Column style={{maxWidth: 450}}>
-            {this.state.loginSuccess && (
-              <Message color="teal">Successfully logged in!</Message>
+            {signupSuccess && (
+              <Message color="teal">Account successfully created!</Message>
             )}
+            {error && <Message negative>{error}</Message>}
             <Header as="h2" color="teal" textAlign="center">
               Sign up for an account
             </Header>
@@ -105,36 +109,5 @@ export default class Signup extends Component {
         </Grid>
       </div>
     )
-    /* return (
-      <div className="form">
-        <form onSubmit={this.handleSubmit}>
-          <div className="form-item">
-            <label htmlFor="email">Email</label>
-            <input
-              name="email"
-              type="text"
-              onChange={this.handleChange}
-              value={this.state.email}
-            />
-          </div>
-          <div className="form-item">
-            <label htmlFor="password">Password</label>
-            <input
-              name="password"
-              type="password"
-              onChange={this.handleChange}
-              value={this.state.password}
-            />
-          </div>
-          <div>
-            <button type="submit">Sign in</button>
-          </div>
-          {this.state.error &&
-            this.state.error.response && (
-              <div> {this.state.error.response.data} </div>
-            )}
-        </form>
-      </div>
-    ) */
   }
 }
