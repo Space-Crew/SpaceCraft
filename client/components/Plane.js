@@ -98,10 +98,14 @@ class Plane extends Component {
   async componentDidMount() {
     // /plane/5
     let cubes = []
+    console.log(`plane:`, this.props.match, this.props.match.params.id)
     if (this.props.match && this.props.match.params.id) {
-      const worldRef = db.ref('/worlds/' + this.props.match.params.id)
-      const world = (await worldRef.once()).val()
-      cubes = world.cubes
+      const uri = '/worlds/' + this.props.match.params.id
+      console.log(uri)
+      const worldRef = db.ref(uri)
+      const world = (await worldRef.once('value')).val()
+      console.log(world)
+      cubes = Object.values(world.cubes)
     }
     this.unsubscribe = generateWorld(cubes)
   }

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import ListPresentation from './ListPresentation'
+import {db} from '../firebase'
 
 export default class WorldList extends Component {
   constructor(props) {
@@ -10,12 +11,9 @@ export default class WorldList extends Component {
     }
   }
 
-  componentDidMount() {
-    const worlds = firebase
-      .database()
-      .ref('worlds')
-      .limit(10)
-    this.setState({worlds})
+  async componentDidMount() {
+    const worlds = (await db.ref('worlds').once('value')).val()
+    this.setState({worlds: Object.values(worlds)})
   }
   handleClick(id) {
     this.props.history.push('/plane/' + id)

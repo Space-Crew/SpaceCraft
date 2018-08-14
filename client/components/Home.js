@@ -68,7 +68,7 @@ fontLoader.load('/fonts/gentilis_regular.typeface.json', font => {
 })
 
 // load background texture //
-const texture = new THREE.TextureLoader().load('starrybackground.png')
+const texture = new THREE.TextureLoader().load('/starrybackground.png')
 const backgroundMesh = new THREE.Mesh(
   new THREE.PlaneGeometry(2, 2, 0),
   new THREE.MeshBasicMaterial({map: texture})
