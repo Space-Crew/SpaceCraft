@@ -1,7 +1,7 @@
 import {db} from '../../firebase'
 import {toKey} from '..'
 
-function deleteBlock(selected, scene, objects) {
+export function deleteBlock(selected, scene, objects) {
   scene.remove(selected)
   selected.geometry.dispose()
   selected.material.dispose()
@@ -21,5 +21,3 @@ export function deleteBlockFromDb(selected, scene, objects, worldId) {
     console.error(error)
   }
 }
-
-export default deleteBlock
