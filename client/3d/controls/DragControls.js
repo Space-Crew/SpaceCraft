@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import {makeUnitCube} from '../meshes'
 import {addBlockToDb, addBlock} from './addBlock'
-import deleteBlock from './deleteBlock'
+import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 
 THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
@@ -162,7 +162,11 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
         addBlockToDb(previewBox.position, 0xb9c4c0, _scene, _objects, worldId)
       }
     } else if (_commandIsDown) {
-      deleteBlock(_selected, _scene, _objects)
+      if (worldId === undefined) {
+        deleteBlock(_selected, _scene, _objects)
+      } else {
+        deleteBlockFromDb(_selected, _scene, _objects, worldId)
+      }
     }
   }
 

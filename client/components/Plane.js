@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
-import {addBlock, addBlockToDb} from '../3d/controls/addBlock'
+import {addBlock} from '../3d/controls/addBlock'
 
 /*********************************
  * Construct the Three World
