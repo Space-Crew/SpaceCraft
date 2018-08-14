@@ -8,7 +8,6 @@ export function addBlockToDb(position, color, scene, objects, worldId) {
     cubesRef.child(toKey(position)).once('value', snapshot => {
       if (snapshot.val() === null) {
         addBlock(position, color, scene, objects)
-        console.log(snapshot)
         snapshot.ref.set({
           x: position.x,
           y: position.y,

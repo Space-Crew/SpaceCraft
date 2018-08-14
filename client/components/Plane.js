@@ -70,12 +70,11 @@ function generateWorld(cubes, worldId) {
 function addCubesToScene(cubes, scene, objects, worldId) {
   if (cubes.length !== 0) {
     cubes.forEach(cube => {
-      addBlockToDb(
+      addBlock(
         new THREE.Vector3(cube.x, cube.y, cube.z),
         0xb9c4c0,
         scene,
-        objects,
-        worldId
+        objects
       )
     })
   } else {
@@ -107,6 +106,7 @@ class Plane extends Component {
         const world = (await worldRef.once('value')).val()
         cubes = Object.values(world.cubes)
         worldId = world.id
+        console.log(`plane mounted:`, cubes)
       }
       this.unsubscribe = generateWorld(cubes, worldId)
     } catch (error) {
