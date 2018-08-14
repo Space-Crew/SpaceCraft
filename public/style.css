@@ -2,6 +2,7 @@ body {
   height: 100%;
   width: 100%;
   font-family: sans-serif;
+  margin: 0;
 }
 
 #homepage {
@@ -84,11 +85,6 @@ nav a {
   height: 20px;
 } */
 
-/* .form-item {
-  height: 30px;
-  display: flex;
-  justify-content: flex-start;
-} */
 #blocker {
   position: absolute;
   width: 100%;
