@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import {makeUnitCube} from '../meshes'
-import addBlock from './addBlock'
-import deleteBlock from './deleteBlock'
+import {addBlockToDb, addBlock} from './addBlock'
+import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 
-THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
+THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   if (_objects instanceof THREE.Camera) {
     console.warn(
       'THREE.DragControls: Constructor now expects ( objects, camera, domElement )'
@@ -143,26 +143,32 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
 
   function onDocumentMouseDown(event) {
     event.preventDefault()
-    // _raycaster.setFromCamera(_mouse, _camera)
-
-    // var intersects = _raycaster
-    //   .intersectObjects(_objects)
-    //   .filter(e => e.object.uuid !== previewId)
     _selected = selectBlock(_mouse, _camera, _objects)
     if (_selected) {
-      // _selected = intersects[0].object
       distanceToSelected = yawObject.position.distanceTo(_selected.position)
       _domElement.style.cursor = 'move'
     }
     if (_shiftIsDown) {
-      addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
+      if (worldId === undefined) {
+        addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
+      } else {
+        addBlockToDb(previewBox.position, 0xb9c4c0, _scene, _objects, worldId)
+      }
     } else if (_commandIsDown) {
+<<<<<<< HEAD
       // _scene.remove(_selected)
       // _selected.geometry.dispose()
       // _selected.material.dispose()
       // _selected = undefined
       // _objects = _scene.children
       _objects = deleteBlock(_selected, _scene, _objects)
+=======
+      if (worldId === undefined) {
+        _objects = deleteBlock(_selected, _scene, _objects)
+      } else {
+        _objects = deleteBlock(_selected, _scene, _objects, worldId)
+      }
+>>>>>>> 649cd1ebe73f2495fe95f75edfe66167c5c808ce
     }
   }
 
