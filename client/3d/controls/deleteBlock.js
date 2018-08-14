@@ -1,4 +1,7 @@
-function deleteBlock(selected, scene, objects) {
+import {db} from '../../firebase'
+import {toKey} from '..'
+
+export function deleteBlock(selected, scene, objects) {
   if (selected) {
     scene.remove(selected)
     selected.geometry.dispose()
@@ -8,4 +11,16 @@ function deleteBlock(selected, scene, objects) {
   }
   return objects
 }
-export default deleteBlock
+
+export function deleteBlockFromDb(selected, scene, objects, worldId) {
+  const deleteThis = selected.position.clone()
+  deleteBlock(selected, scene, objects)
+  try {
+    const cubeRef = db.ref(`/worlds/${worldId}/cubes/${toKey(deleteThis)}`)
+    if (cubeRef !== null) {
+      cubeRef.remove()
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
