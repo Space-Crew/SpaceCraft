@@ -25,13 +25,14 @@ export default class Signup extends Component {
         this.state.email,
         this.state.password
       )
-      this.setState({signupSuccess: true})
+      this.setState({error: '', signupSuccess: true})
       setTimeout(() => this.props.history.push('/plane'), 1500)
     } catch (err) {
-      console.log('there is an error', err)
       this.setState({error: 'There was a problem creating an account'})
+      console.log('there is an error', err)
     }
   }
+
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value

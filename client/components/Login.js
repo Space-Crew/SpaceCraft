@@ -6,15 +6,18 @@ import {Button, Form, Grid, Header, Message, Segment} from 'semantic-ui-react'
 /**
  * COMPONENT
  */
+
+const initialState = {
+  email: '',
+  password: '',
+  error: '',
+  loginSuccess: false
+}
+
 export default class AuthForm extends Component {
   constructor() {
     super()
-    this.state = {
-      email: '',
-      password: '',
-      error: '',
-      loginSuccess: false
-    }
+    this.state = initialState
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
@@ -23,8 +26,14 @@ export default class AuthForm extends Component {
       event.preventDefault()
       const {email, password} = this.state
       await doSignInWithEmailAndPassword(email, password)
-      this.setState({loginSuccess: true})
-      setTimeout(() => this.props.history.push('/plane'), 1500)
+      this.setState({
+        error: '',
+        loginSuccess: true
+      })
+      setTimeout(() => {
+        this.setState(initialState)
+        this.props.history.push('/plane')
+      }, 1500)
     } catch (err) {
       console.log('there is an error', err)
       this.setState({error: 'Invalid login credentials'})
