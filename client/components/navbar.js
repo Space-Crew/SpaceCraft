@@ -6,10 +6,16 @@ import {logout} from '../store'
 
 const Navbar = ({handleClick, isLoggedIn}) => (
   <div id="navbar">
-    <Link to="/"><div id="logo">SpaceCraft</div></Link>
+    <Link to="/">
+      <div id="logo">SpaceCraft</div>
+    </Link>
     <div id="menu">
-      <Link to="/plane"><div className="link-item">Create</div></Link>
-      <div className="link-item">Explore</div>
+      <Link to="/plane">
+        <div className="link-item">Create</div>
+      </Link>
+      <Link to="/worlds">
+        <div className="link-item">Explore</div>
+      </Link>
       <div className="link-item">Share</div>
       <Link to="/login"><div className="link-item">Sign in</div></Link>
     </div>
