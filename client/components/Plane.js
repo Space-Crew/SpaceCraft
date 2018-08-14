@@ -2,13 +2,13 @@ import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
-import addBlock from '../3d/controls/addBlock'
+import {addBlock, addBlockToDb} from '../3d/controls/addBlock'
 
 /*********************************
  * Construct the Three World
  ********************************/
 
-function generateWorld(cubes) {
+function generateWorld(cubes, worldId) {
   //container for all 3d objects that will be affected by event
   let objects = []
   //renders the scene, camera, and cubes using webGL
@@ -36,7 +36,8 @@ function generateWorld(cubes) {
     objects,
     camera,
     renderer.domElement,
-    scene
+    scene,
+    worldId
   )
   scene.add(dragControl.getObject())
 
@@ -46,7 +47,7 @@ function generateWorld(cubes) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  addCubesToScene(cubes, scene, objects)
+  addCubesToScene(cubes, scene, objects, worldId)
   // const clock = new THREE.Clock() //needed for controls
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
@@ -66,14 +67,15 @@ function generateWorld(cubes) {
  * Helper functions
  ********************************/
 
-function addCubesToScene(cubes, scene, objects) {
+function addCubesToScene(cubes, scene, objects, worldId) {
   if (cubes.length !== 0) {
     cubes.forEach(cube => {
-      addBlock(
+      addBlockToDb(
         new THREE.Vector3(cube.x, cube.y, cube.z),
         0xb9c4c0,
         scene,
-        objects
+        objects,
+        worldId
       )
     })
   } else {
@@ -98,13 +100,15 @@ class Plane extends Component {
   async componentDidMount() {
     try {
       let cubes = []
+      let worldId
       if (this.props.match && this.props.match.params.id) {
         const uri = '/worlds/' + this.props.match.params.id
         const worldRef = db.ref(uri)
         const world = (await worldRef.once('value')).val()
         cubes = Object.values(world.cubes)
+        worldId = world.id
       }
-      this.unsubscribe = generateWorld(cubes)
+      this.unsubscribe = generateWorld(cubes, worldId)
     } catch (error) {
       console.log(error)
     }
