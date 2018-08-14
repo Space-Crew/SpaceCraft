@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {logout} from '../store'
+import {doSignOut} from '../firebase/auth'
 
 const Navbar = ({handleClick, isLoggedIn}) => (
   <div id="navbar">
@@ -17,7 +18,12 @@ const Navbar = ({handleClick, isLoggedIn}) => (
         <div className="link-item">Explore</div>
       </Link>
       <div className="link-item">Share</div>
-      <Link to="/login"><div className="link-item">Sign in</div></Link>
+      <Link to="/login">
+        <div className="link-item">Login</div>
+      </Link>
+      <Link to="/" onClick={doSignOut}>
+        <div className="link-item">Sign Out</div>
+      </Link>
     </div>
   </div>
 )
