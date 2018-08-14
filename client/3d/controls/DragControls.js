@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import {makeUnitCube} from '../meshes'
-import addBlock from './addBlock'
-import deleteBlock from './deleteBlock'
+import {addBlockToDb, addBlock} from './addBlock'
+import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 
-THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
+THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   if (_objects instanceof THREE.Camera) {
     console.warn(
       'THREE.DragControls: Constructor now expects ( objects, camera, domElement )'
@@ -156,9 +156,17 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
       _domElement.style.cursor = 'move'
     }
     if (_shiftIsDown) {
-      addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
+      if (worldId === undefined) {
+        addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
+      } else {
+        addBlockToDb(previewBox.position, 0xb9c4c0, _scene, _objects, worldId)
+      }
     } else if (_commandIsDown) {
-      deleteBlock(_selected, _scene, _objects)
+      if (worldId === undefined) {
+        deleteBlock(_selected, _scene, _objects)
+      } else {
+        deleteBlockFromDb(_selected, _scene, _objects, worldId)
+      }
     }
   }
 

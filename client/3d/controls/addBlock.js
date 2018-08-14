@@ -1,8 +1,28 @@
 import {makeUnitCube} from '../meshes'
-function addBlock(position, color, scene, objects) {
+import {db} from '../../firebase'
+import {toKey} from '../index'
+
+export function addBlockToDb(position, color, scene, objects, worldId) {
+  try {
+    const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
+    cubesRef.child(toKey(position)).once('value', snapshot => {
+      if (snapshot.val() === null) {
+        addBlock(position, color, scene, objects)
+        snapshot.ref.set({
+          x: position.x,
+          y: position.y,
+          z: position.z,
+          color
+        })
+      }
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export function addBlock(position, color, scene, objects) {
   const cube = makeUnitCube(position, color, 1)
   scene.add(cube)
   objects.push(cube)
 }
-
-export default addBlock
