@@ -1,11 +1,8 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
-import PointerLockControls from '../3d/controls/PointerLockControls'
-import {makeUnitCube} from '../3d/meshes'
 import {db} from '../firebase'
-//this is assuming that there will be a firebase folder that I can use to access the db
-//Samer is working on ^
+import addBlock from '../3d/controls/addBlock'
 
 /*********************************
  * Construct the Three World
@@ -49,8 +46,7 @@ function generateWorld(cubes) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  addCubesToScene(cubes)
-
+  addCubesToScene(cubes, scene, objects)
   // const clock = new THREE.Clock() //needed for controls
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
@@ -63,6 +59,7 @@ function generateWorld(cubes) {
   }
   document.getElementById('plane').appendChild(renderer.domElement)
   animate()
+  return dragControl.dispose
 }
 
 /*********************************
@@ -72,10 +69,12 @@ function generateWorld(cubes) {
 function addCubesToScene(cubes, scene, objects) {
   if (cubes.length !== 0) {
     cubes.forEach(cube => {
-      const position = new THREE.Vector3(cube.x, cube.y, cube.z)
-      const cubeMesh = makeUnitCube(position, 0xb9c4c0, 1)
-      scene.add(cubeMesh)
-      objects.push(cubeMesh)
+      addBlock(
+        new THREE.Vector3(cube.x, cube.y, cube.z),
+        0xb9c4c0,
+        scene,
+        objects
+      )
     })
   } else {
     generateDefaultPlane(scene, objects)
@@ -86,10 +85,7 @@ function generateDefaultPlane(scene, objects) {
   for (let z = -10; z < 10; z += 1) {
     for (let x = -10; x <= 10; x += 1) {
       const y = -1
-      const position = new THREE.Vector3(x, y, z)
-      let cube = makeUnitCube(position, 0xb9c4c0, 1)
-      scene.add(cube)
-      objects.push(cube)
+      addBlock(new THREE.Vector3(x, y, z), 0xb9c4c0, scene, objects)
     }
   }
 }
@@ -100,13 +96,17 @@ function generateDefaultPlane(scene, objects) {
 
 class Plane extends Component {
   async componentDidMount() {
+    // /plane/5
     let cubes = []
     if (this.props.match && this.props.match.params.id) {
       const worldRef = db.ref('/worlds/' + this.props.match.params.id)
-      const world = await worldRef.get()
+      const world = (await worldRef.once()).val()
       cubes = world.cubes
     }
-    generateWorld(cubes)
+    this.unsubscribe = generateWorld(cubes)
+  }
+  componentWillUnmount() {
+    this.unsubscribe()
   }
   render() {
     return <div id="plane" />

@@ -2,17 +2,10 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {withRouter, Route, Switch} from 'react-router-dom'
 import PropTypes from 'prop-types'
-import {
-  Login,
-  Signup,
-  UserHome,
-  Home,
-  Draggables,
-  Plane,
-  WorldList
-} from './components'
+import {Login, Signup, Home, Plane, WorldList} from './components'
 import {me} from './store'
 import PointerLockDemo from './components/PointerLockDemo'
+import {db} from './firebase'
 
 /**
  * COMPONENT
@@ -23,6 +16,10 @@ class Routes extends Component {
   }
 
   render() {
+    // Example to access worlds column in db //
+    const usersRef = db.ref('worlds')
+    usersRef.on('value', snapshot => console.log(snapshot.val()))
+
     const {isLoggedIn} = this.props
 
     return (
@@ -34,7 +31,6 @@ class Routes extends Component {
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/demo" component={PointerLockDemo} />
-        <Route exact path="/three" component={Draggables} />
       </Switch>
     )
   }
