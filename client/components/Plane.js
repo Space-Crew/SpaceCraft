@@ -68,7 +68,7 @@ function generateWorld(cubes, worldId) {
  ********************************/
 
 function addCubesToScene(cubes, scene, objects) {
-  if (cubes.length !== 0) {
+  if (cubes.length > 0) {
     cubes.forEach(cube => {
       addBlock(
         new THREE.Vector3(cube.x, cube.y, cube.z),
