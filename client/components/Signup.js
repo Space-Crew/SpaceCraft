@@ -45,7 +45,7 @@ export default class Signup extends Component {
     return (
       <div className="login-form">
         {/*
-      The styles below are necessary for the correct render of this Login page.
+      The styles below are necessary for the correct render of this Signup page.
       All the elements up to the `Grid` below must have a height of 100%.
     */}
         <style>{`
