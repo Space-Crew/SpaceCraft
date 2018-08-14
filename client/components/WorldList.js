@@ -24,7 +24,7 @@ export default class WorldList extends Component {
     this.props.history.push('/plane/' + id)
   }
   render() {
-    const path = '/plane/'
-    return <ListPresentation items={this.state.worlds} linkPath={path} />
+    const linkPath = '/plane/'
+    return <ListPresentation items={this.state.worlds} linkPath={linkPath} />
   }
 }
