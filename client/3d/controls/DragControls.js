@@ -24,7 +24,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
   var PI_2 = Math.PI / 2
   var _shiftIsDown = false
   var _commandIsDown = false
-  var _plane = new THREE.Plane()
   var _raycaster = new THREE.Raycaster()
   const mouseVectorForBox = new THREE.Vector3()
   const mouseVector = new THREE.Vector3()
@@ -158,7 +157,12 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene) {
     if (_shiftIsDown) {
       addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
     } else if (_commandIsDown) {
-      deleteBlock(_selected, _scene, _objects)
+      // _scene.remove(_selected)
+      // _selected.geometry.dispose()
+      // _selected.material.dispose()
+      // _selected = undefined
+      // _objects = _scene.children
+      _objects = deleteBlock(_selected, _scene, _objects)
     }
   }
 
