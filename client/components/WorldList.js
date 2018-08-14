@@ -9,6 +9,7 @@ export default class WorldList extends Component {
     this.state = {
       worlds: []
     }
+    this.handleClick = this.handleClick.bind(this)
   }
 
   async componentDidMount() {
@@ -23,11 +24,7 @@ export default class WorldList extends Component {
     this.props.history.push('/plane/' + id)
   }
   render() {
-    return (
-      <ListPresentation
-        items={this.state.worlds}
-        handleClick={this.handleClick}
-      />
-    )
+    const path = '/plane/'
+    return <ListPresentation items={this.state.worlds} linkPath={path} />
   }
 }

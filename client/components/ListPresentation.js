@@ -1,13 +1,13 @@
 import React from 'react'
-
-const ListPresentation = ({items, handleClick}) => {
+import {Link} from 'react-router-dom'
+const ListPresentation = ({items, linkPath}) => {
   return (
     <ul>
       {items.map(item => {
         return (
-          <li key={item.id} onClick={() => handleClick(item.id)}>
-            {item.name}
-          </li>
+          <Link key={item.id} to={linkPath.concat(item.id)}>
+            <li>{item.name}</li>
+          </Link>
         )
       })}
     </ul>

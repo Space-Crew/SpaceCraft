@@ -16,12 +16,7 @@ class Routes extends Component {
   }
 
   render() {
-    // Example to access worlds column in db //
-    const usersRef = db.ref('worlds')
-    usersRef.on('value', snapshot => console.log(snapshot.val()))
-
     const {isLoggedIn} = this.props
-
     return (
       <Switch>
         {/* Routes placed here are available to all visitors */}
