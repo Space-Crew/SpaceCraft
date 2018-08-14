@@ -5,7 +5,7 @@ const ListPresentation = ({items, handleClick}) => {
     <ul>
       {items.map(item => {
         return (
-          <li key={item.key} onClick={() => handleClick(item.key)}>
+          <li key={item.id} onClick={() => handleClick(item.id)}>
             {item.name}
           </li>
         )

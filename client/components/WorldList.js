@@ -12,8 +12,12 @@ export default class WorldList extends Component {
   }
 
   async componentDidMount() {
-    const worlds = (await db.ref('worlds').once('value')).val()
-    this.setState({worlds: Object.values(worlds)})
+    try {
+      const worlds = (await db.ref('worlds').once('value')).val()
+      this.setState({worlds: Object.values(worlds)})
+    } catch (error) {
+      console.log(error)
+    }
   }
   handleClick(id) {
     this.props.history.push('/plane/' + id)
