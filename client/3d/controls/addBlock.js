@@ -1,6 +1,6 @@
 import {makeUnitCube} from '../meshes'
 import {db} from '../../firebase'
-import {toKey} from '../index'
+import {toKey} from '..'
 
 export function addBlockToDb(position, color, scene, objects, worldId) {
   try {
