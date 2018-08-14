@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-export function makeUnitCube(position, color = 0xb9c4c0, opacity, texture) {
+export function makeUnitCube(position, color = 0xb9c4c0, opacity = 1, texture) {
   const geometry = new THREE.BoxGeometry(1, 1, 1)
   const material = new THREE.MeshLambertMaterial({
     color

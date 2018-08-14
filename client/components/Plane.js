@@ -3,6 +3,8 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import addBlock from '../3d/controls/addBlock'
+import {generateWater} from '../3d/meshes/water'
+import makeUnitCube from '../3d/meshes'
 
 /*********************************
  * Construct the Three World
@@ -48,8 +50,35 @@ function generateWorld(cubes) {
 
   addCubesToScene(cubes, scene, objects)
   // const clock = new THREE.Clock() //needed for controls
+
+  const someWaterPosition = new THREE.Vector3(0, 1, -4)
+  const waterCube = makeUnitCube(someWaterPosition, 0x0000ff, 1)
+  waterCube.type = 'WATER'
+  cubes.push(waterCube)
+  const waterSources = cubes.filter(cube => {
+    return cube.type === 'WATER'
+  })
+  let waterCubes = []
+  function updateWaterCubes() {
+    waterCubes.forEach(destroy)
+    waterCubes = generateWater(waterSources, cubes)
+    waterCubes.forEach(cube => {
+      scene.add(cube)
+    })
+  }
+  function destroy(cube) {
+    scene.remove(cube)
+    // for (let prop in cube) {
+    //   if (cube.hasOwnProperty(prop)) {
+    //     delete cube[prop]
+    //   }
+    // }
+    cube = undefined
+  }
+
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
+    updateWaterCubes()
     renderer.render(scene, camera)
   }
   function animate() {

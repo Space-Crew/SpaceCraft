@@ -7,6 +7,7 @@ export function generateWater(listOfWaterSources, cubes) {
   listOfWaterSources.forEach(waterSource => {
     makeWaterCubes(waterSource, cubes, waterCubes)
   })
+  return waterCubes
 }
 
 function makeWaterCubes(waterSource, cubes, waterCubes) {
@@ -26,7 +27,8 @@ function makeWaterCube(
   if (basecase) {
     return waterCubes
   }
-  const cube = makeUnitCube(position, 0x0000ff)
+  const cube = makeUnitCube(position, 0x0000ff, 1)
+  cube.type = 'WATER'
   waterCubes.push(cube)
   const oneDown = position.clone()
   oneDown.y -= 1
