@@ -4,7 +4,7 @@ import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import addBlock from '../3d/controls/addBlock'
 import {generateWater} from '../3d/meshes/water'
-import makeUnitCube from '../3d/meshes'
+import {makeUnitCube} from '../3d/meshes'
 
 /*********************************
  * Construct the Three World
@@ -57,28 +57,29 @@ function generateWorld(cubes) {
   cubes.push(waterCube)
   const waterSources = cubes.filter(cube => {
     return cube.type === 'WATER'
+    // return false
   })
-  let waterCubes = []
-  function updateWaterCubes() {
-    waterCubes.forEach(destroy)
-    waterCubes = generateWater(waterSources, cubes)
-    waterCubes.forEach(cube => {
-      scene.add(cube)
-    })
-  }
-  function destroy(cube) {
-    scene.remove(cube)
-    // for (let prop in cube) {
-    //   if (cube.hasOwnProperty(prop)) {
-    //     delete cube[prop]
-    //   }
-    // }
-    cube = undefined
-  }
+  // let waterCubes = []
+  // function updateWaterCubes() {
+  //   waterCubes.forEach(destroy)
+  //   waterCubes = generateWater(waterSources, cubes)
+  //   waterCubes.forEach(cube => {
+  //     scene.add(cube)
+  //   })
+  // }
+  // function destroy(cube) {
+  //   scene.remove(cube)
+  //   // for (let prop in cube) {
+  //   //   if (cube.hasOwnProperty(prop)) {
+  //   //     delete cube[prop]
+  //   //   }
+  //   // }
+  //   cube = undefined
+  // }
 
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
-    updateWaterCubes()
+    // updateWaterCubes()
     renderer.render(scene, camera)
   }
   function animate() {
@@ -125,18 +126,19 @@ function generateDefaultPlane(scene, objects) {
 
 class Plane extends Component {
   async componentDidMount() {
-    try {
-      let cubes = []
-      if (this.props.match && this.props.match.params.id) {
-        const uri = '/worlds/' + this.props.match.params.id
-        const worldRef = db.ref(uri)
-        const world = (await worldRef.once('value')).val()
-        cubes = Object.values(world.cubes)
-      }
-      this.unsubscribe = generateWorld(cubes)
-    } catch (error) {
-      console.log(error)
+    // try {
+    let cubes = []
+    if (this.props.match && this.props.match.params.id) {
+      const uri = '/worlds/' + this.props.match.params.id
+      const worldRef = db.ref(uri)
+      const world = (await worldRef.once('value')).val()
+      cubes = Object.values(world.cubes)
+      console.log(cubes)
     }
+    this.unsubscribe = generateWorld(cubes)
+    // } catch (error) {
+    //   console.log(error)
+    // }
   }
   componentWillUnmount() {
     this.unsubscribe()

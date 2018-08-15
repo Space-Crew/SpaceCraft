@@ -1,6 +1,6 @@
-import {makeUnitCube} from '../index'
+import {makeUnitCube} from '.'
 import * as THREE from 'three'
-import {toKey, toPosition} from '../../'
+import {toKey, toPosition} from '..'
 
 export function generateWater(listOfWaterSources, cubes) {
   const waterCubes = []
@@ -32,7 +32,7 @@ function makeWaterCube(
   waterCubes.push(cube)
   const oneDown = position.clone()
   oneDown.y -= 1
-  const shouldFlowDown = !cubes[toKey(oneDown)]
+  const shouldFlowDown = !cubes[toKey(oneDown)] && oneDown.y > -64
   if (shouldFlowDown) {
     makeWaterCube(oneDown, puddleLength, cubes, waterCubes)
   } else {
