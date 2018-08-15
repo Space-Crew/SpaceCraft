@@ -9,7 +9,12 @@ import Instructions from './Instructions'
  * Construct the Three World
  ********************************/
 let isPaused = false
+let onSpaceBar
+const blocker = document.getElementById('blocker')
+const instructions = document.getElementById('instructions')
+
 function generateWorld(cubes, worldId) {
+  blocker.style.zIndex = '-1'
   //container for all 3d objects that will be affected by event
   let objects = []
   //renders the scene, camera, and cubes using webGL
@@ -51,29 +56,6 @@ function generateWorld(cubes, worldId) {
   addCubesToScene(cubes, scene, objects)
   // const clock = new THREE.Clock() //needed for controls
 
-  /*********************************
-   * Pause the world
-   ********************************/
-
-  // let scene load then pause for instructions //
-  setTimeout(() => {
-    isPaused = true
-    animate()
-  }, 1000)
-
-  window.addEventListener(
-    'keydown',
-    event => {
-      if (event.which === 32) {
-        isPaused = !isPaused
-        animate()
-      }
-    },
-    false
-  )
-
-  // END PAUSE //
-
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
     renderer.render(scene, camera)
@@ -85,6 +67,43 @@ function generateWorld(cubes, worldId) {
   }
   document.getElementById('plane').appendChild(renderer.domElement)
   animate()
+
+  /*********************************
+   * Pause the world
+   ********************************/
+
+  const showInstructions = isPaused => {
+    console.log(isPaused)
+    if (isPaused) {
+      blocker.style.display = 'block'
+      blocker.style.zIndex = '99'
+      instructions.style.display = ''
+    } else {
+      blocker.style.display = 'none'
+      blocker.style.zIndex = ''
+      instructions.style.display = 'none'
+    }
+  }
+
+  // let scene load then pause for instructions //
+  // setTimeout(() => {
+  //   isPaused = true
+  //   showInstructions(isPaused)
+  //   animate()
+  // }, 1000)
+
+  onSpaceBar = event => {
+    console.log('fired')
+    if (event.which === 32) {
+      isPaused = !isPaused
+      showInstructions(isPaused)
+      animate()
+    }
+  }
+  window.addEventListener('keydown', onSpaceBar, false)
+
+  // END PAUSE //
+
   return dragControl.dispose
 }
 
@@ -139,6 +158,7 @@ class Create extends Component {
     }
   }
   componentWillUnmount() {
+    window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {
