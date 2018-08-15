@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
-
+import {Message} from 'semantic-ui-react'
 /*********************************
  * Construct the Three World
  ********************************/
@@ -117,7 +117,22 @@ class Create extends Component {
     this.unsubscribe()
   }
   render() {
-    return <div id="plane" />
+    return (
+      <div>
+        <Message
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            /* bring your own prefixes */
+            transform: 'translate(-50px, -50px)'
+          }}
+        >
+          TESTING
+        </Message>
+        <div id="plane" />
+      </div>
+    )
   }
 }
 
