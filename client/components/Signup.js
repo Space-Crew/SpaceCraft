@@ -150,7 +150,6 @@ export default class Signup extends Component {
             </Form>
           </Grid.Column>
         </Grid>
-        {/* // >>>>>>> master */}
       </div>
     )
   }
