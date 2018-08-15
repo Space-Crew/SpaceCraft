@@ -3,6 +3,7 @@ import {makeUnitCube} from '../meshes'
 import {addBlockToDb, addBlock} from './addBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
+import {checkPositionOccupied} from './checkPositionOccupied'
 
 THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   if (_objects instanceof THREE.Camera) {
@@ -148,17 +149,23 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       distanceToSelected = yawObject.position.distanceTo(_selected.position)
       _domElement.style.cursor = 'move'
     }
-    if (_shiftIsDown) {
-      if (worldId === undefined) {
-        addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
-      } else {
-        addBlockToDb(previewBox.position, 0xb9c4c0, _scene, _objects, worldId)
-      }
-    } else if (_commandIsDown) {
-      if (worldId === undefined) {
-        _objects = deleteBlock(_selected, _scene, _objects)
-      } else {
-        _objects = deleteBlock(_selected, _scene, _objects, worldId)
+    const isPositionOccupied = checkPositionOccupied(
+      previewBox.position,
+      _objects
+    )
+    if (!isPositionOccupied) {
+      if (_shiftIsDown) {
+        if (worldId === undefined) {
+          addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
+        } else {
+          addBlockToDb(previewBox.position, 0xb9c4c0, _scene, _objects, worldId)
+        }
+      } else if (_commandIsDown) {
+        if (worldId === undefined) {
+          _objects = deleteBlock(_selected, _scene, _objects)
+        } else {
+          _objects = deleteBlock(_selected, _scene, _objects, worldId)
+        }
       }
     }
   }
