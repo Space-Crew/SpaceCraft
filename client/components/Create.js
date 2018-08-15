@@ -14,7 +14,6 @@ const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
 function generateWorld(cubes, worldId) {
-  blocker.style.zIndex = '-1'
   //container for all 3d objects that will be affected by event
   let objects = []
   //renders the scene, camera, and cubes using webGL
@@ -73,6 +72,7 @@ function generateWorld(cubes, worldId) {
    ********************************/
 
   const showInstructions = isPaused => {
+    blocker.style.visibility = 'visible'
     console.log(isPaused)
     if (isPaused) {
       blocker.style.display = 'block'
