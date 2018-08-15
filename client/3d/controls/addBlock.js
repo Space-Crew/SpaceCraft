@@ -4,6 +4,9 @@ import {toKey} from '..'
 
 export function addBlockToDb(position, color, scene, objects, worldId) {
   try {
+    if (!color) {
+      color = 0xb9c4c0;
+    }
     const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
     cubesRef.child(toKey(position)).once('value', snapshot => {
       if (snapshot.val() === null) {

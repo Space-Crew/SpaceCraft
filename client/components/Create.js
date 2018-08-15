@@ -59,6 +59,12 @@ function generateWorld(cubes, worldId) {
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
+  const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
+  cubesRef.on("child_added", function(snapshot) {
+    var newCube = snapshot.val();
+    console.log("cube added!!" + newCube);
+    addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, scene, objects)
+  });
   animate()
   return dragControl.dispose
 }
@@ -72,7 +78,7 @@ function addCubesToScene(cubes, scene, objects) {
     cubes.forEach(cube => {
       addBlock(
         new THREE.Vector3(cube.x, cube.y, cube.z),
-        0xb9c4c0,
+        cube.color,
         scene,
         objects
       )

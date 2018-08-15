@@ -169,7 +169,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       if (worldId === undefined) {
         _objects = deleteBlock(_selected, _scene, _objects)
       } else {
-        _objects = deleteBlock(_selected, _scene, _objects, worldId)
+        _objects = deleteBlockFromDb(_selected, _scene, _objects, worldId)
       }
     }
   }
