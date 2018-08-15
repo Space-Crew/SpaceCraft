@@ -124,11 +124,12 @@ class Create extends Component {
             position: 'fixed',
             top: '50%',
             left: '50%',
-            /* bring your own prefixes */
-            transform: 'translate(-50px, -50px)'
+            transform: `translate("-50%", "-50%")`
           }}
         >
-          TESTING
+          Click to play <br />W,A,S,D,Q,E: Move, MOUSE: Look around <br />SHIFT
+          + CLICK: Add cube, CMD + CLICK: Remove cube, CLICK + MOVE MOUSE: Drag
+          cube
         </Message>
         <div id="plane" />
       </div>
