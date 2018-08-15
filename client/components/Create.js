@@ -47,7 +47,7 @@ function generateWorld(cubes, worldId) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  addCubesToScene(cubes, scene, objects)
+  // addCubesToScene(cubes, scene, objects)
   // const clock = new THREE.Clock() //needed for controls
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work

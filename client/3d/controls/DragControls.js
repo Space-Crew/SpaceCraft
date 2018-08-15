@@ -53,15 +53,18 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _domElement.addEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.addEventListener('mouseup', onDocumentMouseCancel, false) //able to release
     _domElement.addEventListener('mouseleave', onDocumentMouseCancel, false)
-    document.getElementById('color-palette').addEventListener('change', function(event) {
-      chosenColor = parseInt(event.target.value.replace('#',''), 16);
-      previewBox.material.color.setHex(chosenColor);
-      previewBox.children[0].material.color.setHex(darken(chosenColor, -0.05));
-    })
+    document.getElementById('color-palette').addEventListener('change', onColorChange, false)
 
     window.addEventListener('keydown', onDocumentOptionDown, false)
     window.addEventListener('keyup', onDocumentOptionUp, false)
   }
+  
+  function onColorChange(event) {
+    chosenColor = parseInt(event.target.value.replace('#',''), 16);
+    previewBox.material.color.setHex(chosenColor);
+    previewBox.children[0].material.color.setHex(darken(chosenColor, -0.05));
+  }
+
   function onDocumentOptionDown(event) {
     onDocumentKeyDown(event)
     if (event.which === 16) {
@@ -90,6 +93,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _domElement.removeEventListener('mouseleave', onDocumentMouseCancel, false)
     window.removeEventListener('keydown', onDocumentOptionDown, false)
     window.removeEventListener('keyup', onDocumentOptionUp, false)
+    document.getElementById('color-palette').removeEventListener('change', onColorChange, false)
   }
 
   function dispose() {
