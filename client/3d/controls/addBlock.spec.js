@@ -3,10 +3,16 @@ import {expect} from 'chai'
 import {makeUnitCube} from '../meshes'
 import {addBlock} from './addBlock'
 
+const scene = new THREE.Scene()
+const objects = []
+const newCube = makeUnitCube(new THREE.Vector3(1, 1, 1), 0xb9c4c0, 1)
+const sceneBefore = scene.children.length
+const objectsBefore = objects.length
+addBlock(new THREE.Vector3(1, 1, 1), 0xb9c4c0, scene, objects)
+const sceneAfter = scene.children.length
+const objectsAfter = objects.length
+
 describe('Adding a THREE Cube mesh object', () => {
-  const scene = new THREE.Scene()
-  const newCube = makeUnitCube(new THREE.Vector3(1, 1, 1), 0xb9c4c0, 1)
-  scene.add(newCube)
   it('should have a defined BoxGeometry', () => {
     expect(newCube.geometry.type).to.be.equal('BoxGeometry')
   })
@@ -30,8 +36,11 @@ describe('Adding a THREE Cube mesh object', () => {
   it('should have a material', () => {
     expect(newCube.material).to.not.be.equal(undefined)
   })
+
   it('should be added to the scene', () => {
-    const findCube = scene.children.find(el => el.uuid === newCube.uuid)
-    expect(findCube).to.not.be.equal(undefined)
+    expect(sceneAfter).to.be.equal(sceneBefore + 1)
+  })
+  it('should be added to the global objects array for controls', () => {
+    expect(objectsAfter).to.be.equal(objectsBefore + 1)
   })
 })
