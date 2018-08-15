@@ -11,7 +11,7 @@ const Navbar = ({handleClick, isLoggedIn}) => (
       <div id="logo">SpaceCraft</div>
     </Link>
     <div id="menu">
-      <Link to="/plane">
+      <Link to="/create">
         <div className="link-item">Create</div>
       </Link>
       <Link to="/worlds">
