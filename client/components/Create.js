@@ -3,11 +3,11 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
-import Instructions from './Instructions'
 
 /*********************************
  * Construct the Three World
  ********************************/
+
 let isPaused = false
 let onSpaceBar
 const blocker = document.getElementById('blocker')
@@ -36,6 +36,7 @@ function generateWorld(cubes, worldId) {
 
   //create a new scene
   const scene = new THREE.Scene()
+  // camera.lookAt(new THREE.Vector3(0, 0, 0))
   //allows for adding, deleting, and moving 3d objects with mouse drag
   const dragControl = new DragControls(
     objects,
@@ -67,10 +68,7 @@ function generateWorld(cubes, worldId) {
   document.getElementById('plane').appendChild(renderer.domElement)
   animate()
 
-  /*********************************
-   * Pause the world
-   ********************************/
-
+  // pause the world //
   const showInstructions = isPaused => {
     blocker.style.visibility = 'visible'
     console.log(isPaused)
@@ -101,8 +99,6 @@ function generateWorld(cubes, worldId) {
     }
   }
   window.addEventListener('keydown', onSpaceBar, false)
-
-  // END PAUSE //
 
   return dragControl.dispose
 }
