@@ -153,19 +153,17 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       previewBox.position,
       _objects
     )
-    if (!isPositionOccupied) {
-      if (_shiftIsDown) {
-        if (worldId === undefined) {
-          addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
-        } else {
-          addBlockToDb(previewBox.position, 0xb9c4c0, _scene, _objects, worldId)
-        }
-      } else if (_commandIsDown) {
-        if (worldId === undefined) {
-          _objects = deleteBlock(_selected, _scene, _objects)
-        } else {
-          _objects = deleteBlock(_selected, _scene, _objects, worldId)
-        }
+    if (!isPositionOccupied && _shiftIsDown) {
+      if (worldId === undefined) {
+        addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
+      } else {
+        addBlockToDb(previewBox.position, 0xb9c4c0, _scene, _objects, worldId)
+      }
+    } else if (_commandIsDown) {
+      if (worldId === undefined) {
+        _objects = deleteBlock(_selected, _scene, _objects)
+      } else {
+        _objects = deleteBlock(_selected, _scene, _objects, worldId)
       }
     }
   }
