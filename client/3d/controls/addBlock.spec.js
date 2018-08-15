@@ -6,7 +6,6 @@ import {addBlock} from './addBlock'
 const scene = new THREE.Scene()
 const objects = []
 const newCube = makeUnitCube(new THREE.Vector3(1, 1, 1), 0xb9c4c0, 1)
-addBlock(new THREE.Vector3(1, 1, 1), 0xb9c4c0, scene, objects)
 
 describe('Adding a THREE Cube mesh object', () => {
   it('should have a defined BoxGeometry', () => {
@@ -34,6 +33,7 @@ describe('Adding a THREE Cube mesh object', () => {
   })
 
   it('should be added to the scene', () => {
+    addBlock(new THREE.Vector3(1, 1, 1), 0xb9c4c0, scene, objects)
     expect(scene.children.length).to.be.equal(1)
   })
   it('should be added to the global objects array for controls', () => {
