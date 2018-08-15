@@ -28,7 +28,7 @@ function makeWaterCube(
     return waterCubes
   }
   const cube = makeUnitCube(position, 0x0000ff, 1)
-  cube.type = 'WATER'
+  cube.name = 'WATER'
   waterCubes.push(cube)
   const oneDown = position.clone()
   oneDown.y -= 1
