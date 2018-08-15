@@ -8,7 +8,7 @@ import Instructions from './Instructions'
 /*********************************
  * Construct the Three World
  ********************************/
-
+let isPaused = false
 function generateWorld(cubes, worldId) {
   //container for all 3d objects that will be affected by event
   let objects = []
@@ -50,13 +50,37 @@ function generateWorld(cubes, worldId) {
 
   addCubesToScene(cubes, scene, objects)
   // const clock = new THREE.Clock() //needed for controls
+
+  /*********************************
+   * Pause the world
+   ********************************/
+
+  // let scene load then pause for instructions //
+  setTimeout(() => {
+    isPaused = true
+    animate()
+  }, 1000)
+
+  window.addEventListener(
+    'keydown',
+    event => {
+      if (event.which === 32) {
+        isPaused = !isPaused
+        animate()
+      }
+    },
+    false
+  )
+
+  // END PAUSE //
+
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
     renderer.render(scene, camera)
   }
   function animate() {
+    if (isPaused) return
     requestAnimationFrame(animate)
-
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
@@ -120,7 +144,6 @@ class Create extends Component {
   render() {
     return (
       <div>
-        <Instructions />
         <div id="plane" />
       </div>
     )
