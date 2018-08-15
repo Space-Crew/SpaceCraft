@@ -3,7 +3,8 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
-import {Message} from 'semantic-ui-react'
+import Instructions from './Instructions'
+
 /*********************************
  * Construct the Three World
  ********************************/
@@ -119,18 +120,7 @@ class Create extends Component {
   render() {
     return (
       <div>
-        <Message
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: `translate("-50%", "-50%")`
-          }}
-        >
-          Click to play <br />W,A,S,D,Q,E: Move, MOUSE: Look around <br />SHIFT
-          + CLICK: Add cube, CMD + CLICK: Remove cube, CLICK + MOVE MOUSE: Drag
-          cube
-        </Message>
+        <Instructions />
         <div id="plane" />
       </div>
     )
