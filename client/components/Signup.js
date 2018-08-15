@@ -1,16 +1,29 @@
 import React, {Component} from 'react'
 import {doCreateUserWithEmailAndPassword} from '../firebase/auth'
+import {db} from '../firebase'
 import {Button, Form, Grid, Header, Message, Segment} from 'semantic-ui-react'
 
 /**
  * COMPONENT
  */
+
+function writeUserData(userId, name, email, imageUrl, worlds = []) {
+  db.ref('users/' + userId).set({
+    username: name,
+    email: email,
+    avatar: imageUrl,
+    worlds: worlds
+  })
+}
+
 export default class Signup extends Component {
   constructor() {
     super()
     this.state = {
+      username: '',
       email: '',
       password: '',
+      imageUrl: '',
       confirmPW: '',
       error: '',
       signupSuccess: false
@@ -18,15 +31,22 @@ export default class Signup extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
+
   async handleSubmit(event) {
     try {
       event.preventDefault()
-      await doCreateUserWithEmailAndPassword(
+      const user = await doCreateUserWithEmailAndPassword(
         this.state.email,
         this.state.password
       )
+      await writeUserData(
+        user.user.uid,
+        this.state.username,
+        this.state.email,
+        this.state.imageUrl
+      )
       this.setState({error: '', signupSuccess: true})
-      setTimeout(() => this.props.history.push('/plane'), 1500)
+      setTimeout(() => this.props.history.push('/create'), 1500)
     } catch (err) {
       this.setState({error: 'There was a problem creating an account'})
       console.log('there is an error', err)
@@ -40,8 +60,16 @@ export default class Signup extends Component {
   }
 
   render() {
-    const {email, password, confirmPW, signupSuccess, error} = this.state
-    const isInvalid = email === '' || password === '' || confirmPW === ''
+    const {
+      username,
+      email,
+      password,
+      confirmPW,
+      signupSuccess,
+      error
+    } = this.state
+    const isInvalid =
+      username === '' || email === '' || password === '' || confirmPW === ''
     const passwordsMatch = password === confirmPW
     return (
       <div className="login-form">
@@ -71,6 +99,20 @@ export default class Signup extends Component {
             </Header>
             <Form size="large" onSubmit={this.handleSubmit}>
               <Segment stacked>
+                <Form.Input
+                  placeholder="Username"
+                  name="username"
+                  type="text"
+                  onChange={this.handleChange}
+                  value={this.state.username}
+                />
+                <Form.Input
+                  placeholder="Avatar URL"
+                  name="imageUrl"
+                  type="text"
+                  onChange={this.handleChange}
+                  value={this.state.imageUrl}
+                />
                 <Form.Input
                   placeholder="E-mail address"
                   name="email"

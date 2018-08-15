@@ -32,7 +32,7 @@ export default class AuthForm extends Component {
       })
       setTimeout(() => {
         this.setState(initialState)
-        this.props.history.push('/plane')
+        this.props.history.push('/create')
       }, 1500)
     } catch (err) {
       console.log('there is an error', err)

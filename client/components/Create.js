@@ -95,7 +95,7 @@ function generateDefaultPlane(scene, objects) {
  * Render the world
  ********************************/
 
-class Plane extends Component {
+class Create extends Component {
   async componentDidMount() {
     try {
       let cubes = []
@@ -122,4 +122,4 @@ class Plane extends Component {
 }
 
 //water flow by doing BFS from source
-export default Plane
+export default Create
