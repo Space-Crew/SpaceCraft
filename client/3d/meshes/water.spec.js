@@ -36,7 +36,7 @@ describe('FlowCube', () => {
         expect(child.parents).to.have.property('0,0,0')
       })
     })
-    describe('modifies parent/children', () => {
+    describe('modifies parent/children during collision and the source', () => {
       let source
       let flowMap
       let otherCube
@@ -45,20 +45,28 @@ describe('FlowCube', () => {
         otherCube = new FlowCube(0, 1, 0, false, 4)
         flowMap = {'0,0,0': source, '0,1,0': otherCube}
       })
-      it('when flowing into another cube, will become a parent of that cube if that cube is not a source', () => {
+      it('will become a parent of a cube if that cube is not a source', () => {
         source.createChild({x: 0, y: 1, z: 0}, flowMap)
         expect(otherCube.parents['0,0,0']).to.equal(source)
       })
-      it('when flowing into another cube, will add that cube as its child', () => {
+      it('will add that cube as its child', () => {
         source.createChild({x: 0, y: 1, z: 0}, flowMap)
         expect(source.children['0,1,0']).to.equal(otherCube)
       })
-      it('when flowing into another cube, will not become a parent of that cube if that cube is a source', () => {
+      it('will become an additional parent of a cube if that cube has another parent', () => {
+        source.createChild({x: 0, y: 1, z: 0}, flowMap)
+        const otherSource = new FlowCube(0, 1, 1, true, 4)
+        flowMap['0,1,1'] = otherSource
+        otherSource.createChild({x: 0, y: 1, z: 0}, flowMap)
+        expect(otherCube.parents).to.have.property('0,0,0', source)
+        expect(otherCube.parents).to.have.property('0,1,1', otherSource)
+      })
+      it('will not become a parent of that cube if that cube is a source', () => {
         otherCube.isSource = true
         source.createChild({x: 0, y: 1, z: 0}, flowMap)
         expect(otherCube.parents).to.deep.equal({})
       })
-      it('when flowing into another cube, will not add that cube as a child', () => {
+      it('will not add that cube as a child', () => {
         otherCube.isSource = true
         source.createChild({x: 0, y: 1, z: 0}, flowMap)
         expect(source.children).to.not.have.property('0,1,0')
@@ -117,30 +125,34 @@ describe('FlowCube', () => {
     })
   })
   describe('removeChildren', () => {
-    const cubes = {'0,-64,0': 'stuff'}
-    let source
-    let flowMap
-    beforeEach(() => {
-      source = new FlowCube(0, -62, 0, true, {}, 2)
-      flowMap = {'0,-62,0': source}
-      source.spawnChildren(cubes, flowMap)
-      source.removeChildren(flowMap)
-    })
-    it('removes all children from this cube', () => {
-      expect(source.children).to.deep.equal({})
-    })
-    it('updates the flowMap', () => {
-      expect(flowMap).to.deep.equal({'0,-62,0': source})
+    describe('simply', () => {
+      const cubes = {'0,-64,0': 'stuff'}
+      let source
+      let flowMap
+      beforeEach(() => {
+        source = new FlowCube(0, -62, 0, true, {}, 2)
+        flowMap = {'0,-62,0': source}
+        source.spawnChildren(cubes, flowMap)
+        source.removeChildren(flowMap)
+      })
+      it('removes all children from this cube', () => {
+        expect(source.children).to.deep.equal({})
+      })
+      it('updates the flowMap', () => {
+        expect(flowMap).to.deep.equal({'0,-62,0': source})
+      })
     })
     it('does not delete a child if the child has other parents', () => {
-      let otherSource = new FlowCube(0, -62, 1, true, {}, 1)
-      source = new FlowCube(0, -62, 0, true, {}, 2)
-      flowMap = {'0,-62,0': source, '0,-62,1': otherSource}
+      const cubes = {'0,-64,0': 'stuff'}
+      const otherSource = new FlowCube(0, -62, 1, true, {}, 1)
+      const source = new FlowCube(0, -62, 0, true, {}, 2)
+      const flowMap = {'0,-62,0': source, '0,-62,1': otherSource}
+
       source.spawnChildren(cubes, flowMap)
       otherSource.spawnChildren(cubes, flowMap)
-      console.log(otherSource.children)
-      source.removeChildren(flowMap)
       expect(otherSource.children).to.have.property('0,-63,1')
+
+      source.removeChildren(flowMap)
       expect(Object.keys(flowMap)).to.have.lengthOf(4)
       expect(flowMap).to.have.property('0,-62,0')
       expect(flowMap).to.have.property('0,-62,1')
