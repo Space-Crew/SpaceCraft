@@ -1,40 +1,28 @@
 import {toKey, toPosition} from '..'
 
 export class FlowCube {
-  constructor(x = 0, y = 0, z = 0, isSource = false, volume = 1) {
+  constructor(x = 0, y = 0, z = 0, isSource = false) {
     this.position = {x, y, z}
     this.isSource = isSource
-    this.volume = volume
     this.parents = {}
     this.children = {}
   }
-  createChild(childPosition, flowMap, shouldDecrementVolume = true) {
-    if (this._hasVolumeToFlow(shouldDecrementVolume)) {
-      const cubeAtKey = flowMap[toKey(childPosition)]
-      if (cubeAtKey) {
-        return this._linkChild(cubeAtKey)
-      } else {
-        return this._flowInto(childPosition, flowMap, shouldDecrementVolume)
-      }
-    }
-    return null
-  }
+  /*************
+   * Public methods
+   *************/
   spawnChildren(cubes, flowMap) {
-    const createdChildren = []
-    const oneDown = this._clonePosition()
-    oneDown.y -= 1
-    const shouldFlowDown = !cubes[toKey(oneDown)] && oneDown.y >= -64
+    const childrenThatNeedToFlow = []
+    const shouldFlowDown = !cubes[toKey(this._down)] && this.position.y > -64
     if (shouldFlowDown) {
-      const child = this.createChild(oneDown, flowMap, false)
-      if (child) createdChildren.push(child)
+      const child = this._createChild(this._down, flowMap)
+      if (child) childrenThatNeedToFlow.push(child)
     } else {
       this._flowHorizontally(cubes, flowMap).forEach(child => {
-        if (child) createdChildren.push(child)
+        if (child) childrenThatNeedToFlow.push(child)
       })
     }
-    createdChildren.forEach(child => child.spawnChildren(cubes, flowMap))
+    childrenThatNeedToFlow.forEach(child => child.spawnChildren(cubes, flowMap))
   }
-
   removeChildren(flowMap) {
     Object.values(this.children).forEach(child => {
       const parents = child.parents
@@ -46,39 +34,10 @@ export class FlowCube {
     })
     this.children = {}
   }
-  _addChild(cube) {
-    this.children[toKey(cube.position)] = cube
-  }
-  _addParent(cube) {
-    this.parents[toKey(cube.position)] = cube
-  }
-  _clonePosition() {
-    return {...this.position}
-  }
-  _flowHorizontally(cubes, flowMap) {
-    const createdChildren = []
-    const adjacentPositions = this._getAdjacentPositions()
-    adjacentPositions.forEach(position => {
-      const shouldFlow = !cubes[toKey(position)]
-      if (shouldFlow) {
-        createdChildren.push(this.createChild(position, flowMap))
-      }
-    })
-    return createdChildren
-  }
-  _flowInto(childPosition, flowMap, shouldDecrementVolume) {
-    const child = new FlowCube(
-      childPosition.x,
-      childPosition.y,
-      childPosition.z,
-      false,
-      shouldDecrementVolume ? this.volume - 1 : this.volume
-    )
-    this._linkChild(child)
-    flowMap[toKey(childPosition)] = child
-    return child
-  }
-  _getAdjacentPositions() {
+  /*************
+   * Get/Set
+   *************/
+  get _adjacentPositions() {
     const northPosition = this._clonePosition()
     northPosition.z += 1
     const southPosition = this._clonePosition()
@@ -91,8 +50,86 @@ export class FlowCube {
     const positions = [northPosition, eastPosition, southPosition, westPosition]
     return positions
   }
-  _hasVolumeToFlow(shouldDecrementVolume) {
-    return shouldDecrementVolume ? this.volume > 1 : this.volume > 0
+  get _down() {
+    const result = this._clonePosition()
+    result.y -= 1
+    return result
+  }
+  get _maxVolumeOfParents() {
+    if (Object.values(this.parents).length === 0) {
+      if (!this.isSource) {
+        console.log(`maxVolumeOfParents`, this.parents, this)
+        throw new Error('flowing cube has no parents but is not a source')
+      }
+      return 4
+    }
+    // console.log(Object.values(this.parents))
+    return Math.max(...Object.values(this.parents).map(parent => parent.volume))
+  }
+  get _up() {
+    const result = this._clonePosition()
+    result.y += 1
+    return result
+  }
+  get volume() {
+    if (this.storedVolume != undefined) return this.storedVolume
+    if (this.isSource) return 4 //default value
+    this.storedVolume = this._loseVolume(this._maxVolumeOfParents)
+    return this.storedVolume
+  }
+  set volume(val) {
+    return val
+  }
+  /*************
+   * Private methods
+   *************/
+  _addChild(cube) {
+    this.children[toKey(cube.position)] = cube
+  }
+  _addParent(cube) {
+    this.parents[toKey(cube.position)] = cube
+  }
+  _createChild(childPosition, flowMap) {
+    if (childPosition.y < -64) {
+      throw new Error('do not create a child below -64')
+    }
+    if (this._hasVolumeToFlow()) {
+      const cubeAtPosition = flowMap[toKey(childPosition)]
+      if (cubeAtPosition) {
+        this._linkChild(cubeAtPosition)
+      } else {
+        return this._flowInto(childPosition, flowMap)
+      }
+    }
+    return null
+  }
+  _clonePosition() {
+    return {...this.position}
+  }
+  _flowHorizontally(cubes, flowMap) {
+    const createdChildren = []
+    const adjacentPositions = this._adjacentPositions
+    adjacentPositions.forEach(position => {
+      const shouldFlow = !cubes[toKey(position)]
+      if (shouldFlow) {
+        createdChildren.push(this._createChild(position, flowMap))
+      }
+    })
+    return createdChildren
+  }
+  _flowInto(childPosition, flowMap) {
+    const child = new FlowCube(
+      childPosition.x,
+      childPosition.y,
+      childPosition.z,
+      false
+    )
+    this._linkChild(child)
+    flowMap[toKey(childPosition)] = child
+    return child
+  }
+  _hasVolumeToFlow() {
+    return this.volume > 1
   }
   _linkChild(child) {
     if (!child.isSource) {
@@ -101,6 +138,14 @@ export class FlowCube {
       return child
     }
     return null
+  }
+  _loseVolume(max) {
+    //should not lose volume if it's flowing down
+    const parentAbove = this.parents[toKey(this._up)]
+    if (parentAbove && parentAbove.volume === max) {
+      return max
+    }
+    return max - 1
   }
 }
 
@@ -145,3 +190,9 @@ export class FlowCube {
 //     }
 //   }
 // }
+
+// let source
+// let flowMap
+// source = new FlowCube(0, 0, 0, true)
+// flowMap = {'0,0,0': source}
+// source.spawnChildren({}, flowMap)
