@@ -91,6 +91,8 @@ nav a {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  display: block;
+  visibility: hidden;
 }
 
 #instructions {
@@ -113,4 +115,12 @@ nav a {
   color: #ffffff;
   text-align: center;
   cursor: pointer;
+}
+
+#instructionsHeader {
+  font-size: 40px;
+}
+.instructionsSub {
+  text-decoration: underline;
+  line-height: 30px;
 }
