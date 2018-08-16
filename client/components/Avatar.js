@@ -18,13 +18,14 @@ scene.add(lightAmb)
 // build character //
 const group = new THREE.Group()
 
-// head //
+// head << body parts are positioned relative to head //
 const head = new THREE.Mesh(
   new THREE.BoxGeometry(0.5, 0.5, 0.5),
   new THREE.MeshBasicMaterial({color: 'purple'})
 )
-// head.position.setFromMatrixPosition(body.matrixWorld)
+
 const headHeight = head.geometry.parameters.height
+const headWidth = head.geometry.parameters.width
 const x = 0
 const y = 2
 const z = 0
@@ -47,8 +48,8 @@ const leftArm = new THREE.Mesh(
   new THREE.BoxGeometry(0.2, 0.7, 0.2),
   new THREE.MeshBasicMaterial({color: 'purple'})
 )
-const lArmX =
-  x - head.geometry.parameters.width / 2 - leftArm.geometry.parameters.width / 2
+const armWidth = leftArm.geometry.parameters.width
+const lArmX = x - headWidth / 2 - armWidth / 2
 const lArmY = bodyY
 const lArmZ = z
 leftArm.position.set(lArmX, lArmY, lArmZ)
@@ -57,7 +58,7 @@ const rightArm = new THREE.Mesh(
   new THREE.BoxGeometry(0.2, 0.7, 0.2),
   new THREE.MeshBasicMaterial({color: 'purple'})
 )
-const rArmX = Math.abs(lArmX)
+const rArmX = x + headWidth / 2 + armWidth / 2
 const rArmY = bodyY
 const rArmZ = z
 rightArm.position.set(rArmX, rArmY, rArmZ)
