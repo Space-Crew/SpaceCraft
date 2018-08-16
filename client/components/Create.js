@@ -68,18 +68,6 @@ function generateWorld(cubes, worldId) {
   animate()
 
   // pause the world //
-  const showInstructions = isPaused => {
-    blocker.style.visibility = 'visible'
-    if (isPaused) {
-      blocker.style.display = 'block'
-      blocker.style.zIndex = '99'
-      instructions.style.display = ''
-    } else {
-      blocker.style.display = 'none'
-      blocker.style.zIndex = ''
-      instructions.style.display = 'none'
-    }
-  }
 
   onSpaceBar = event => {
     if (event.which === 32) {
@@ -118,6 +106,19 @@ function generateDefaultPlane(scene, objects) {
       const y = -1
       addBlock(new THREE.Vector3(x, y, z), 0xb9c4c0, scene, objects)
     }
+  }
+}
+
+const showInstructions = isPaused => {
+  blocker.style.visibility = 'visible'
+  if (isPaused) {
+    blocker.style.display = 'block'
+    blocker.style.zIndex = '99'
+    instructions.style.display = ''
+  } else {
+    blocker.style.display = 'none'
+    blocker.style.zIndex = ''
+    instructions.style.display = 'none'
   }
 }
 
