@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
+import { deleteBlock } from '../3d/controls/deleteBlock';
 
 /*********************************
  * Construct the Three World
@@ -59,12 +60,13 @@ function generateWorld(cubes, worldId) {
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
-  const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
-  cubesRef.on("child_added", function(snapshot) {
-    var newCube = snapshot.val();
-    console.log("cube added!!" + newCube);
-    addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, scene, objects)
-  });
+
+  // cubesRef.on("child_changed", function(snapshot) {
+  //   let deletedCube = snapshot.val();
+  //   let selectedCube = scene.children.find(cube => cube.position.x === deletedCube.x && cube.position.y === deletedCube.y && cube.position.z === deletedCube.z);
+  //   deleteBlock(selectedCube, scene, objects)
+  // });
+
   animate()
   return dragControl.dispose
 }
@@ -110,7 +112,11 @@ class Create extends Component {
         const uri = '/worlds/' + this.props.match.params.id
         const worldRef = db.ref(uri)
         const world = (await worldRef.once('value')).val()
-        cubes = Object.values(world.cubes)
+        if (!world.cubes) {
+          cubes = [];
+        } else {
+          cubes = Object.values(world.cubes)
+        }
         worldId = world.id
         console.log(`plane mounted:`, cubes)
       }

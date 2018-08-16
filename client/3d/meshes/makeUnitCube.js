@@ -17,7 +17,7 @@ export function makeUnitCube(position, color = 0xb9c4c0, opacity, texture) {
     //     from stack overlfow
     // mesh.material.map = THREE.ImageUtils.loadTexture( src ); //assumes you've pre-loaded your images, for now will ignore
     // mesh.material.needsUpdate = true;
-    console.log(texture)
+    // console.log(texture)
     material.map = new THREE.TextureLoader().load(texture)
   }
   const mesh = new THREE.Mesh(geometry, material)
