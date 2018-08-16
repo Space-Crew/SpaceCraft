@@ -2,15 +2,11 @@ import {makeUnitCube} from '../meshes'
 import {db} from '../../firebase'
 import {toKey} from '..'
 
-export function addBlockToDb(position, color, scene, objects, worldId) {
+export function addBlockToDb(position, color = 0xb9c4c0, worldId) {
   try {
-    if (!color) {
-      color = 0xb9c4c0;
-    }
     const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
     cubesRef.child(toKey(position)).once('value', snapshot => {
       if (snapshot.val() === null) {
-        addBlock(position, color, scene, objects)
         snapshot.ref.set({
           x: position.x,
           y: position.y,
