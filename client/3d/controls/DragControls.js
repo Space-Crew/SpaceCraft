@@ -88,14 +88,14 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
 
   function onDocumentMouseMove(event) {
     event.preventDefault()
-    var rect = _domElement.getBoundingClientRect()
+    const rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
     _mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
     _raycaster.setFromCamera(_mouse, _camera)
 
-    var movementX =
+    const movementX =
       event.movementX || event.mozMovementX || event.webkitMovementX || 0
-    var movementY =
+    const movementY =
       event.movementY || event.mozMovementY || event.webkitMovementY || 0
 
     yawObject.rotation.y -= movementX * 0.002
@@ -109,14 +109,17 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     if (_selected && scope.enabled) {
       mouseVector.copy(yawObject.position)
       mouseVector.addScaledVector(_raycaster.ray.direction, distanceToSelected)
-
-      _selected.position.copy(mouseVector)
-      _selected.position.round()
+      mouseVector.round()
+      const isMovePositionOccupied = checkPositionOccupied(
+        mouseVector,
+        _objects
+      )
+      if (!isMovePositionOccupied) _selected.position.copy(mouseVector)
     }
     mouseVectorForBox.copy(yawObject.position)
     mouseVectorForBox.addScaledVector(_raycaster.ray.direction, scale)
+    mouseVectorForBox.round()
     previewBox.position.copy(mouseVectorForBox)
-    previewBox.position.round()
   }
 
   function onDocumentKeyDown(event) {
@@ -139,6 +142,8 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       case 81: //E
         yawObject.translateY(-1)
         break
+      default:
+        break
     }
   }
 
@@ -149,11 +154,11 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       distanceToSelected = yawObject.position.distanceTo(_selected.position)
       _domElement.style.cursor = 'move'
     }
-    const isPositionOccupied = checkPositionOccupied(
+    const isAddPositionOccupied = checkPositionOccupied(
       previewBox.position,
       _objects
     )
-    if (!isPositionOccupied && _shiftIsDown) {
+    if (!isAddPositionOccupied && _shiftIsDown) {
       if (worldId === undefined) {
         addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
       } else {
