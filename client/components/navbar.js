@@ -4,29 +4,52 @@ import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {logout} from '../store'
 import {doSignOut} from '../firebase/auth'
+import {withRouter} from 'react-router'
 
-const Navbar = ({handleClick, isLoggedIn}) => (
-  <div id="navbar">
-    <Link to="/">
-      <div id="logo">SpaceCraft</div>
-    </Link>
-    <div id="menu">
-      <Link to="/create">
-        <div className="link-item">Create</div>
-      </Link>
-      <Link to="/worlds">
-        <div className="link-item">Explore</div>
-      </Link>
-      <div className="link-item">Share</div>
-      <Link to="/login">
-        <div className="link-item">Login</div>
-      </Link>
-      <Link to="/" onClick={doSignOut}>
-        <div className="link-item">Sign Out</div>
-      </Link>
-    </div>
-  </div>
-)
+class Navbar extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      style: 'block'
+    }
+  }
+  componentDidMount() {
+    setTimeout(() => this.setState({style: 'none'}), 4000)
+  }
+  render() {
+    return (
+      <div id="navbar">
+        <Link to="/">
+          <div id="logo">SpaceCraft</div>
+        </Link>
+        {this.props.location.pathname === '/create' && (
+          <span
+            id="nav-instructions"
+            className="link-item"
+            style={{display: this.state.style}}
+          >
+            Instructions? Press Space Bar
+          </span>
+        )}
+        <div id="menu">
+          <Link to="/create">
+            <div className="link-item">Create</div>
+          </Link>
+          <Link to="/worlds">
+            <div className="link-item">Explore</div>
+          </Link>
+          <div className="link-item">Share</div>
+          <Link to="/login">
+            <div className="link-item">Login</div>
+          </Link>
+          <Link to="/" onClick={doSignOut}>
+            <div className="link-item">Sign Out</div>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+}
 
 /**
  * CONTAINER
@@ -45,7 +68,7 @@ const mapDispatch = dispatch => {
   }
 }
 
-export default connect(mapState, mapDispatch)(Navbar)
+export default withRouter(connect(mapState, mapDispatch)(Navbar))
 
 /**
  * PROP TYPES
