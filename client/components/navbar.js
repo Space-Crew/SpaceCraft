@@ -13,9 +13,7 @@ class Navbar extends React.Component {
       style: 'block'
     }
   }
-  componentDidMount() {
-    setTimeout(() => this.setState({style: 'none'}), 4000)
-  }
+
   render() {
     return (
       <div id="navbar">
