@@ -3,83 +3,102 @@ import * as THREE from 'three'
 import {toKey, toPosition} from '..'
 
 export class FlowCube {
-  constructor(x = 0, y = 0, z = 0, isSource = false, parents = {}, volume = 1) {
+  constructor(x = 0, y = 0, z = 0, isSource = false, volume = 1) {
     this.position = {x, y, z}
     this.isSource = isSource
-    this.parents = parents
-    this.children = {}
     this.volume = volume
+    this.parents = {}
+    this.children = {}
   }
   createChild(childPosition, flowMap, shouldDecrementVolume = true) {
     const key = toKey(childPosition)
     const hasVolumeToFlow = shouldDecrementVolume
       ? this.volume > 1
       : this.volume > 0
-    if (!flowMap[key] && hasVolumeToFlow) {
-      const child = new FlowCube(
-        childPosition.x,
-        childPosition.y,
-        childPosition.z,
-        false,
-        {[toKey(this.position)]: this},
-        shouldDecrementVolume ? this.volume - 1 : this.volume
-      )
-      this.children[key] = child
-      flowMap[key] = child
-      return child
+    if (flowMap[key] && hasVolumeToFlow) {
+      this._linkChild(flowMap[key])
+    } else if (!flowMap[key] && hasVolumeToFlow) {
+      return this._flowInto(childPosition, flowMap, shouldDecrementVolume)
     }
     return null
   }
-  clonePosition() {
-    return {...this.position}
-  }
   spawnChildren(cubes, flowMap) {
     const createdChildren = []
-    const oneDown = this.clonePosition()
+    const oneDown = this._clonePosition()
     oneDown.y -= 1
     const shouldFlowDown = !cubes[toKey(oneDown)] && oneDown.y >= -64
     if (shouldFlowDown) {
-      createdChildren.push(this.createChild(oneDown, flowMap, false))
+      const child = this.createChild(oneDown, flowMap, false)
+      if (child) createdChildren.push(child)
     } else {
-      //flow in all directions
-      const adjacentPositions = this.getAdjacentPositions()
-      adjacentPositions.forEach(position => {
-        const shouldFlow = !cubes[toKey(position)]
-        if (shouldFlow) {
-          createdChildren.push(this.createChild(position, flowMap))
-        }
+      this._flowHorizontally(cubes, flowMap).forEach(maybeChild => {
+        if (maybeChild) createdChildren.push(maybeChild)
       })
     }
-    createdChildren.forEach(child => {
-      if (child) {
-        child.spawnChildren(cubes, flowMap)
-      }
-    })
+    createdChildren.forEach(child => child.spawnChildren(cubes, flowMap))
   }
-  getAdjacentPositions() {
-    const northPosition = this.clonePosition()
-    northPosition.z += 1
-    const southPosition = this.clonePosition()
-    southPosition.z -= 1
-    const eastPosition = this.clonePosition()
-    eastPosition.x += 1
-    const westPosition = this.clonePosition()
-    westPosition.x -= 1
 
-    const positions = [northPosition, eastPosition, southPosition, westPosition]
-    return positions
-  }
   removeChildren(flowMap) {
-    const children = Object.values(this.children)
-    children.forEach(child => {
+    Object.values(this.children).forEach(child => {
       const parents = child.parents
       delete parents[toKey(this.position)]
-      delete this.children[toKey(child.position)]
       if (Object.keys(parents).length === 0) {
+        child.removeChildren(flowMap)
         delete flowMap[toKey(child.position)]
       }
     })
     this.children = {}
+  }
+  _flowHorizontally(cubes, flowMap) {
+    const createdChildren = []
+    const adjacentPositions = this._getAdjacentPositions()
+    adjacentPositions.forEach(position => {
+      const shouldFlow = !cubes[toKey(position)]
+      if (shouldFlow) {
+        createdChildren.push(this.createChild(position, flowMap))
+      }
+    })
+    return createdChildren
+  }
+  _addParent(cube) {
+    this.parents[toKey(cube.position)] = cube
+  }
+  _addChild(cube) {
+    this.children[toKey(cube.position)] = cube
+  }
+  _linkChild(child) {
+    if (!child.isSource) {
+      this._addChild(child)
+      child._addParent(this)
+    }
+  }
+  _flowInto(childPosition, flowMap, shouldDecrementVolume) {
+    const child = new FlowCube(
+      childPosition.x,
+      childPosition.y,
+      childPosition.z,
+      false,
+      shouldDecrementVolume ? this.volume - 1 : this.volume
+    )
+    this._linkChild(child)
+    flowMap[toKey(childPosition)] = child
+    return child
+  }
+  _clonePosition() {
+    return {...this.position}
+  }
+  _getAdjacentPositions() {
+    const northPosition = this._clonePosition()
+    northPosition.z += 1
+    const southPosition = this._clonePosition()
+    southPosition.z -= 1
+    const eastPosition = this._clonePosition()
+    eastPosition.x += 1
+    const westPosition = this._clonePosition()
+    westPosition.x -= 1
+
+    const positions = [northPosition, eastPosition, southPosition, westPosition]
+    return positions
   }
 }
 
