@@ -47,7 +47,7 @@ function generateWorld(cubes, worldId) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  addCubesToScene(cubes, scene, objects)
+  // addCubesToScene(cubes, scene, objects)
   // const clock = new THREE.Clock() //needed for controls
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
@@ -59,6 +59,12 @@ function generateWorld(cubes, worldId) {
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
+  const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
+  cubesRef.on("child_added", function(snapshot) {
+    var newCube = snapshot.val();
+    console.log("cube added!!" + newCube);
+    addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, scene, objects)
+  });
   animate()
   return dragControl.dispose
 }
@@ -72,7 +78,7 @@ function addCubesToScene(cubes, scene, objects) {
     cubes.forEach(cube => {
       addBlock(
         new THREE.Vector3(cube.x, cube.y, cube.z),
-        0xb9c4c0,
+        cube.color,
         scene,
         objects
       )
