@@ -9,6 +9,11 @@ import { deleteBlock } from '../3d/controls/deleteBlock';
  * Construct the Three World
  ********************************/
 
+let isPaused = false
+let onSpaceBar
+const blocker = document.getElementById('blocker')
+const instructions = document.getElementById('instructions')
+
 function generateWorld(cubes, worldId) {
   //container for all 3d objects that will be affected by event
   let objects = []
@@ -50,13 +55,14 @@ function generateWorld(cubes, worldId) {
 
   // addCubesToScene(cubes, scene, objects)
   // const clock = new THREE.Clock() //needed for controls
+
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
     renderer.render(scene, camera)
   }
   function animate() {
+    if (isPaused) return
     requestAnimationFrame(animate)
-
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
@@ -68,6 +74,18 @@ function generateWorld(cubes, worldId) {
   // });
 
   animate()
+
+  // pause the world //
+
+  onSpaceBar = event => {
+    if (event.which === 32) {
+      isPaused = !isPaused
+      showInstructions(isPaused)
+      animate()
+    }
+  }
+  window.addEventListener('keydown', onSpaceBar, false)
+
   return dragControl.dispose
 }
 
@@ -99,6 +117,19 @@ function generateDefaultPlane(scene, objects) {
   }
 }
 
+const showInstructions = isPaused => {
+  blocker.style.visibility = 'visible'
+  if (isPaused) {
+    blocker.style.display = 'block'
+    blocker.style.zIndex = '99'
+    instructions.style.display = ''
+  } else {
+    blocker.style.display = 'none'
+    blocker.style.zIndex = ''
+    instructions.style.display = 'none'
+  }
+}
+
 /*********************************
  * Render the world
  ********************************/
@@ -126,6 +157,7 @@ class Create extends Component {
     }
   }
   componentWillUnmount() {
+    window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {
