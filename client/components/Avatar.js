@@ -24,7 +24,7 @@ const head = new THREE.Mesh(
   new THREE.MeshBasicMaterial({color: 'purple'})
 )
 // head.position.setFromMatrixPosition(body.matrixWorld)
-
+const headHeight = head.geometry.parameters.height
 const x = 0
 const y = 2
 const z = 0
@@ -36,9 +36,9 @@ const body = new THREE.Mesh(
   new THREE.BoxGeometry(0.4, 0.9, 0.4),
   new THREE.MeshBasicMaterial({color: 0x00ff00})
 )
+const bodyHeight = body.geometry.parameters.height
 const bodyX = x
-const bodyY =
-  y - head.geometry.parameters.height / 2 - body.geometry.parameters.height / 2
+const bodyY = y - headHeight / 2 - bodyHeight / 2
 const bodyZ = z
 body.position.set(bodyX, bodyY, bodyZ)
 
@@ -51,7 +51,6 @@ const lArmX =
   x - head.geometry.parameters.width / 2 - leftArm.geometry.parameters.width / 2
 const lArmY = bodyY
 const lArmZ = z
-console.log(lArmX, lArmY, lArmZ)
 leftArm.position.set(lArmX, lArmY, lArmZ)
 
 const rightArm = new THREE.Mesh(
@@ -66,10 +65,14 @@ rightArm.position.set(rArmX, rArmY, rArmZ)
 // legs //
 
 const legs = new THREE.Mesh(
-  new THREE.BoxGeometry(0.4, 0.75, 0.4),
+  new THREE.BoxGeometry(0.3, 0.75, 0.3),
   new THREE.MeshBasicMaterial({color: 'purple'})
 )
-legs.position.set(0, -2, 0)
+const legX = x
+const legY =
+  y - headHeight / 2 - bodyHeight - legs.geometry.parameters.height / 2
+const legZ = z
+legs.position.set(legX, legY, legZ)
 
 // put it all together //
 group.add(body)
