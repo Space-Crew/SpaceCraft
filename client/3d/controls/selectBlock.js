@@ -13,7 +13,7 @@ function selectBlock(mouse, camera, objects) {
     .filter(e => !e.unselectable)
   if (intersections.length > 0) {
     return intersections[0].object
-  }
+  }else return null
 }
 
 export default selectBlock
