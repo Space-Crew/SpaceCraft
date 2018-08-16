@@ -148,11 +148,7 @@ class Create extends Component {
     this.unsubscribe()
   }
   render() {
-    return (
-      <div>
-        <div id="plane" />
-      </div>
-    )
+    return <div id="plane" />
   }
 }
 
