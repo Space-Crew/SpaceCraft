@@ -3,6 +3,12 @@ import {makeUnitCube} from '../meshes'
 import {addBlockToDb, addBlock} from './addBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
+import {checkPositionOccupied} from './checkPositionOccupied'
+
+function darken(color, percent) {   
+  let t=percent<0?0:255,p=percent<0?percent*-1:percent,R=color>>16,G=color>>8&0x00FF,B=color&0x0000FF;
+  return 0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B);
+}
 
 THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   if (_objects instanceof THREE.Camera) {
@@ -36,6 +42,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   previewBox.unselectable = true
   previewBox.visible = false
   _scene.add(previewBox)
+  let chosenColor;
 
   var _selected = null,
     _hovered = null
@@ -47,10 +54,18 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _domElement.addEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.addEventListener('mouseup', onDocumentMouseCancel, false) //able to release
     _domElement.addEventListener('mouseleave', onDocumentMouseCancel, false)
+    document.getElementById('color-palette').addEventListener('change', onColorChange, false)
 
     window.addEventListener('keydown', onDocumentOptionDown, false)
     window.addEventListener('keyup', onDocumentOptionUp, false)
   }
+  
+  function onColorChange(event) {
+    chosenColor = parseInt(event.target.value.replace('#',''), 16);
+    previewBox.material.color.setHex(chosenColor);
+    previewBox.children[0].material.color.setHex(darken(chosenColor, -0.05));
+  }
+
   function onDocumentOptionDown(event) {
     onDocumentKeyDown(event)
     if (event.which === 16) {
@@ -79,6 +94,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _domElement.removeEventListener('mouseleave', onDocumentMouseCancel, false)
     window.removeEventListener('keydown', onDocumentOptionDown, false)
     window.removeEventListener('keyup', onDocumentOptionUp, false)
+    document.getElementById('color-palette').removeEventListener('change', onColorChange, false)
   }
 
   function dispose() {
@@ -87,14 +103,14 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
 
   function onDocumentMouseMove(event) {
     event.preventDefault()
-    var rect = _domElement.getBoundingClientRect()
+    const rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
     _mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
     _raycaster.setFromCamera(_mouse, _camera)
 
-    var movementX =
+    const movementX =
       event.movementX || event.mozMovementX || event.webkitMovementX || 0
-    var movementY =
+    const movementY =
       event.movementY || event.mozMovementY || event.webkitMovementY || 0
 
     yawObject.rotation.y -= movementX * 0.002
@@ -108,14 +124,17 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     if (_selected && scope.enabled) {
       mouseVector.copy(yawObject.position)
       mouseVector.addScaledVector(_raycaster.ray.direction, distanceToSelected)
-
-      _selected.position.copy(mouseVector)
-      _selected.position.round()
+      mouseVector.round()
+      const isMovePositionOccupied = checkPositionOccupied(
+        mouseVector,
+        _objects
+      )
+      if (!isMovePositionOccupied) _selected.position.copy(mouseVector)
     }
     mouseVectorForBox.copy(yawObject.position)
     mouseVectorForBox.addScaledVector(_raycaster.ray.direction, scale)
+    mouseVectorForBox.round()
     previewBox.position.copy(mouseVectorForBox)
-    previewBox.position.round()
   }
 
   function onDocumentKeyDown(event) {
@@ -138,6 +157,8 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       case 81: //E
         yawObject.translateY(-1)
         break
+      default:
+        break
     }
   }
 
@@ -148,17 +169,21 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       distanceToSelected = yawObject.position.distanceTo(_selected.position)
       _domElement.style.cursor = 'move'
     }
-    if (_shiftIsDown) {
+    const isAddPositionOccupied = checkPositionOccupied(
+      previewBox.position,
+      _objects
+    )
+    if (!isAddPositionOccupied && _shiftIsDown) {
       if (worldId === undefined) {
-        addBlock(previewBox.position, 0xb9c4c0, _scene, _objects)
+        addBlock(previewBox.position, chosenColor, _scene, _objects)
       } else {
-        addBlockToDb(previewBox.position, 0xb9c4c0, _scene, _objects, worldId)
+        addBlockToDb(previewBox.position, chosenColor, _scene, _objects, worldId)
       }
     } else if (_commandIsDown) {
       if (worldId === undefined) {
         _objects = deleteBlock(_selected, _scene, _objects)
       } else {
-        _objects = deleteBlock(_selected, _scene, _objects, worldId)
+        _objects = deleteBlockFromDb(_selected, _scene, _objects, worldId)
       }
     }
   }
