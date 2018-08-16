@@ -12,7 +12,9 @@ var config = {
   messagingSenderId: '664798515932'
 }
 
-firebase.initializeApp(config)
+if (!firebase.apps.length) {
+  firebase.initializeApp(config)
+}
 
 const db = firebase.database()
 const auth = firebase.auth()
