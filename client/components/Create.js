@@ -61,12 +61,6 @@ function generateWorld(cubes, worldId) {
   }
   document.getElementById('plane').appendChild(renderer.domElement)
 
-  // cubesRef.on("child_changed", function(snapshot) {
-  //   let deletedCube = snapshot.val();
-  //   let selectedCube = scene.children.find(cube => cube.position.x === deletedCube.x && cube.position.y === deletedCube.y && cube.position.z === deletedCube.z);
-  //   deleteBlock(selectedCube, scene, objects)
-  // });
-
   animate()
   return dragControl.dispose
 }

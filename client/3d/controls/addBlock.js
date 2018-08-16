@@ -7,7 +7,6 @@ export function addBlockToDb(position, color = 0xb9c4c0, worldId) {
     const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
     cubesRef.child(toKey(position)).once('value', snapshot => {
       if (snapshot.val() === null) {
-        // addBlock(position, color, scene, objects)
         snapshot.ref.set({
           x: position.x,
           y: position.y,
@@ -22,7 +21,6 @@ export function addBlockToDb(position, color = 0xb9c4c0, worldId) {
 }
 
 export function addBlock(position, color, scene, objects) {
-  console.log('I ADD ANOTHER BLOCK')
   const cube = makeUnitCube(position, color, 1)
   scene.add(cube)
   objects.push(cube)

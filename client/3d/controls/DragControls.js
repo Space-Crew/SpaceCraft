@@ -178,14 +178,12 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       if (worldId === undefined) {
         addBlock(previewBox.position, chosenColor, _scene, _objects)
       } else {
-        // addBlock(previewBox.position, chosenColor, _scene, _objects)
         addBlockToDb(previewBox.position, chosenColor, worldId)
       }
     } else if (_commandIsDown) {
       if (worldId === undefined) {
         _objects = deleteBlock(_selected, _scene, _objects)
       } else {
-        console.log(_selected);
         _objects = deleteBlock(_selected, _scene, _objects)
         deleteBlockFromDb(_selected, _scene, _objects, worldId)
       }
