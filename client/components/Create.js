@@ -36,7 +36,6 @@ function generateWorld(cubes, worldId) {
 
   //create a new scene
   const scene = new THREE.Scene()
-  // camera.lookAt(new THREE.Vector3(0, 0, 0))
   //allows for adding, deleting, and moving 3d objects with mouse drag
   const dragControl = new DragControls(
     objects,
@@ -71,7 +70,6 @@ function generateWorld(cubes, worldId) {
   // pause the world //
   const showInstructions = isPaused => {
     blocker.style.visibility = 'visible'
-    console.log(isPaused)
     if (isPaused) {
       blocker.style.display = 'block'
       blocker.style.zIndex = '99'
@@ -83,15 +81,7 @@ function generateWorld(cubes, worldId) {
     }
   }
 
-  // let scene load then pause for instructions //
-  // setTimeout(() => {
-  //   isPaused = true
-  //   showInstructions(isPaused)
-  //   animate()
-  // }, 1000)
-
   onSpaceBar = event => {
-    console.log('fired')
     if (event.which === 32) {
       isPaused = !isPaused
       showInstructions(isPaused)
