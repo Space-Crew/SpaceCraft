@@ -18,7 +18,7 @@ scene.add(lightAmb)
 // build character //
 const group = new THREE.Group()
 
-// head << body parts are positioned relative to head //
+// head ! body parts are positioned relative to head ! //
 const head = new THREE.Mesh(
   new THREE.BoxGeometry(0.5, 0.5, 0.5),
   new THREE.MeshBasicMaterial({color: 'purple'})
@@ -74,12 +74,13 @@ const legY =
 const legZ = z
 legs.position.set(legX, legY, legZ)
 
-// put it all together //
+// bring it to LIFE //
 group.add(body)
 group.add(head)
 group.add(leftArm)
 group.add(rightArm)
 group.add(legs)
+console.log(group)
 scene.add(group)
 
 // rendererrrrrr //

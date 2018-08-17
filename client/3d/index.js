@@ -3,6 +3,7 @@ export function toKey(position) {
   return `${position.x},${position.y},${position.z}`
 }
 const removePeriod = coord => {
+  // more efficient way to remove a period? //
   return coord
     .toString()
     .split('.')

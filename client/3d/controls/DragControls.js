@@ -92,6 +92,15 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       deleteBlock(selectedCube, _scene, _objects)
     })
   }
+  // event listener for avatar position change in db //
+  const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
+  avatarsRef.on('position_changed', snapshot => {
+    let newPosition = snapshot.val()
+    addAvatar(
+      new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
+      _scene
+    )
+  })
 
   function onColorChange(event) {
     chosenColor = parseInt(event.target.value.replace('#', ''), 16)
