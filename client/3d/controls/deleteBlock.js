@@ -12,7 +12,7 @@ export function deleteBlock(selected, scene, objects) {
   return objects
 }
 
-export function deleteBlockFromDb(selected, scene, objects, worldId) {
+export function deleteBlockFromDb(selected, worldId) {
   try {
     if (selected) {
       const deleteThis = selected.position.clone()

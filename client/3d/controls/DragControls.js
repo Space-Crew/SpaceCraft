@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import {makeUnitCube} from '../meshes'
-import {addBlockToDb, addBlock} from './addBlock'
+import {addBlockToDb, addBlock, addTempBlockToDb} from './addBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 import {db} from '../../firebase'
@@ -49,25 +49,40 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _hovered = null
 
   var scope = this
+  let toBeMoved;
 
   function activate() {
     _domElement.addEventListener('mousemove', onDocumentMouseMove, false)
     _domElement.addEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.addEventListener('mouseup', onDocumentMouseCancel, false) //able to release
-    _domElement.addEventListener('mouseleave', onDocumentMouseCancel, false)
+    // _domElement.addEventListener('mouseleave', onDocumentMouseCancel, false)
     document.getElementById('color-palette').addEventListener('change', onColorChange, false)
 
     window.addEventListener('keydown', onDocumentOptionDown, false)
     window.addEventListener('keyup', onDocumentOptionUp, false)
-    const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
+    const cubesRef = db.ref(`/worlds/${worldId}/cubes/`);
     cubesRef.on("child_added", function(snapshot) {
-      let newCube = snapshot.val();
-      addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, _scene, _objects)
+      if (snapshot.key === 'temp') {
+        toBeMoved = _scene.children.find(cube => cube.position.x === snapshot.val().x && cube.position.y === snapshot.val().y && cube.position.z === snapshot.val().z)
+        console.log(toBeMoved, _selected)
+      } else {
+        let newCube = snapshot.val();
+        addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, _scene, _objects)
+      }
     });
     cubesRef.on("child_removed", function(snapshot) {
-      let deletedCube = snapshot.val();
-      let selectedCube = _scene.children.find(cube => cube.position.x === deletedCube.x && cube.position.y === deletedCube.y && cube.position.z === deletedCube.z);
-      deleteBlock(selectedCube, _scene, _objects)
+      if (snapshot.key !== 'temp') {
+        let deletedCube = snapshot.val();
+        let selectedCube = _scene.children.find(cube => cube.position.x === deletedCube.x && cube.position.y === deletedCube.y && cube.position.z === deletedCube.z);
+        deleteBlock(selectedCube, _scene, _objects)
+      }
+    });
+    cubesRef.on("child_changed", function(snapshot) {
+      let movedCube = snapshot.val();
+      if (toBeMoved) {
+        let newPosition = new THREE.Vector3(movedCube.x, movedCube.y, movedCube.z);
+        toBeMoved.position.copy(newPosition);
+      }
     });
   }
   
@@ -102,7 +117,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _domElement.removeEventListener('mousemove', onDocumentMouseMove, false)
     _domElement.removeEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.removeEventListener('mouseup', onDocumentMouseCancel, false)
-    _domElement.removeEventListener('mouseleave', onDocumentMouseCancel, false)
+    // _domElement.removeEventListener('mouseleave', onDocumentMouseCancel, false)
     window.removeEventListener('keydown', onDocumentOptionDown, false)
     window.removeEventListener('keyup', onDocumentOptionUp, false)
     document.getElementById('color-palette').removeEventListener('change', onColorChange, false)
@@ -112,7 +127,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     deactivate()
   }
 
-  function onDocumentMouseMove(event) {
+  async function onDocumentMouseMove(event) {
     event.preventDefault()
     const rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
@@ -140,7 +155,16 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
         mouseVector,
         _objects
       )
-      if (!isMovePositionOccupied) _selected.position.copy(mouseVector)
+      if (!isMovePositionOccupied) {
+        const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
+        cubesRef.child('temp').set({
+          x: mouseVector.x,
+          y: mouseVector.y,
+          z: mouseVector.z,
+          color: _selected.material.color.getHex()
+        });
+        _selected.position.copy(mouseVector)
+      }
     }
     mouseVectorForBox.copy(yawObject.position)
     mouseVectorForBox.addScaledVector(_raycaster.ray.direction, scale)
@@ -195,17 +219,29 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
         _objects = deleteBlock(_selected, _scene, _objects)
       } else {
         _objects = deleteBlock(_selected, _scene, _objects)
-        deleteBlockFromDb(_selected, _scene, _objects, worldId)
+        deleteBlockFromDb(_selected, worldId)
       }
+    } else {
+      addTempBlockToDb(_selected.position, _selected.material.color.getHex(), worldId)
     }
   }
 
-  function onDocumentMouseCancel(event) {
+  async function onDocumentMouseCancel(event) {
     event.preventDefault()
-
     if (_selected) {
       window.removeEventListener('keydown', onDocumentKeyDown, false)
       _selected = null
+    }
+    if (toBeMoved) {
+      const tempRef = db.ref(`/worlds/${worldId}/cubes/temp`);
+      // console.log(tempRef, tempRef.val());
+      const tempSnap = await tempRef.once('value');
+      const tempVal = tempSnap.val();
+      console.log(tempVal)
+      const tempPosition = new THREE.Vector3(tempVal.x, tempVal.y, tempVal.z)
+      addBlockToDb(tempPosition, tempVal.color, worldId)
+      // toBeMoved = null;
+      tempRef.remove();
     }
 
     _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
