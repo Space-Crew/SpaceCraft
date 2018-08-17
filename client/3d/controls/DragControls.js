@@ -97,17 +97,21 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
 
   // add avatar at initial camera position //
   const {x, y, z} = yawObject.position
-  const initialAvatar = addAvatar(new THREE.Vector3(x, y, z), _scene)
+  let avatar = addAvatar(new THREE.Vector3(x, y, z), _scene)
+  let initial = true
   updateAvatarInDb({x, y, z}, worldId, yawObject.uuid)
-  let prevAvatar
   // event listener for avatar position change in db //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars/${yawObject.uuid}`)
   avatarsRef.on('value', snapshot => {
+    console.log('fired')
     let newPosition = snapshot.val()
-    prevAvatar = addAvatar(
-      new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
-      _scene
-    )
+    if (!initial) {
+      deleteAvatar(_scene, avatar)
+      avatar = addAvatar(
+        new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
+        _scene
+      )
+    }
   })
 
   function onColorChange(event) {
@@ -189,43 +193,49 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     previewBox.position.copy(mouseVectorForBox)
   }
 
-  let avatarToDelete
   function onDocumentKeyDown(event) {
     switch (event.which) {
       case 87: //W
         yawObject.translateZ(-1)
-        avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
-        deleteAvatar(_scene, avatarToDelete)
+        // console.log(initialAvatar)
+        // avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
+        // deleteAvatar(_scene, avatarToDelete)
+        initial = false
         updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 83: // S
         yawObject.translateZ(1)
-        avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
-        deleteAvatar(_scene, avatarToDelete)
+        // avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
+        // deleteAvatar(_scene, avatarToDelete)
+        initial = false
         updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 65: //A
         yawObject.translateX(-1)
-        avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
-        deleteAvatar(_scene, avatarToDelete)
+        // avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
+        // deleteAvatar(_scene, avatarToDelete)
+        initial = false
         updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 68: //D
         yawObject.translateX(1)
-        avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
-        deleteAvatar(_scene, avatarToDelete)
+        // avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
+        // deleteAvatar(_scene, avatarToDelete)
+        initial = false
         updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 69: //Q
         yawObject.translateY(1)
-        avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
-        deleteAvatar(_scene, avatarToDelete)
+        // avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
+        // deleteAvatar(_scene, avatarToDelete)
+        initial = false
         updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 81: //E
         yawObject.translateY(-1)
-        avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
-        deleteAvatar(_scene, avatarToDelete)
+        // avatarToDelete = initialAvatar ? initialAvatar : prevAvatar
+        // deleteAvatar(_scene, avatarToDelete)
+        initial = false
         updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       default:

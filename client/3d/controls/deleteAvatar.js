@@ -8,4 +8,5 @@ export const deleteAvatar = (scene, avatarGroup) => {
     bodyPart = undefined
   }
   scene.remove(avatarGroup)
+  avatarGroup = undefined
 }

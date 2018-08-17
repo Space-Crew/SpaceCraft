@@ -9,7 +9,7 @@ export const addAvatar = (position, scene) => {
   const legs = makeLegs()
 
   // bring it to LIFE //
-  const group = new THREE.Group()
+  const group = new THREE.Object3D()
   group.add(body)
   group.add(head)
   group.add(leftArm)
