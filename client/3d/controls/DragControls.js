@@ -93,14 +93,15 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       deleteBlock(selectedCube, _scene, _objects)
     })
   }
+
+  // add avatar at initial camera position //
+  const {x, y, z} = yawObject.position
+  addAvatar(new THREE.Vector3(x, y, z), _scene)
+
   // event listener for avatar position change in db //
-  const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
+  const avatarsRef = db.ref(`/worlds/${worldId}/avatars/${yawObject.uuid}`)
   avatarsRef.on('value', snapshot => {
     let newPosition = snapshot.val()
-    if (newPosition === null) {
-      const {x, y, z} = yawObject.position
-      addAvatar(new THREE.Vector3(x, y, z), _scene)
-    }
     addAvatar(
       new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
       _scene
@@ -190,7 +191,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     switch (event.which) {
       case 87: //W
         yawObject.translateZ(-1)
-        console.log(yawObject)
         updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 83: // S
