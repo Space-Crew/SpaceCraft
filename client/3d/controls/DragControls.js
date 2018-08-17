@@ -21,24 +21,10 @@ function darken(color, percent) {
   )
 }
 
-THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
-  if (_objects instanceof THREE.Camera) {
-    console.warn(
-      'THREE.DragControls: Constructor now expects ( objects, camera, domElement )'
-    )
-    let temp = _objects
-    _objects = _camera
-    _camera = temp
-  }
-  let pitchObject = new THREE.Object3D()
-  pitchObject.add(_camera)
-  pitchObject.rotation.x = Math.PI / 2
-
-  let yawObject = new THREE.Object3D()
-  yawObject.position.y = 0
-  yawObject.add(pitchObject)
-
-  let PI_2 = Math.PI / 2
+THREE.DragControls = function(_camera, _domElement, _scene) {
+  let _objects = _scene.objects
+  let worldId = _scene.worldId
+  const {yawObject, pitchObject} = _camera.controls
   let _shiftIsDown = false
   let _commandIsDown = false
   let _raycaster = new THREE.Raycaster()
@@ -196,25 +182,12 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     deactivate()
   }
 
-  async function onDocumentMouseMove(event) {
+  function onDocumentMouseMove(event) {
     event.preventDefault()
     const rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
     _mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
     _raycaster.setFromCamera(_mouse, _camera)
-
-    const movementX =
-      event.movementX || event.mozMovementX || event.webkitMovementX || 0
-    const movementY =
-      event.movementY || event.mozMovementY || event.webkitMovementY || 0
-
-    yawObject.rotation.y -= movementX * 0.002
-    pitchObject.rotation.x -= movementY * 0.004
-
-    pitchObject.rotation.x = Math.max(
-      -PI_2,
-      Math.min(PI_2, pitchObject.rotation.x)
-    )
 
     if (_selected && scope.enabled) {
       mouseVector.copy(yawObject.position)
@@ -271,7 +244,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
 
   function onDocumentMouseDown(event) {
     event.preventDefault()
-    _selected = selectBlock(_mouse, _camera, _objects)
+    _selected = selectBlock(_mouse, _camera, _scene.objects)
     if (_selected) {
       distanceToSelected = yawObject.position.distanceTo(_selected.position)
       _domElement.style.cursor = 'move'
@@ -350,33 +323,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   this.activate = activate
   this.deactivate = deactivate
   this.dispose = dispose
-
-  // Backward compatibility
-
-  this.setObjects = function() {
-    console.error('THREE.DragControls: setObjects() has been removed.')
-  }
-
-  this.on = function(type, listener) {
-    console.warn(
-      'THREE.DragControls: on() has been deprecated. Use addEventListener() instead.'
-    )
-    scope.addEventListener(type, listener)
-  }
-
-  this.off = function(type, listener) {
-    console.warn(
-      'THREE.DragControls: off() has been deprecated. Use removeEventListener() instead.'
-    )
-    scope.removeEventListener(type, listener)
-  }
-
-  this.notify = function(type) {
-    console.error(
-      'THREE.DragControls: notify() has been deprecated. Use dispatchEvent() instead.'
-    )
-    scope.dispatchEvent({type: type})
-  }
 }
 
 THREE.DragControls.prototype = Object.create(THREE.EventDispatcher.prototype)
