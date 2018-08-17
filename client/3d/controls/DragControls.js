@@ -3,7 +3,7 @@ import {makeUnitCube} from '../meshes'
 import {addBlockToDb, addBlock, addTempBlockToDb} from './addBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
-import {db, auth} from '../../firebase'
+import {db, currentUser} from '../../firebase'
 import {checkPositionOccupied} from './checkPositionOccupied'
 import { toKey } from '..';
 
@@ -68,6 +68,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
         //toBeMoved = _scene.children.find(cube => cube.position.x === snapshot.val().x && cube.position.y === snapshot.val().y && cube.position.z === snapshot.val().z)
         // originalPosition = toBeMoved.position;
       } else {
+        console.log(currentUser);
         let newCube = snapshot.val();
         addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, _scene, _objects)
       }

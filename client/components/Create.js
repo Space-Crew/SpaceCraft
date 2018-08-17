@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
-import {db} from '../firebase'
+import {db, currentUser} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
 import { deleteBlock } from '../3d/controls/deleteBlock';
 
@@ -130,6 +130,7 @@ const showInstructions = isPaused => {
 
 class Create extends Component {
   async componentDidMount() {
+    console.log(currentUser);
     try {
       let cubes = []
       let worldId
