@@ -39,6 +39,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   var yawObject = new THREE.Object3D()
   yawObject.position.y = 0
   yawObject.add(pitchObject)
+  console.log(yawObject)
 
   var PI_2 = Math.PI / 2
   var _shiftIsDown = false
@@ -102,18 +103,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   let initialAvatar = true
   updateAvatarInDb({x, y, z}, worldId, yawObject.uuid)
   // event listener for avatar position change in db //
-  /*  const avatarRef = db.ref(`/worlds/${worldId}/avatars/`)
-  avatarRef.on('value', snapshot => {
-    console.log(snapshot)
-    let newPosition = snapshot.val()
-    if (!initialAvatar) {
-      deleteAvatar(_scene, avatar)
-      avatar = addAvatar(
-        new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
-        _scene
-      )
-    }
-  }) */
 
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
@@ -121,12 +110,22 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       console.log('fired')
       let newPosition = snapshot.val()
       // if (!initialAvatar)
-      deleteAvatar(_scene, avatar)
-      avatar = addAvatar(
+      // deleteAvatar(_scene, avatar)
+      addAvatar(
         new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
         _scene
       )
     }
+  })
+
+  const avatarRef = db.ref(`/worlds/${worldId}/avatars/`)
+  avatarRef.on('child_changed', snapshot => {
+    console.log(snapshot)
+    let newPosition = snapshot.val()
+    addAvatar(
+      new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
+      _scene
+    )
   })
 
   function onColorChange(event) {
@@ -209,6 +208,15 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   }
 
   function onDocumentKeyDown(event) {
+    //this currently deletes the camera
+    let avatarToDelete = _scene.children.find(
+      avatar =>
+        avatar.uuid !== yawObject.uuid &&
+        avatar.position.x === yawObject.position.x &&
+        avatar.position.y === yawObject.position.y &&
+        avatar.position.z === yawObject.position.z
+    )
+    deleteAvatar(_scene, avatarToDelete)
     switch (event.which) {
       case 87: //W
         yawObject.translateZ(-1)
