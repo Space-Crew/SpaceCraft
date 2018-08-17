@@ -18,29 +18,27 @@ export class FlowCube {
       newChild.spawnChildren(cubes, flowMap, queueBreadthFirst)
     }
   }
-  _findSpacesToFlowInto(cubes, flowMap) {
-    const childrenThatNeedToSpawnMoreChildren = []
-    const shouldFlowDown = !cubes[toKey(this._down)] && this.position.y > -64
-    if (shouldFlowDown) {
-      const child = this._createChild(this._down, flowMap)
-      if (child) childrenThatNeedToSpawnMoreChildren.push(child)
-    } else {
-      this._flowHorizontally(cubes, flowMap).forEach(child => {
-        if (child) childrenThatNeedToSpawnMoreChildren.push(child)
-      })
+  triggerChildRespawn(child) {
+    //has volume changed? if so respawn
+    if (volumeHasChanged) {
+      this.respawnChild(child)
     }
-    return childrenThatNeedToSpawnMoreChildren
   }
-  removeChildren(flowMap) {
+  _destroyChild(child) {
+    //what about other parents of this child
+    //this matters because a parent might be giving better volume
+    //refactor find max parent volume to cover this as well
+    child._destroyChildren()
+    this._unlinkChild(child)
+  }
+  _destroyChildren(flowMap) {
     Object.values(this.children).forEach(child => {
-      const parents = child.parents
-      delete parents[toKey(this.position)]
-      if (Object.keys(parents).length === 0) {
-        child.removeChildren(flowMap)
-        delete flowMap[toKey(child.position)]
-      }
+      this._destroyChild(child)
     })
-    this.children = {}
+  }
+  _respawnChild(child) {
+    this._destroyChild(child)
+    this.spawnChildren()
   }
   /*************
    * Get/Set
@@ -118,6 +116,19 @@ export class FlowCube {
   _clonePosition() {
     return {...this.position}
   }
+  _findSpacesToFlowInto(cubes, flowMap) {
+    const childrenThatSpawnMoreChildren = []
+    const shouldFlowDown = !cubes[toKey(this._down)] && this.position.y > -64
+    if (shouldFlowDown) {
+      const child = this._createChild(this._down, flowMap)
+      if (child) childrenThatSpawnMoreChildren.push(child)
+    } else {
+      this._flowHorizontally(cubes, flowMap).forEach(child => {
+        if (child) childrenThatSpawnMoreChildren.push(child)
+      })
+    }
+    return childrenThatSpawnMoreChildren
+  }
   _flowHorizontally(cubes, flowMap) {
     const createdChildren = []
     const adjacentPositions = this._adjacentPositions
@@ -158,6 +169,10 @@ export class FlowCube {
       return max
     }
     return max - 1
+  }
+  _unlinkChild(child) {
+    delete this.children[toKey(child.position)]
+    delete child.parents[toKey(this.position)]
   }
 }
 

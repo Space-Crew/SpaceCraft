@@ -147,9 +147,11 @@ describe('FlowCube', () => {
         '2,-64,0'
       ]
       expect(flowMap).to.have.all.keys(...waterPositions)
+      source.spawnChildren(cubes, flowMap)
+      expect(flowMap).to.have.all.keys(...waterPositions)
     })
   })
-  xdescribe('removeChildren', () => {
+  describe('removeChildren', () => {
     describe('simply', () => {
       const cubes = {'0,-64,0': 'stuff'}
       let source
