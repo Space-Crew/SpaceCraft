@@ -3,6 +3,7 @@ import {makeUnitCube} from '../meshes'
 import {addBlockToDb, addBlock} from './addBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
+import {db} from '../../firebase'
 import {checkPositionOccupied} from './checkPositionOccupied'
 import makePreviewGrid from '../meshes/makePreviewGrid'
 
@@ -71,6 +72,16 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
 
     window.addEventListener('keydown', onDocumentOptionDown, false)
     window.addEventListener('keyup', onDocumentOptionUp, false)
+    const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
+    cubesRef.on("child_added", function(snapshot) {
+      let newCube = snapshot.val();
+      addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, _scene, _objects)
+    });
+    cubesRef.on("child_removed", function(snapshot) {
+      let deletedCube = snapshot.val();
+      let selectedCube = _scene.children.find(cube => cube.position.x === deletedCube.x && cube.position.y === deletedCube.y && cube.position.z === deletedCube.z);
+      deleteBlock(selectedCube, _scene, _objects)
+    });
   }
 
   function onColorChange(event) {
@@ -192,6 +203,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       if (worldId === undefined) {
         addBlock(previewBox.position, chosenColor, _scene, _objects)
       } else {
+<<<<<<< HEAD
         addBlockToDb(
           previewBox.position,
           chosenColor,
@@ -199,12 +211,16 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
           _objects,
           worldId
         )
+=======
+        addBlockToDb(previewBox.position, chosenColor, worldId)
+>>>>>>> master
       }
     } else if (_commandIsDown) {
       if (worldId === undefined) {
         _objects = deleteBlock(_selected, _scene, _objects)
       } else {
-        _objects = deleteBlockFromDb(_selected, _scene, _objects, worldId)
+        _objects = deleteBlock(_selected, _scene, _objects)
+        deleteBlockFromDb(_selected, _scene, _objects, worldId)
       }
     }
   }
