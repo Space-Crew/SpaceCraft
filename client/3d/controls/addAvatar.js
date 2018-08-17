@@ -18,4 +18,5 @@ export const addAvatar = (position, scene) => {
   const {x, y, z} = position
   group.position.set(x, y, z)
   scene.add(group)
+  return group
 }

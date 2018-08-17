@@ -3,6 +3,7 @@
   "extends": ["fullstack", "prettier", "prettier/react"],
   "rules": {
     "semi": 0,
-    "max-statements": 0
+    "max-statements": 0,
+    "complexity": 0
   }
 }
