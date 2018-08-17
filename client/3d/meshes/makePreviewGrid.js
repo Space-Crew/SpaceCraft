@@ -11,7 +11,16 @@ function makePreviewGrid() {
   // const mat = new THREE.LineBasicMaterial({color: 0xffffff, width: 4})
   // const previewGrid = new THREE.LineSegments(boxGeo, mat)
   // return previewGrid
-  return makeGridWithYaxisOffset(0)
+  const grid = makeGridWithYaxisOffset(0)
+  grid.visible = false
+  const toggleVisibility = function() {
+    this.visible = !this.visible
+  }
+  const boundToggleVisibility = toggleVisibility.bind(grid)
+  return {
+    grid,
+    boundToggleVisibility
+  }
 }
 function makeGridWithYaxisOffset(offset) {
   const size = 9

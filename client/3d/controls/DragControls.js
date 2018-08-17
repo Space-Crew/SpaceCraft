@@ -52,7 +52,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   let previewBox = makeUnitCube(position, 0xb9c4c0, 0.3)
   previewBox.unselectable = true
   previewBox.visible = false
-  previewBox.add(makePreviewGrid())
+  const previewGrid = makePreviewGrid()
+  previewBox.add(previewGrid.grid)
+  previewBox.togglePreviewGridVisibility = previewGrid.boundToggleVisibility
   _scene.add(previewBox)
   let chosenColor
 
@@ -192,6 +194,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
         break
       case 81: //E
         yawObject.translateY(-1)
+        break
+      case 71: //G
+        previewBox.togglePreviewGridVisibility()
         break
       default:
         break
