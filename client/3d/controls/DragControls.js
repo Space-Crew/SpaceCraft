@@ -176,27 +176,28 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     switch (event.which) {
       case 87: //W
         yawObject.translateZ(-1)
-        updateAvatarInDb({x: 0, y: 2, z: 0}, worldId)
+        console.log(yawObject)
+        updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 83: // S
         yawObject.translateZ(1)
-        updateAvatarInDb(yawObject.position, worldId)
+        updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 65: //A
         yawObject.translateX(-1)
-        updateAvatarInDb(yawObject.position, worldId)
+        updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 68: //D
         yawObject.translateX(1)
-        updateAvatarInDb(yawObject.position, worldId)
+        updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 69: //Q
         yawObject.translateY(1)
-        updateAvatarInDb(yawObject.position, worldId)
+        updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       case 81: //E
         yawObject.translateY(-1)
-        updateAvatarInDb(yawObject.position, worldId)
+        updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
         break
       default:
         break

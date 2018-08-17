@@ -1,10 +1,10 @@
 import {db} from '../../firebase'
-import {toKey} from '..'
+import {cameraPositionToKey} from '..'
 
-export function updateAvatarInDb(position, worldId) {
-  /* try {
-    const key = toKey(position)
-    const avatarRef = db.ref(`/worlds/${worldId}/avatars/`)
+export function updateAvatarInDb(position, worldId, uniqueId) {
+  const key = cameraPositionToKey(position)
+  /*try {
+     const avatarRef = db.ref(`/worlds/${worldId}/avatars/`)
     avatarRef.child(key).once('value', () => {
       avatarRef.ref.set({
         x: position.x,
@@ -16,8 +16,7 @@ export function updateAvatarInDb(position, worldId) {
     console.error(error)
   } */
   try {
-    const key = toKey(position)
-    const avatarRef = db.ref(`/worlds/${worldId}/avatars/${key}`)
+    const avatarRef = db.ref(`/worlds/${worldId}/avatars/${uniqueId}`)
     avatarRef.ref.set({
       x: position.x,
       y: position.y,

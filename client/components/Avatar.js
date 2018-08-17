@@ -30,7 +30,6 @@ const x = 0
 const y = 2
 const z = 0
 head.position.set(x, y, z)
-console.log(head)
 
 // body //
 const body = new THREE.Mesh(
