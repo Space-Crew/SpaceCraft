@@ -45,13 +45,12 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   previewBox.visible = false
   _scene.add(previewBox)
   let chosenColor;
-
+  let originalPosition;
   var _selected = null,
     _hovered = null
 
   var scope = this
-  let toBeMoved;
-  let originalPosition;
+  let cubesToBeMoved = {};
 
   function activate() {
     _domElement.addEventListener('mousemove', onDocumentMouseMove, false)
@@ -63,36 +62,52 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     window.addEventListener('keydown', onDocumentOptionDown, false)
     window.addEventListener('keyup', onDocumentOptionUp, false)
     const cubesRef = db.ref(`/worlds/${worldId}/cubes/`);
-    cubesRef.on("child_added", function(snapshot) {
-      if (snapshot.key === 'temp') {
-        //toBeMoved = _scene.children.find(cube => cube.position.x === snapshot.val().x && cube.position.y === snapshot.val().y && cube.position.z === snapshot.val().z)
-        // originalPosition = toBeMoved.position;
+    cubesRef.on("child_added", async function(snapshot) {
+      if (snapshot.key.indexOf('temp') === 0) {
+        
+        if (snapshot.key.slice(4) === currentUser.displayName) {
+          await deleteBlockFromDb(originalPosition, worldId)
+          cubesToBeMoved[snapshot.key.slice(4)] = addBlock(originalPosition, snapshot.val().color, _scene, _objects);
+          originalPosition = undefined;
+        } else {
+          cubesToBeMoved[snapshot.key.slice(4)] = addBlock((new THREE.Vector3(snapshot.val().x, snapshot.val().y, snapshot.val().z)), snapshot.val().color, _scene, _objects)
+        }
       } else {
-        console.log(currentUser);
         let newCube = snapshot.val();
         addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, _scene, _objects)
       }
+      console.log(currentUser.displayName);
     });
     cubesRef.on("child_removed", function(snapshot) {
-      if (snapshot.key !== 'temp') {
+      if (snapshot.key.indexOf('temp') !== 0) {
         let deletedCube = snapshot.val();
         let selectedCube = _scene.children.find(cube => cube.position.x === deletedCube.x && cube.position.y === deletedCube.y && cube.position.z === deletedCube.z);
+        console.log(selectedCube, 'is selected cube for', currentUser.displayName)
         deleteBlock(selectedCube, _scene, _objects)
+      } else {
+        if (snapshot.key.slice(4) === currentUser.displayName) {
+          addBlockToDb((new THREE.Vector3(snapshot.val().x, snapshot.val().y, snapshot.val().z)), snapshot.val().color, worldId)
+        } else {
+          deleteBlock(cubesToBeMoved[snapshot.key.slice(4)], _scene, _objects)
+        }
+      }//def correct
+    });
+    cubesRef.on("child_changed", function(snapshot) {
+      if (snapshot.key.indexOf('temp') === 0) {
+        let movedCube = snapshot.val();
+        // if (originalPosition) {
+        //   deleteBlockFromDb(originalPosition, worldId);
+        //   originalPosition = undefined;
+        
+        let newPosition = new THREE.Vector3(movedCube.x, movedCube.y, movedCube.z);
+          
+        cubesToBeMoved[snapshot.key.slice(4)].position.copy(newPosition);
+        // }
+        // let toBeMoved = _scene.children.find(cube => cube.position.x === snapshot.val().x && cube.position.y === snapshot.val().y && cube.position.z === snapshot.val().z)
+        // cubesToBeMoved[snapshot.key.slice(4)] = toBeMoved
+        // console.log(cubesToBeMoved, snapshot.val(), toBeMoved)
       }
     });
-    // cubesRef.on("child_changed", function(snapshot) {
-    //   if (snapshot.key === 'temp' && !_commandIsDown) {
-    //     let movedCube = snapshot.val();
-    //     if (toBeMoved) {
-    //       if (originalPosition) {
-    //         deleteBlockFromDb(originalPosition, worldId);
-    //         originalPosition = undefined;
-    //       }
-    //       let newPosition = new THREE.Vector3(movedCube.x, movedCube.y, movedCube.z);
-    //       toBeMoved.position.copy(newPosition);
-    //     }
-    //   }
-    // });
   }
   
   function onColorChange(event) {
@@ -166,7 +181,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       )
       if (!isMovePositionOccupied) {
         const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
-        cubesRef.child('temp').set({
+        cubesRef.child('temp'+currentUser.displayName).set({
           x: mouseVector.x,
           y: mouseVector.y,
           z: mouseVector.z,
@@ -233,7 +248,10 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
         }
       }
     } else {
-      addTempBlockToDb(_selected.position, _selected.material.color.getHex(), worldId)
+      if (_selected) {
+        originalPosition = _selected.position
+        
+      }
     }
   }
 
@@ -243,17 +261,18 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       window.removeEventListener('keydown', onDocumentKeyDown, false)
       _selected = null
     }
-    if (toBeMoved) {
-      const tempRef = db.ref(`/worlds/${worldId}/cubes/temp`);
-      // console.log(tempRef, tempRef.val());
-      const tempSnap = await tempRef.once('value');
-      const tempVal = tempSnap.val();
-     
-      const tempPosition = new THREE.Vector3(tempVal.x, tempVal.y, tempVal.z)
-      addBlockToDb(tempPosition, tempVal.color, worldId)
-      _scene.remove(toBeMoved);
-      toBeMoved = null;
-      tempRef.remove();
+    const tempRef = db.ref(`/worlds/${worldId}/cubes/temp${currentUser.displayName}`);
+    // console.log(tempRef, tempRef.val());
+    // const tempSnap = await tempRef.once('value');
+    // const tempVal = tempSnap.val();
+    tempRef.remove();
+    if (!_commandIsDown && !_shiftIsDown) {
+      // const tempPosition = new THREE.Vector3(tempVal.x, tempVal.y, tempVal.z)
+      // addBlockToDb(tempPosition, tempVal.color, worldId)
+      
+      _scene.remove(cubesToBeMoved[currentUser.displayName]);
+      delete cubesToBeMoved[currentUser.displayName];
+    
     }
 
     _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
