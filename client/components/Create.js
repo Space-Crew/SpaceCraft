@@ -3,14 +3,20 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import addBlock from '../3d/controls/addBlock'
-import {generateWater} from '../3d/meshes/water'
-import {makeUnitCube} from '../3d/meshes'
+import {makeWaterCube} from '../3d/meshes'
+import FlowGraph from '../3d/meshes/WaterGraph'
+import {deleteBlock} from '../3d/controls/deleteBlock'
 
 /*********************************
  * Construct the Three World
  ********************************/
 
-function generateWorld(cubes) {
+let isPaused = false
+let onSpaceBar
+const blocker = document.getElementById('blocker')
+const instructions = document.getElementById('instructions')
+
+function generateWorld(cubes, worldId, water, rawWorldCubes) {
   //container for all 3d objects that will be affected by event
   let objects = []
   //renders the scene, camera, and cubes using webGL
@@ -38,7 +44,8 @@ function generateWorld(cubes) {
     objects,
     camera,
     renderer.domElement,
-    scene
+    scene,
+    worldId
   )
   scene.add(dragControl.getObject())
 
@@ -48,47 +55,38 @@ function generateWorld(cubes) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  addCubesToScene(cubes, scene, objects)
-  // const clock = new THREE.Clock() //needed for controls
-
-  const someWaterPosition = new THREE.Vector3(0, 1, -4)
-  const waterCube = makeUnitCube(someWaterPosition, 0x0000ff, 1)
-  waterCube.type = 'WATER'
-  cubes.push(waterCube)
-  const waterSources = cubes.filter(cube => {
-    return cube.type === 'WATER'
-    // return false
-  })
-  // let waterCubes = []
-  // function updateWaterCubes() {
-  //   waterCubes.forEach(destroy)
-  //   waterCubes = generateWater(waterSources, cubes)
-  //   waterCubes.forEach(cube => {
-  //     scene.add(cube)
-  //   })
-  // }
-  // function destroy(cube) {
-  //   scene.remove(cube)
-  //   // for (let prop in cube) {
-  //   //   if (cube.hasOwnProperty(prop)) {
-  //   //     delete cube[prop]
-  //   //   }
-  //   // }
-  //   cube = undefined
-  // }
+  scene.addWaterSources = function(waterSources, worldCubes) {
+    const waterGraph = new FlowGraph(waterSources, worldCubes)
+    const waterCubes = Object.values(waterGraph.flowCubes)
+    waterCubes.forEach(waterCube => {
+      this.add(makeWaterCube(waterCube.position))
+    })
+  }
+  scene.addWaterSources(water, rawWorldCubes)
 
   function render() {
-    //   controls.update(clock.getDelta()) // needed for First Person Controls to work
-    // updateWaterCubes()
     renderer.render(scene, camera)
   }
   function animate() {
+    if (isPaused) return
     requestAnimationFrame(animate)
-
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
+
   animate()
+
+  // pause the world //
+
+  onSpaceBar = event => {
+    if (event.which === 32) {
+      isPaused = !isPaused
+      showInstructions(isPaused)
+      animate()
+    }
+  }
+  window.addEventListener('keydown', onSpaceBar, false)
+
   return dragControl.dispose
 }
 
@@ -97,11 +95,11 @@ function generateWorld(cubes) {
  ********************************/
 
 function addCubesToScene(cubes, scene, objects) {
-  if (cubes.length !== 0) {
+  if (cubes.length > 0) {
     cubes.forEach(cube => {
       addBlock(
         new THREE.Vector3(cube.x, cube.y, cube.z),
-        0xb9c4c0,
+        cube.color,
         scene,
         objects
       )
@@ -120,27 +118,51 @@ function generateDefaultPlane(scene, objects) {
   }
 }
 
+const showInstructions = isPaused => {
+  blocker.style.visibility = 'visible'
+  if (isPaused) {
+    blocker.style.display = 'block'
+    blocker.style.zIndex = '99'
+    instructions.style.display = ''
+  } else {
+    blocker.style.display = 'none'
+    blocker.style.zIndex = ''
+    instructions.style.display = 'none'
+  }
+}
+
 /*********************************
  * Render the world
  ********************************/
 
-class Plane extends Component {
+class Create extends Component {
   async componentDidMount() {
-    // try {
-    let cubes = []
-    if (this.props.match && this.props.match.params.id) {
-      const uri = '/worlds/' + this.props.match.params.id
-      const worldRef = db.ref(uri)
-      const world = (await worldRef.once('value')).val()
-      cubes = Object.values(world.cubes)
-      console.log(cubes)
+    try {
+      let cubes = []
+      let worldId
+      let water
+      let rawWorldCubes
+      if (this.props.match && this.props.match.params.id) {
+        const uri = '/worlds/' + this.props.match.params.id
+        const worldRef = db.ref(uri)
+        const world = (await worldRef.once('value')).val()
+        if (!world.cubes) {
+          cubes = []
+        } else {
+          cubes = Object.values(world.cubes)
+        }
+        worldId = world.id
+        water = world.water
+        rawWorldCubes = world.cubes
+        console.log(`plane mounted:`, cubes)
+      }
+      this.unsubscribe = generateWorld(cubes, worldId, water, rawWorldCubes)
+    } catch (error) {
+      console.log(error)
     }
-    this.unsubscribe = generateWorld(cubes)
-    // } catch (error) {
-    //   console.log(error)
-    // }
   }
   componentWillUnmount() {
+    window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {
@@ -148,5 +170,4 @@ class Plane extends Component {
   }
 }
 
-//water flow by doing BFS from source
-export default Plane
+export default Create

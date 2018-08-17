@@ -21,10 +21,10 @@ export default class WorldList extends Component {
     }
   }
   handleClick(id) {
-    this.props.history.push('/plane/' + id)
+    this.props.history.push('/create/' + id)
   }
   render() {
-    const linkPath = '/plane/'
+    const linkPath = '/create/'
     return <ListPresentation items={this.state.worlds} linkPath={linkPath} />
   }
 }
