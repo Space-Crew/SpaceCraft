@@ -216,19 +216,63 @@ describe('FlowCube', () => {
     })
   })
   describe('_hasVolumeToFlow', () => {
-    const source = new FlowCube(0, -64, 0, true)
-    const flowMap = {'0,-64,0': source}
+    it('works horizontally', () => {
+      const source = new FlowCube(0, -64, 0, true)
+      const flowMap = {'0,-64,0': source}
 
-    source
-      ._createChild({x: 0, y: -64, z: -1}, flowMap)
-      ._createChild({x: 0, y: -64, z: -2}, flowMap)
-      ._createChild({x: 0, y: -64, z: -3}, flowMap)
-      ._createChild({x: 0, y: -64, z: -4}, flowMap)
-
-    it('works', () => {
+      source
+        ._createChild({x: 0, y: -64, z: -1}, flowMap)
+        ._createChild({x: 0, y: -64, z: -2}, flowMap)
+        ._createChild({x: 0, y: -64, z: -3}, flowMap)
+        ._createChild({x: 0, y: -64, z: -4}, flowMap)
       expect(flowMap['0,-64,-3'].volume).to.equal(1)
-      expect(flowMap['0,-64,-3']._hasVolumeToFlow()).to.equal(false)
+      expect(
+        flowMap['0,-64,-3']._hasVolumeToFlow({x: 0, y: -64, z: -4})
+      ).to.equal(false)
       expect(flowMap).to.not.have.property('0,-64,-4')
+    })
+    it('works vertically', () => {
+      const source = new FlowCube(0, -63, 0, true)
+      const flowMap = {'0,-63,0': source}
+
+      source
+        ._createChild({x: 0, y: -63, z: -1}, flowMap)
+        ._createChild({x: 0, y: -63, z: -2}, flowMap)
+        ._createChild({x: 0, y: -63, z: -3}, flowMap)
+      expect(flowMap['0,-63,-3'].volume).to.equal(1)
+      expect(
+        flowMap['0,-63,-3']._hasVolumeToFlow({x: 0, y: -64, z: -3})
+      ).to.equal(true)
+    })
+  })
+  describe('_parentWithBiggestVolume', () => {
+    let source1
+    let source2
+    let flowMap
+    beforeEach(() => {
+      source1 = new FlowCube(0, -64, 1, true)
+      source2 = new FlowCube(0, -63, -1, true)
+      flowMap = {'0,-64,1': source1, '0,-63,-1': source2}
+    })
+    it('returns null if no parents', () => {
+      expect(source1._parentWithBiggestVolume).to.equal(null)
+    })
+
+    it('works for one parent', () => {
+      source2._createChild({x: 0, y: -64, z: -1}, flowMap)
+      expect(flowMap['0,-64,-1']._parentWithBiggestVolume).to.equal(source2)
+    })
+    it('works for multiple parents', () => {
+      source1
+        ._createChild({x: 0, y: -64, z: 0}, flowMap)
+        ._createChild({x: 0, y: -64, z: -1}, flowMap)
+      source2._createChild({x: 0, y: -64, z: -1}, flowMap)
+      expect(flowMap['0,-64,-1']._parentWithBiggestVolume).to.equal(source2)
+    })
+    afterEach(() => {
+      source1 = undefined
+      source2 = undefined
+      flowMap = undefined
     })
   })
 })

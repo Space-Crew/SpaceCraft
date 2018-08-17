@@ -31,5 +31,29 @@ export default class FlowGraph {
       newSource.spawnChildren(this.worldCubes, this.flowCubes)
     }
   }
-  createObstacle(position) {}
+  createObstacleAt(position) {
+    this.worldCubes[toKey(position)] = true //data not that important I think
+    const cubeAtPosition = this.flowCubes(toKey(position))
+    if (cubeAtPosition) {
+      const parents = cubeAtPosition.parents
+      this.destroy(cubeAtPosition)
+      this.triggerParents(parents)
+    }
+  }
+  triggerParents(parents) {
+    Object.values(parents).forEach(parent =>
+      parent.spawnChildren(this.worldCubes, this.flowCubes)
+    )
+  }
+  destroy(cube) {
+    const destroyTheseBreadthFirst = []
+    while (cube) {
+      Object.values(cube.children).forEach(child => cube._unlinkChild(child))
+      destroyTheseBreadthFirst.push(...Object.values(cube.children))
+      Object.values(cube.parents).forEach(parent => parent._unlinkChild(cube))
+      this.removeFromGraph(cube)
+      cube = destroyTheseBreadthFirst.shift()
+    }
+  }
+  removeFromGraph(cube) {}
 }
