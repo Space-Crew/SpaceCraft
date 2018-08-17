@@ -1,26 +1,7 @@
 import * as THREE from 'three'
 
-export const makeAvatar = (position, scene) => {
-  // build character //
-  const head = makeHead()
-  const body = makeBody()
-  const [leftArm, rightArm] = makeArms()
-  const legs = makeLegs()
-
-  // bring it to LIFE //
-  const group = new THREE.Group()
-  group.add(body)
-  group.add(head)
-  group.add(leftArm)
-  group.add(rightArm)
-  group.add(legs)
-  const {x, y, z} = position
-  group.position.set(x, y, z)
-  scene.add(group)
-}
-
 let x, y, z, headHeight, headWidth, bodyHeight, armWidth, bodyY
-const makeHead = () => {
+export const makeHead = () => {
   // body parts are positioned relative to head //
   const head = new THREE.Mesh(
     new THREE.BoxGeometry(0.5, 0.5, 0.5),
@@ -35,7 +16,7 @@ const makeHead = () => {
   return head
 }
 
-const makeBody = () => {
+export const makeBody = () => {
   const body = new THREE.Mesh(
     new THREE.BoxGeometry(0.4, 0.9, 0.4),
     new THREE.MeshBasicMaterial({color: 0x00ff00})
@@ -48,7 +29,7 @@ const makeBody = () => {
   return body
 }
 
-const makeArms = () => {
+export const makeArms = () => {
   const leftArm = new THREE.Mesh(
     new THREE.BoxGeometry(0.2, 0.7, 0.2),
     new THREE.MeshBasicMaterial({color: 'purple'})
@@ -70,7 +51,7 @@ const makeArms = () => {
   return [leftArm, rightArm]
 }
 
-const makeLegs = () => {
+export const makeLegs = () => {
   const legs = new THREE.Mesh(
     new THREE.BoxGeometry(0.3, 0.75, 0.3),
     new THREE.MeshBasicMaterial({color: 'purple'})

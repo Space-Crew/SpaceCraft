@@ -80,7 +80,6 @@ group.add(head)
 group.add(leftArm)
 group.add(rightArm)
 group.add(legs)
-console.log(group)
 scene.add(group)
 
 // rendererrrrrr //

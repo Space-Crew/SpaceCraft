@@ -45,6 +45,7 @@ function generateWorld(cubes, worldId) {
     scene,
     worldId
   )
+
   scene.add(dragControl.getObject())
 
   const light = new THREE.AmbientLight(0xffffff, 0.8)

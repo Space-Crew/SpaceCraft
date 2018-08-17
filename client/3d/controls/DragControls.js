@@ -6,6 +6,7 @@ import selectBlock from './selectBlock'
 import {db} from '../../firebase'
 import {checkPositionOccupied} from './checkPositionOccupied'
 import {updateAvatarInDb} from './updateAvatarPosition'
+import {addAvatar} from './addAvatar'
 
 function darken(color, percent) {
   let t = percent < 0 ? 0 : 255,
@@ -94,8 +95,12 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   }
   // event listener for avatar position change in db //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
-  avatarsRef.on('position_changed', snapshot => {
+  avatarsRef.on('value', snapshot => {
     let newPosition = snapshot.val()
+    if (newPosition === null) {
+      const {x, y, z} = yawObject.position
+      addAvatar(new THREE.Vector3(x, y, z), _scene)
+    }
     addAvatar(
       new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
       _scene
