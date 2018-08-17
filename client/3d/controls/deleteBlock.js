@@ -12,14 +12,11 @@ export function deleteBlock(selected, scene, objects) {
   return objects
 }
 
-export function deleteBlockFromDb(selected, worldId) {
+export function deleteBlockFromDb(position, worldId) {
   try {
-    if (selected) {
-      const deleteThis = selected.position.clone()
-      const cubeRef = db.ref(`/worlds/${worldId}/cubes/${toKey(deleteThis)}`)
-      if (cubeRef !== null) {
-        cubeRef.remove()
-      }
+    const cubeRef = db.ref(`/worlds/${worldId}/cubes/${toKey(position)}`)
+    if (cubeRef !== null) {
+      cubeRef.remove()
     }
   } catch (error) {
     console.error(error)
