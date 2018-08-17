@@ -55,5 +55,10 @@ export default class FlowGraph {
       cube = destroyTheseBreadthFirst.shift()
     }
   }
-  removeFromGraph(cube) {}
+  removeFromGraph(cube) {
+    if (cube.isSource) {
+      delete this.sources[toKey(cube.position)]
+    }
+    delete this.flowCubes[toKey(cube.position)]
+  }
 }
