@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {doCreateUserWithEmailAndPassword} from '../firebase/auth'
-import {db} from '../firebase'
+import {db, currentUser} from '../firebase'
 import {Button, Form, Grid, Header, Message, Segment} from 'semantic-ui-react'
 
 /**
@@ -46,7 +46,8 @@ export default class Signup extends Component {
         this.state.imageUrl
       )
       this.setState({error: '', signupSuccess: true})
-      setTimeout(() => this.props.history.push('/create'), 1500)
+      currentUser.updateProfile({displayName: this.state.username})
+      setTimeout(() => this.props.history.push('/worlds'), 1500)
     } catch (err) {
       this.setState({error: 'There was a problem creating an account'})
       console.log('there is an error', err)

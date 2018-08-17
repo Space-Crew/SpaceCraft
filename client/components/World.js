@@ -1,9 +1,8 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
-import {db} from '../firebase'
+import {db, currentUser} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
-import {deleteBlock} from '../3d/controls/deleteBlock'
 
 /*********************************
  * Construct the Three World
@@ -53,11 +52,7 @@ function generateWorld(cubes, worldId) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  // addCubesToScene(cubes, scene, objects)
-  // const clock = new THREE.Clock() //needed for controls
-
   function render() {
-    //   controls.update(clock.getDelta()) // needed for First Person Controls to work
     renderer.render(scene, camera)
   }
   function animate() {
@@ -127,8 +122,9 @@ const showInstructions = isPaused => {
  * Render the world
  ********************************/
 
-class Create extends Component {
+class World extends Component {
   async componentDidMount() {
+    console.log(currentUser)
     try {
       let cubes = []
       let worldId
@@ -142,7 +138,6 @@ class Create extends Component {
           cubes = Object.values(world.cubes)
         }
         worldId = world.id
-        console.log(`plane mounted:`, cubes)
       }
       this.unsubscribe = generateWorld(cubes, worldId)
     } catch (error) {
@@ -154,7 +149,6 @@ class Create extends Component {
     this.unsubscribe()
   }
   render() {
-    console.log('render')
     return (
       <div id="plane">
         <input id="color-palette" type="color" defaultValue="#b9c4c0" />
@@ -164,4 +158,4 @@ class Create extends Component {
 }
 
 //water flow by doing BFS from source
-export default Create
+export default World
