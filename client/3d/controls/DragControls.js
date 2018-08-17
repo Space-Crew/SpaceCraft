@@ -5,7 +5,6 @@ import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 import {db, auth} from '../../firebase'
 import {checkPositionOccupied} from './checkPositionOccupied'
-import {toKey} from '..'
 
 function darken(color, percent) {
   let t = percent < 0 ? 0 : 255,
@@ -24,15 +23,8 @@ function darken(color, percent) {
 THREE.DragControls = function(_camera, _domElement, _scene) {
   let _objects = _scene.objects
   let worldId = _scene.worldId
-  let pitchObject = new THREE.Object3D()
-  pitchObject.add(_camera)
-  pitchObject.rotation.x = Math.PI / 2
 
-  let yawObject = new THREE.Object3D()
-  yawObject.position.y = 0
-  yawObject.add(pitchObject)
-
-  let PI_2 = Math.PI / 2
+  const {yawObject, pitchObject} = _camera.controls
   let _shiftIsDown = false
   let _commandIsDown = false
   let _raycaster = new THREE.Raycaster()
@@ -54,7 +46,6 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
 
   let scope = this
   let toBeMoved
-  let originalPosition
 
   function activate() {
     _domElement.addEventListener('mousemove', onDocumentMouseMove, false)
@@ -152,26 +143,12 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
     deactivate()
   }
 
-  async function onDocumentMouseMove(event) {
+  function onDocumentMouseMove(event) {
     event.preventDefault()
-    console.log(`test`, event.target === _domElement)
     const rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
     _mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
     _raycaster.setFromCamera(_mouse, _camera)
-
-    const movementX =
-      event.movementX || event.mozMovementX || event.webkitMovementX || 0
-    const movementY =
-      event.movementY || event.mozMovementY || event.webkitMovementY || 0
-
-    yawObject.rotation.y -= movementX * 0.002
-    pitchObject.rotation.x -= movementY * 0.004
-
-    pitchObject.rotation.x = Math.max(
-      -PI_2,
-      Math.min(PI_2, pitchObject.rotation.x)
-    )
 
     if (_selected && scope.enabled) {
       mouseVector.copy(yawObject.position)

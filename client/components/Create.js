@@ -4,6 +4,7 @@ import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
 import {deleteBlock} from '../3d/controls/deleteBlock'
+import {attatchCameraControls} from '../3d/controls/cameraControls'
 
 /*********************************
  * Construct the Three World
@@ -30,9 +31,7 @@ function generateWorld(cubes, worldId) {
     0.1,
     1000
   )
-  camera.position.y = 0
-  camera.position.z = 0
-
+  camera.controls = attatchCameraControls(camera, renderer.domElement)
   //create a new scene
   const scene = new THREE.Scene()
 
@@ -43,6 +42,7 @@ function generateWorld(cubes, worldId) {
     this.dragControl = new DragControls(camera, renderer.domElement, this)
     this.add(this.dragControl.getObject())
   }
+  scene.addDragControls()
 
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
@@ -77,7 +77,16 @@ function generateWorld(cubes, worldId) {
   }
   window.addEventListener('keydown', onSpaceBar, false)
 
-  return scene.dragControl.dispose
+  console.log(`test`)
+  console.log(scene.dragControl)
+  console.log(camera.controls)
+  const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
+
+  const disposeWorld = () => {
+    tearDownFunctions.forEach(func => func())
+  }
+
+  return disposeWorld
 }
 
 /*********************************
