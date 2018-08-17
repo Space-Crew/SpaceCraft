@@ -5,10 +5,20 @@ import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 import {db} from '../../firebase'
 import {checkPositionOccupied} from './checkPositionOccupied'
+import makePreviewGrid from '../meshes/makePreviewGrid'
 
-function darken(color, percent) {   
-  let t=percent<0?0:255,p=percent<0?percent*-1:percent,R=color>>16,G=color>>8&0x00FF,B=color&0x0000FF;
-  return 0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B);
+function darken(color, percent) {
+  let t = percent < 0 ? 0 : 255,
+    p = percent < 0 ? percent * -1 : percent,
+    R = color >> 16,
+    G = (color >> 8) & 0x00ff,
+    B = color & 0x0000ff
+  return (
+    0x1000000 +
+    (Math.round((t - R) * p) + R) * 0x10000 +
+    (Math.round((t - G) * p) + G) * 0x100 +
+    (Math.round((t - B) * p) + B)
+  )
 }
 
 THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
@@ -42,8 +52,11 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   let previewBox = makeUnitCube(position, 0xb9c4c0, 0.3)
   previewBox.unselectable = true
   previewBox.visible = false
+  const previewGrid = makePreviewGrid()
+  previewBox.add(previewGrid.grid)
+  previewBox.togglePreviewGridVisibility = previewGrid.boundToggleVisibility
   _scene.add(previewBox)
-  let chosenColor;
+  let chosenColor
 
   var _selected = null,
     _hovered = null
@@ -55,26 +68,38 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _domElement.addEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.addEventListener('mouseup', onDocumentMouseCancel, false) //able to release
     _domElement.addEventListener('mouseleave', onDocumentMouseCancel, false)
-    document.getElementById('color-palette').addEventListener('change', onColorChange, false)
+    document
+      .getElementById('color-palette')
+      .addEventListener('change', onColorChange, false)
 
     window.addEventListener('keydown', onDocumentOptionDown, false)
     window.addEventListener('keyup', onDocumentOptionUp, false)
-    const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
-    cubesRef.on("child_added", function(snapshot) {
-      let newCube = snapshot.val();
-      addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, _scene, _objects)
-    });
-    cubesRef.on("child_removed", function(snapshot) {
-      let deletedCube = snapshot.val();
-      let selectedCube = _scene.children.find(cube => cube.position.x === deletedCube.x && cube.position.y === deletedCube.y && cube.position.z === deletedCube.z);
+    const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
+    cubesRef.on('child_added', function(snapshot) {
+      let newCube = snapshot.val()
+      addBlock(
+        new THREE.Vector3(newCube.x, newCube.y, newCube.z),
+        newCube.color,
+        _scene,
+        _objects
+      )
+    })
+    cubesRef.on('child_removed', function(snapshot) {
+      let deletedCube = snapshot.val()
+      let selectedCube = _scene.children.find(
+        cube =>
+          cube.position.x === deletedCube.x &&
+          cube.position.y === deletedCube.y &&
+          cube.position.z === deletedCube.z
+      )
       deleteBlock(selectedCube, _scene, _objects)
-    });
+    })
   }
-  
+
   function onColorChange(event) {
-    chosenColor = parseInt(event.target.value.replace('#',''), 16);
-    previewBox.material.color.setHex(chosenColor);
-    previewBox.children[0].material.color.setHex(darken(chosenColor, -0.05));
+    chosenColor = parseInt(event.target.value.replace('#', ''), 16)
+    previewBox.material.color.setHex(chosenColor)
+    previewBox.children[0].material.color.setHex(darken(chosenColor, -0.05))
   }
 
   function onDocumentOptionDown(event) {
@@ -89,7 +114,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     }
   }
   function onDocumentOptionUp(event) {
-    // onDocumentKeyDown(event)
     if (event.which === 16) {
       _shiftIsDown = false
       previewBox.visible = false
@@ -105,7 +129,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _domElement.removeEventListener('mouseleave', onDocumentMouseCancel, false)
     window.removeEventListener('keydown', onDocumentOptionDown, false)
     window.removeEventListener('keyup', onDocumentOptionUp, false)
-    document.getElementById('color-palette').removeEventListener('change', onColorChange, false)
+    document
+      .getElementById('color-palette')
+      .removeEventListener('change', onColorChange, false)
   }
 
   function dispose() {
@@ -167,6 +193,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
         break
       case 81: //E
         yawObject.translateY(-1)
+        break
+      case 71: //G
+        previewBox.togglePreviewGridVisibility()
         break
       default:
         break

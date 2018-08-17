@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
-import { deleteBlock } from '../3d/controls/deleteBlock';
+import {deleteBlock} from '../3d/controls/deleteBlock'
 
 /*********************************
  * Construct the Three World
@@ -66,7 +66,6 @@ function generateWorld(cubes, worldId) {
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
-
   animate()
 
   // pause the world //
@@ -138,7 +137,7 @@ class Create extends Component {
         const worldRef = db.ref(uri)
         const world = (await worldRef.once('value')).val()
         if (!world.cubes) {
-          cubes = [];
+          cubes = []
         } else {
           cubes = Object.values(world.cubes)
         }
@@ -155,7 +154,12 @@ class Create extends Component {
     this.unsubscribe()
   }
   render() {
-    return <div id="plane" />
+    console.log('render')
+    return (
+      <div id="plane">
+        <input id="color-palette" type="color" defaultValue="#b9c4c0" />
+      </div>
+    )
   }
 }
 
