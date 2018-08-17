@@ -2,9 +2,9 @@ import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
-import addBlock from '../3d/controls/addBlock'
 import {makeWaterCube} from '../3d/meshes'
 import FlowGraph from '../3d/meshes/WaterGraph'
+import {addBlock} from '../3d/controls/addBlock'
 import {deleteBlock} from '../3d/controls/deleteBlock'
 
 /*********************************
@@ -73,7 +73,6 @@ function generateWorld(cubes, worldId, water, rawWorldCubes) {
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
-
   animate()
 
   // pause the world //
@@ -166,7 +165,12 @@ class Create extends Component {
     this.unsubscribe()
   }
   render() {
-    return <div id="plane" />
+    console.log('render')
+    return (
+      <div id="plane">
+        <input id="color-palette" type="color" defaultValue="#b9c4c0" />
+      </div>
+    )
   }
 }
 
