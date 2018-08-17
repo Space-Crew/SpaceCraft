@@ -112,7 +112,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     cubesRef.on('child_removed', function(snapshot) {
       if (snapshot.key.indexOf('temp') !== 0) {
         let deletedCube = snapshot.val()
-        let selectedCube = _scene.children.find(
+        let selectedCube = _objects.find(
           cube =>
             cube.position.x === deletedCube.x &&
             cube.position.y === deletedCube.y &&
