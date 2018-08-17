@@ -10,18 +10,26 @@ export class FlowCube {
   /*************
    * Public methods
    *************/
-  spawnChildren(cubes, flowMap) {
-    const childrenThatNeedToFlow = []
+  spawnChildren(cubes, flowMap, queueBreadthFirst = []) {
+    queueBreadthFirst.push(...this._findSpacesToFlowInto(cubes, flowMap))
+    //shift can be optimized
+    const newChild = queueBreadthFirst.shift()
+    if (newChild) {
+      newChild.spawnChildren(cubes, flowMap, queueBreadthFirst)
+    }
+  }
+  _findSpacesToFlowInto(cubes, flowMap) {
+    const childrenThatNeedToSpawnMoreChildren = []
     const shouldFlowDown = !cubes[toKey(this._down)] && this.position.y > -64
     if (shouldFlowDown) {
       const child = this._createChild(this._down, flowMap)
-      if (child) childrenThatNeedToFlow.push(child)
+      if (child) childrenThatNeedToSpawnMoreChildren.push(child)
     } else {
       this._flowHorizontally(cubes, flowMap).forEach(child => {
-        if (child) childrenThatNeedToFlow.push(child)
+        if (child) childrenThatNeedToSpawnMoreChildren.push(child)
       })
     }
-    childrenThatNeedToFlow.forEach(child => child.spawnChildren(cubes, flowMap))
+    return childrenThatNeedToSpawnMoreChildren
   }
   removeChildren(flowMap) {
     Object.values(this.children).forEach(child => {
@@ -77,9 +85,6 @@ export class FlowCube {
     this.storedVolume = this._loseVolume(this._maxVolumeOfParents)
     return this.storedVolume
   }
-  set volume(val) {
-    return val
-  }
   /*************
    * Private methods
    *************/
@@ -90,16 +95,23 @@ export class FlowCube {
     this.parents[toKey(cube.position)] = cube
   }
   _createChild(childPosition, flowMap) {
-    if (childPosition.y < -64) {
-      throw new Error('do not create a child below -64')
-    }
+    //returns the child if the child needs to spawn more children
     if (this._hasVolumeToFlow()) {
       const cubeAtPosition = flowMap[toKey(childPosition)]
       if (cubeAtPosition) {
-        this._linkChild(cubeAtPosition)
+        return this._combineWith(cubeAtPosition)
       } else {
         return this._flowInto(childPosition, flowMap)
       }
+    }
+    return null
+  }
+  _combineWith(cube) {
+    //returns the child if the child needs to spawn more children
+    const originalCubeVolume = cube.volume
+    this._linkChild(cube)
+    if (cube.volume > originalCubeVolume) {
+      return cube
     }
     return null
   }

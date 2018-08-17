@@ -37,12 +37,14 @@ describe('FlowCube', () => {
     })
     describe('modifies parent/children during collision and the source', () => {
       let source
+      let otherSource
       let flowMap
       let otherCube
       beforeEach(() => {
-        source = new FlowCube(0, 0, 0, true, 4)
-        otherCube = new FlowCube(0, 1, 0, false, 4)
+        source = new FlowCube(0, 0, 0, true)
+        otherSource = new FlowCube(1, 1, 0, true)
         flowMap = {'0,0,0': source, '0,1,0': otherCube}
+        otherCube = otherSource._createChild({x: 0, y: 1, z: 0}, flowMap)
       })
       it('will become a parent of a cube if that cube is not a source', () => {
         source._createChild({x: 0, y: 1, z: 0}, flowMap)
@@ -54,21 +56,23 @@ describe('FlowCube', () => {
       })
       it('will become an additional parent of a cube if that cube has another parent', () => {
         source._createChild({x: 0, y: 1, z: 0}, flowMap)
-        const otherSource = new FlowCube(0, 1, 1, true, 4)
-        flowMap['0,1,1'] = otherSource
-        otherSource._createChild({x: 0, y: 1, z: 0}, flowMap)
         expect(otherCube.parents).to.have.property('0,0,0', source)
-        expect(otherCube.parents).to.have.property('0,1,1', otherSource)
+        expect(otherCube.parents).to.have.property('1,1,0', otherSource)
       })
       it('will not become a parent of that cube if that cube is a source', () => {
-        otherCube.isSource = true
-        source._createChild({x: 0, y: 1, z: 0}, flowMap)
-        expect(otherCube.parents).to.deep.equal({})
+        source._createChild({x: 1, y: 1, z: 0}, flowMap)
+        expect(otherSource.parents).to.deep.equal({})
       })
       it('will not add that cube as a child', () => {
         otherCube.isSource = true
         source._createChild({x: 0, y: 1, z: 0}, flowMap)
         expect(source.children).to.not.have.property('0,1,0')
+      })
+      afterEach(() => {
+        source = undefined
+        otherSource = undefined
+        flowMap = undefined
+        otherCube = undefined
       })
     })
   })
@@ -76,7 +80,7 @@ describe('FlowCube', () => {
     let source
     let clone
     before(() => {
-      source = new FlowCube(0, -62, 0, true, 4)
+      source = new FlowCube(0, -62, 0, true)
       clone = source._clonePosition()
     })
     it('creates a new object with same position', () => {
