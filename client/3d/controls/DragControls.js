@@ -3,7 +3,7 @@ import {makeUnitCube} from '../meshes'
 import {addBlockToDb, addBlock, addTempBlockToDb} from './addBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
-import {db} from '../../firebase'
+import {db, auth} from '../../firebase'
 import {checkPositionOccupied} from './checkPositionOccupied'
 import { toKey } from '..';
 
@@ -65,32 +65,33 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     const cubesRef = db.ref(`/worlds/${worldId}/cubes/`);
     cubesRef.on("child_added", function(snapshot) {
       if (snapshot.key === 'temp') {
-        toBeMoved = _scene.children.find(cube => cube.position.x === snapshot.val().x && cube.position.y === snapshot.val().y && cube.position.z === snapshot.val().z)
-        originalPosition = toBeMoved.position;
-        console.log(originalPosition)
+        //toBeMoved = _scene.children.find(cube => cube.position.x === snapshot.val().x && cube.position.y === snapshot.val().y && cube.position.z === snapshot.val().z)
+        // originalPosition = toBeMoved.position;
       } else {
         let newCube = snapshot.val();
         addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, _scene, _objects)
       }
     });
     cubesRef.on("child_removed", function(snapshot) {
-      if (snapshot.key !== 'temp' && snapshot.key !== toKey(originalPosition)) {
+      if (snapshot.key !== 'temp') {
         let deletedCube = snapshot.val();
         let selectedCube = _scene.children.find(cube => cube.position.x === deletedCube.x && cube.position.y === deletedCube.y && cube.position.z === deletedCube.z);
         deleteBlock(selectedCube, _scene, _objects)
       }
     });
-    cubesRef.on("child_changed", function(snapshot) {
-      let movedCube = snapshot.val();
-      if (toBeMoved) {
-        if (originalPosition) {
-          deleteBlockFromDb(originalPosition, worldId);
-          originalPosition = undefined;
-        }
-        let newPosition = new THREE.Vector3(movedCube.x, movedCube.y, movedCube.z);
-        toBeMoved.position.copy(newPosition);
-      }
-    });
+    // cubesRef.on("child_changed", function(snapshot) {
+    //   if (snapshot.key === 'temp' && !_commandIsDown) {
+    //     let movedCube = snapshot.val();
+    //     if (toBeMoved) {
+    //       if (originalPosition) {
+    //         deleteBlockFromDb(originalPosition, worldId);
+    //         originalPosition = undefined;
+    //       }
+    //       let newPosition = new THREE.Vector3(movedCube.x, movedCube.y, movedCube.z);
+    //       toBeMoved.position.copy(newPosition);
+    //     }
+    //   }
+    // });
   }
   
   function onColorChange(event) {
@@ -246,7 +247,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       // console.log(tempRef, tempRef.val());
       const tempSnap = await tempRef.once('value');
       const tempVal = tempSnap.val();
-      console.log(tempVal)
+     
       const tempPosition = new THREE.Vector3(tempVal.x, tempVal.y, tempVal.z)
       addBlockToDb(tempPosition, tempVal.color, worldId)
       _scene.remove(toBeMoved);
