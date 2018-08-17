@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
-import { deleteBlock } from '../3d/controls/deleteBlock';
+import {deleteBlock} from '../3d/controls/deleteBlock'
 
 /*********************************
  * Construct the Three World
@@ -15,8 +15,6 @@ const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
 function generateWorld(cubes, worldId) {
-  //container for all 3d objects that will be affected by event
-  let objects = []
   //renders the scene, camera, and cubes using webGL
   const renderer = new THREE.WebGLRenderer()
   const color = new THREE.Color(0x0f4260)
@@ -37,15 +35,14 @@ function generateWorld(cubes, worldId) {
 
   //create a new scene
   const scene = new THREE.Scene()
+
+  scene.objects = []
+  scene.worldId = worldId
   //allows for adding, deleting, and moving 3d objects with mouse drag
-  const dragControl = new DragControls(
-    objects,
-    camera,
-    renderer.domElement,
-    scene,
-    worldId
-  )
-  scene.add(dragControl.getObject())
+  scene.addDragControls = function() {
+    this.dragControl = new DragControls(camera, renderer.domElement, this)
+    this.add(this.dragControl.getObject())
+  }
 
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
@@ -80,7 +77,7 @@ function generateWorld(cubes, worldId) {
   }
   window.addEventListener('keydown', onSpaceBar, false)
 
-  return dragControl.dispose
+  return scene.dragControl.dispose
 }
 
 /*********************************
@@ -138,7 +135,7 @@ class Create extends Component {
         const worldRef = db.ref(uri)
         const world = (await worldRef.once('value')).val()
         if (!world.cubes) {
-          cubes = [];
+          cubes = []
         } else {
           cubes = Object.values(world.cubes)
         }
