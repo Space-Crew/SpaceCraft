@@ -7,6 +7,7 @@ export function addBlockToDb(position, color = 0xb9c4c0, worldId) {
     const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
     cubesRef.child(toKey(position)).once('value', snapshot => {
       if (snapshot.val() === null) {
+        console.log(snapshot)
         snapshot.ref.set({
           x: position.x,
           y: position.y,
