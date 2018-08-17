@@ -114,7 +114,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     }
   }
   function onDocumentOptionUp(event) {
-    // onDocumentKeyDown(event)
     if (event.which === 16) {
       _shiftIsDown = false
       previewBox.visible = false
