@@ -5,14 +5,30 @@
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width initial-scale=1.0'>
   <title>SpaceCraft</title>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.css"></link>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.css" />
   <link rel="stylesheet" href="/style.css" />
   <script defer src="/bundle.js"></script>
 </head>
 
 <body>
-  <div id="app"></div>
-  <input id="color-palette" type="color" value="#b9c4c0">
+  <div id="app">
+  </div>
+  <div id='blocker'>
+    <div id='instructions'>
+      <span class="instructionsSub">Moving Around</span>
+      <br />W, A, S, D, Q, E: Move
+      <br />MOUSE: Look around
+      <br/><br/>
+      <span>
+        <span class="instructionsSub">Adding/Removing/Dragging cubes</span>
+        <br />SHIFT + CLICK: Add cube
+        <br />CMD + CLICK: Remove cube
+        <br/> CLICK + MOVE MOUSE: Drag cube
+        <br/><br/>
+        <span id='instructionsHeader'>Tap SPACE BAR to play/pause</span>
+      </span>
+    </div>
+  </div>
 </body>
 
 </html>

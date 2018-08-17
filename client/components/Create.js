@@ -3,10 +3,16 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
+import {deleteBlock} from '../3d/controls/deleteBlock'
 
 /*********************************
  * Construct the Three World
  ********************************/
+
+let isPaused = false
+let onSpaceBar
+const blocker = document.getElementById('blocker')
+const instructions = document.getElementById('instructions')
 
 function generateWorld(cubes, worldId) {
   //container for all 3d objects that will be affected by event
@@ -49,23 +55,30 @@ function generateWorld(cubes, worldId) {
 
   // addCubesToScene(cubes, scene, objects)
   // const clock = new THREE.Clock() //needed for controls
+
   function render() {
     //   controls.update(clock.getDelta()) // needed for First Person Controls to work
     renderer.render(scene, camera)
   }
   function animate() {
+    if (isPaused) return
     requestAnimationFrame(animate)
-
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
-  const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
-  cubesRef.on("child_added", function(snapshot) {
-    var newCube = snapshot.val();
-    console.log("cube added!!" + newCube);
-    addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, scene, objects)
-  });
   animate()
+
+  // pause the world //
+
+  onSpaceBar = event => {
+    if (event.which === 32) {
+      isPaused = !isPaused
+      showInstructions(isPaused)
+      animate()
+    }
+  }
+  window.addEventListener('keydown', onSpaceBar, false)
+
   return dragControl.dispose
 }
 
@@ -97,6 +110,19 @@ function generateDefaultPlane(scene, objects) {
   }
 }
 
+const showInstructions = isPaused => {
+  blocker.style.visibility = 'visible'
+  if (isPaused) {
+    blocker.style.display = 'block'
+    blocker.style.zIndex = '99'
+    instructions.style.display = ''
+  } else {
+    blocker.style.display = 'none'
+    blocker.style.zIndex = ''
+    instructions.style.display = 'none'
+  }
+}
+
 /*********************************
  * Render the world
  ********************************/
@@ -110,7 +136,11 @@ class Create extends Component {
         const uri = '/worlds/' + this.props.match.params.id
         const worldRef = db.ref(uri)
         const world = (await worldRef.once('value')).val()
-        cubes = Object.values(world.cubes)
+        if (!world.cubes) {
+          cubes = []
+        } else {
+          cubes = Object.values(world.cubes)
+        }
         worldId = world.id
         console.log(`plane mounted:`, cubes)
       }
@@ -120,10 +150,16 @@ class Create extends Component {
     }
   }
   componentWillUnmount() {
+    window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {
-    return <div id="plane" />
+    console.log('render')
+    return (
+      <div id="plane">
+        <input id="color-palette" type="color" defaultValue="#b9c4c0" />
+      </div>
+    )
   }
 }
 
