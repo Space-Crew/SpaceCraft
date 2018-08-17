@@ -4,10 +4,20 @@ import {addBlockToDb, addBlock} from './addBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 import {checkPositionOccupied} from './checkPositionOccupied'
+import makePreviewGrid from '../meshes/makePreviewGrid'
 
-function darken(color, percent) {   
-  let t=percent<0?0:255,p=percent<0?percent*-1:percent,R=color>>16,G=color>>8&0x00FF,B=color&0x0000FF;
-  return 0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B);
+function darken(color, percent) {
+  let t = percent < 0 ? 0 : 255,
+    p = percent < 0 ? percent * -1 : percent,
+    R = color >> 16,
+    G = (color >> 8) & 0x00ff,
+    B = color & 0x0000ff
+  return (
+    0x1000000 +
+    (Math.round((t - R) * p) + R) * 0x10000 +
+    (Math.round((t - G) * p) + G) * 0x100 +
+    (Math.round((t - B) * p) + B)
+  )
 }
 
 THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
@@ -41,8 +51,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   let previewBox = makeUnitCube(position, 0xb9c4c0, 0.3)
   previewBox.unselectable = true
   previewBox.visible = false
+  previewBox.add(makePreviewGrid())
   _scene.add(previewBox)
-  let chosenColor;
+  let chosenColor
 
   var _selected = null,
     _hovered = null
@@ -54,16 +65,18 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _domElement.addEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.addEventListener('mouseup', onDocumentMouseCancel, false) //able to release
     _domElement.addEventListener('mouseleave', onDocumentMouseCancel, false)
-    document.getElementById('color-palette').addEventListener('change', onColorChange, false)
+    document
+      .getElementById('color-palette')
+      .addEventListener('change', onColorChange, false)
 
     window.addEventListener('keydown', onDocumentOptionDown, false)
     window.addEventListener('keyup', onDocumentOptionUp, false)
   }
-  
+
   function onColorChange(event) {
-    chosenColor = parseInt(event.target.value.replace('#',''), 16);
-    previewBox.material.color.setHex(chosenColor);
-    previewBox.children[0].material.color.setHex(darken(chosenColor, -0.05));
+    chosenColor = parseInt(event.target.value.replace('#', ''), 16)
+    previewBox.material.color.setHex(chosenColor)
+    previewBox.children[0].material.color.setHex(darken(chosenColor, -0.05))
   }
 
   function onDocumentOptionDown(event) {
@@ -94,7 +107,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     _domElement.removeEventListener('mouseleave', onDocumentMouseCancel, false)
     window.removeEventListener('keydown', onDocumentOptionDown, false)
     window.removeEventListener('keyup', onDocumentOptionUp, false)
-    document.getElementById('color-palette').removeEventListener('change', onColorChange, false)
+    document
+      .getElementById('color-palette')
+      .removeEventListener('change', onColorChange, false)
   }
 
   function dispose() {
@@ -177,7 +192,13 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       if (worldId === undefined) {
         addBlock(previewBox.position, chosenColor, _scene, _objects)
       } else {
-        addBlockToDb(previewBox.position, chosenColor, _scene, _objects, worldId)
+        addBlockToDb(
+          previewBox.position,
+          chosenColor,
+          _scene,
+          _objects,
+          worldId
+        )
       }
     } else if (_commandIsDown) {
       if (worldId === undefined) {
