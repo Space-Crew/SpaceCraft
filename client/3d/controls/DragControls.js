@@ -96,13 +96,14 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   }
 
   // add avatar at initial camera position //
-  const {x, y, z} = yawObject.position
+  let {x, y, z} = yawObject.position
   let avatar = addAvatar(new THREE.Vector3(x, y, z), _scene)
   let initialAvatar = true
   updateAvatarInDb({x, y, z}, worldId, yawObject.uuid)
   // event listener for avatar position change in db //
-  const avatarsRef = db.ref(`/worlds/${worldId}/avatars/${yawObject.uuid}`)
-  avatarsRef.on('value', snapshot => {
+  const avatarRef = db.ref(`/worlds/${worldId}/avatars/`)
+  avatarRef.on('value', snapshot => {
+    console.log(snapshot.getChildren())
     let newPosition = snapshot.val()
     if (!initialAvatar) {
       deleteAvatar(_scene, avatar)
@@ -112,6 +113,20 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       )
     }
   })
+  /* 
+  const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
+  avatarsRef.on('child_changed', snapshot => {
+    if (snapshot.ref.key !== yawObject.uuid) {
+      let newPosition = snapshot.val()
+      if (!initialAvatar) {
+        deleteAvatar(_scene, avatar)
+        avatar = addAvatar(
+          new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
+          _scene
+        )
+      }
+    }
+  }) */
 
   function onColorChange(event) {
     chosenColor = parseInt(event.target.value.replace('#', ''), 16)
@@ -216,6 +231,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
         break
     }
     initialAvatar = false
+    x = yawObject.position.x
+    y = yawObject.position.y
+    z = yawObject.position.z
     updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
   }
 
