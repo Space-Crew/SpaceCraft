@@ -65,12 +65,17 @@ function generateWorld(cubes, worldId) {
     render()
   }
   document.getElementById('plane').appendChild(renderer.domElement)
-  const cubesRef = db.ref(`/worlds/${worldId}/cubes`);
-  cubesRef.on("child_added", function(snapshot) {
-    var newCube = snapshot.val();
-    console.log("cube added!!" + newCube);
-    addBlock((new THREE.Vector3(newCube.x, newCube.y, newCube.z)), newCube.color, scene, objects)
-  });
+  const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
+  cubesRef.on('child_added', function(snapshot) {
+    var newCube = snapshot.val()
+    console.log('cube added!!' + newCube)
+    addBlock(
+      new THREE.Vector3(newCube.x, newCube.y, newCube.z),
+      newCube.color,
+      scene,
+      objects
+    )
+  })
   animate()
 
   // pause the world //
@@ -155,7 +160,12 @@ class Create extends Component {
     this.unsubscribe()
   }
   render() {
-    return <div id="plane" />
+    console.log('render')
+    return (
+      <div id="plane">
+        <input id="color-palette" type="color" defaultValue="#b9c4c0" />
+      </div>
+    )
   }
 }
 
