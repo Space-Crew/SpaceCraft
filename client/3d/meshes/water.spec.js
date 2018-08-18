@@ -8,7 +8,7 @@ describe('FlowCube', () => {
       let flowMap
       let child
       beforeEach(() => {
-        source = new FlowCube(0, 0, 0, true)
+        source = new FlowCube({x: 0, y: 0, z: 0}, true)
         flowMap = {'0,0,0': source}
         child = source._createChild({x: 0, y: 0, z: 1}, flowMap)
       })
@@ -41,8 +41,8 @@ describe('FlowCube', () => {
       let flowMap
       let otherCube
       beforeEach(() => {
-        source = new FlowCube(0, 0, 0, true)
-        otherSource = new FlowCube(1, 1, 0, true)
+        source = new FlowCube({x: 0, y: 0, z: 0}, true)
+        otherSource = new FlowCube({x: 1, y: 1, z: 0}, true)
         flowMap = {'0,0,0': source, '0,1,0': otherCube}
         otherCube = otherSource._createChild({x: 0, y: 1, z: 0}, flowMap)
       })
@@ -80,7 +80,7 @@ describe('FlowCube', () => {
     let source
     let clone
     before(() => {
-      source = new FlowCube(0, -62, 0, true)
+      source = new FlowCube({x: 0, y: -62, z: 0}, true)
       clone = source._clonePosition()
     })
     it('creates a new object with same position', () => {
@@ -92,7 +92,7 @@ describe('FlowCube', () => {
     let source
     let adjacentPositions
     before(() => {
-      source = new FlowCube(0, -62, 0, true)
+      source = new FlowCube({x: 0, y: -62, z: 0}, true)
       adjacentPositions = source._adjacentPositions
     })
     it('gets adjacent positions on the xy plane', () => {
@@ -109,7 +109,7 @@ describe('FlowCube', () => {
     let source
     let flowMap
     before(() => {
-      source = new FlowCube(0, -62, 0, true)
+      source = new FlowCube({x: 0, y: -62, z: 0}, true)
       flowMap = {'0,-62,0': source}
       source.spawnChildren(cubes, flowMap)
     })
@@ -152,20 +152,20 @@ describe('FlowCube', () => {
     })
   })
   describe('_up', () => {
-    const source = new FlowCube(0, -62, 0, true)
+    const source = new FlowCube({x: 0, y: -62, z: 0}, true)
     it('returns the position above this one', () => {
       expect(source._up).to.deep.equal({x: 0, y: -61, z: 0})
     })
   })
   describe('_down', () => {
-    const source = new FlowCube(0, -62, 0, true)
+    const source = new FlowCube({x: 0, y: -62, z: 0}, true)
     it('returns the position below this one', () => {
       expect(source._down).to.deep.equal({x: 0, y: -63, z: 0})
     })
   })
   describe('_maxVolumeOfParents', () => {
-    const source1 = new FlowCube(0, -62, 0, true)
-    const source2 = new FlowCube(0, -64, -3, true)
+    const source1 = new FlowCube({x: 0, y: -62, z: 0}, true)
+    const source2 = new FlowCube({x: 0, y: -64, z: -3}, true)
     const flowMap = {'0,-62,0': source1, '0,-64,-3': source2}
 
     source2
@@ -214,8 +214,8 @@ describe('FlowCube', () => {
     let source2
     let flowMap
     beforeEach(() => {
-      source1 = new FlowCube(0, -64, 1, true)
-      source2 = new FlowCube(0, -63, -1, true)
+      source1 = new FlowCube({x: 0, y: -64, z: 1}, true)
+      source2 = new FlowCube({x: 0, y: -63, z: -1}, true)
       flowMap = {'0,-64,1': source1, '0,-63,-1': source2}
     })
     it('returns null if no parents', () => {
@@ -244,7 +244,7 @@ describe('FlowCube', () => {
     let flowMap
     let child
     beforeEach(() => {
-      source = new FlowCube(0, 0, 0, true)
+      source = new FlowCube({x: 0, y: 0, z: 0}, true)
       flowMap = {'0,0,0': source}
       child = source._createChild({x: 0, y: 0, z: 1}, flowMap)
       source._unlinkChild(child)
@@ -254,6 +254,20 @@ describe('FlowCube', () => {
     })
     it('removes the parent form the child', () => {
       expect(child.parents).to.be.empty
+    })
+  })
+  describe('unlinkParents', () => {
+    let child
+    let parent
+    beforeEach(() => {
+      parent = new FlowCube({x: 0, y: 0, z: 0})
+      child = new FlowCube({x: 1, y: 0, z: 0})
+      parent._linkChild(child)
+      expect(parent.children).to.have.property('1,0,0')
+    })
+    it('unlinks the cube from its parents', () => {
+      child.unlinkParents()
+      expect(parent.children).to.not.have.property('1,0,0')
     })
   })
 })
