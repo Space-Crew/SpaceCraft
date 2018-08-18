@@ -95,17 +95,20 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   }
 
   // add avatar to db on world load //
-  updateAvatarInDb({x: 0, y: 0, z: 0}, worldId, yawObject.uuid)
+  let color = '#' + Math.floor(Math.random() * 16777215).toString(16)
+  updateAvatarInDb({x: 0, y: 0, z: 0}, worldId, yawObject.uuid, color)
   let avatars = {}
   let avatar
   // event listener to create and add avatar to scene //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
     let avatarPosition = snapshot.val()
+    console.log(snapshot.val())
     if (snapshot.ref.key !== yawObject.uuid) {
       avatar = addAvatar(
         new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
-        _scene
+        _scene,
+        snapshot.val().color
       )
     }
     avatars[snapshot.ref.key] = avatar
@@ -223,7 +226,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       default:
         break
     }
-    updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
+    updateAvatarInDb(yawObject.position, worldId, yawObject.uuid, color)
   }
 
   function onDocumentMouseDown(event) {

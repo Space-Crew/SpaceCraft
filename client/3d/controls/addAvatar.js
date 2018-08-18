@@ -1,13 +1,9 @@
 import * as THREE from 'three'
-import {makeHead, makeBody, makeArms, makeLegs} from '../meshes'
+import {makeAvatar} from '../meshes'
 
-export const addAvatar = (position, scene) => {
+export const addAvatar = (position, scene, color) => {
   // build character //
-  const head = makeHead()
-  const body = makeBody()
-  const [leftArm, rightArm] = makeArms()
-  const legs = makeLegs()
-
+  const [head, body, leftArm, rightArm, legs] = makeAvatar(color)
   // bring it to LIFE //
   const group = new THREE.Object3D()
   group.add(body)

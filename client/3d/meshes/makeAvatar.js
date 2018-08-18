@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 
 let x, y, z, headHeight, headWidth, bodyHeight, armWidth, bodyY
-let color = '#' + Math.floor(Math.random() * 16777215).toString(16)
-export const makeHead = () => {
+
+const makeHead = color => {
   // body parts are positioned relative to head //
   const head = new THREE.Mesh(
     new THREE.BoxGeometry(0.5, 0.5, 0.5),
@@ -17,7 +17,7 @@ export const makeHead = () => {
   return head
 }
 
-export const makeBody = () => {
+const makeBody = color => {
   const body = new THREE.Mesh(
     new THREE.BoxGeometry(0.4, 0.65, 0.4),
     new THREE.MeshBasicMaterial({color})
@@ -30,7 +30,7 @@ export const makeBody = () => {
   return body
 }
 
-export const makeArms = () => {
+const makeArms = color => {
   const leftArm = new THREE.Mesh(
     new THREE.BoxGeometry(0.2, 0.75, 0.2),
     new THREE.MeshLambertMaterial({color})
@@ -52,7 +52,7 @@ export const makeArms = () => {
   return [leftArm, rightArm]
 }
 
-export const makeLegs = () => {
+const makeLegs = color => {
   const legs = new THREE.Mesh(
     new THREE.BoxGeometry(0.3, 0.5, 0.3),
     new THREE.MeshLambertMaterial({color})
@@ -63,4 +63,10 @@ export const makeLegs = () => {
   const legZ = z
   legs.position.set(legX, legY, legZ)
   return legs
+}
+
+export const makeAvatar = color => {
+  const [head, body, legs] = [makeHead(color), makeBody(color), makeLegs(color)]
+  const [leftArm, rightArm] = makeArms(color)
+  return [head, body, leftArm, rightArm, legs]
 }
