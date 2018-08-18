@@ -161,7 +161,14 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
       let avatarToUpdate = avatars[snapshot.ref.key]
       avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
     }
+    let leftRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
+    leftRef.onDisconnect().remove(() => {
+      deleteAvatar()
+    })
   })
+
+  // event listener to delete avatar from db when user leaves world //
+  // avatarRef.onDisconnect()
 
   function onColorChange(event) {
     chosenColor = parseInt(event.target.value.replace('#', ''), 16)
