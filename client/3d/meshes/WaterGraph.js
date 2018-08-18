@@ -2,87 +2,92 @@ import FlowCube from './water'
 import {toKey} from '..'
 
 export default class FlowGraph {
-  constructor(sources = {}, worldCubes = {}) {
-    this.sources = sources
+  constructor(sourcePositions = {}, worldCubes = {}) {
+    this.sourcePositions = sourcePositions
     this.worldCubes = worldCubes
     this.flowCubes = {}
-    this.spawnCubesFromSources()
+    this.spawnCubesFromSourcePositions()
   }
   /**********************
    * Initialize graph
    **********************/
-  spawnCubesFromSources() {
-    Object.values(this.sources).forEach(source => {
-      this.flowCubes[toKey(source)] = new FlowCube(source, true)
-      this.flowCubes[toKey(source)].spawnChildren(
-        this.worldCubes,
-        this.flowCubes
-      )
+  spawnCubesFromSourcePositions() {
+    Object.values(this.sourcePositions).forEach(sourcePosition => {
+      this.flowCubes[toKey(sourcePosition)] = new FlowCube(sourcePosition, true)
+      this.spawnChildrenFor(this.flowCubes[toKey(sourcePosition)])
     })
   }
   /**********************
    * Edit sources
    **********************/
   spawnSourceAt(position) {
-    const source = this.addSourceAt(position)
-    source.spawnChildren(this.worldCubes, this.flowCubes)
-  }
-  addSourceAt(position) {
-    let sourceAtPosition = this.flowCubes[toKey(position)]
-    if (!sourceAtPosition) {
-      const newSource = new FlowCube(position, true)
-      this.flowCubes[toKey(position)] = newSource
-      this.sources[toKey(position)] = newSource.position
-      sourceAtPosition = newSource
+    if (!this.hasSourceAt(position)) {
+      const source = this.makeSourceAt(position)
+      this.spawnChildrenFor(source)
     }
-    return sourceAtPosition
+  }
+  hasSourceAt(position) {
+    return !!this.source[toKey(position)]
+  }
+  makeSourceAt(position) {
+    const newSource = new FlowCube(position, true)
+    this.flowCubes[toKey(position)] = newSource
+    this.sourcePositions[toKey(position)] = newSource.position
+    return newSource
+  }
+  deleteSourceAt(position) {
+    if (this.hasSourceAt(position)) {
+      this.destroyLineage(this.flowCubes(toKey[position]))
+    }
   }
   /**********************
    * Change all the water when a player puts block in the way
    **********************/
   createObstacleAt(position) {
     this.worldCubes[toKey(position)] = true //data not that important I think
-    const cubeAtPosition = this.flowCubes[toKey(position)]
-    if (cubeAtPosition) {
-      const parents = cubeAtPosition.parents
-      this.destroyLineage(cubeAtPosition)
-      this.triggerParents(parents)
+    if (this.hasCubeAt(position)) {
+      this.triggerUpdateAt(position)
     }
+  }
+  triggerUpdateAt(position) {
+    const cube = this.flowCubes[toKey(position)]
+    const parents = Object.assign({}, cube.parents)
+    this.destroyLineage(cube)
+    this.makeCubesRespawn(parents)
+  }
+  hasCubeAt(position) {
+    return !!this.flowCubes[toKey(position)]
   }
   destroyLineage(cube) {
     let destroyTheseBreadthFirst = []
     while (cube) {
       destroyTheseBreadthFirst.push(...Object.values(cube.children))
-      cube.unlinkParents()
-      this.removeFromGraph(cube)
+      this.destoryCube(cube)
       cube = destroyTheseBreadthFirst.shift()
     }
   }
+  destoryCube(cube) {
+    cube.unlinkParents()
+    this.removeFromGraph(cube)
+  }
   removeFromGraph(cube) {
     if (cube.isSource) {
-      delete this.sources[toKey(cube.position)]
+      delete this.sourcePositions[toKey(cube.position)]
     }
     delete this.flowCubes[toKey(cube.position)]
   }
-  triggerParents(parents) {
-    Object.values(parents).forEach(parent =>
-      parent.spawnChildren(this.worldCubes, this.flowCubes)
-    )
+  makeCubesRespawn(cubes) {
+    Object.values(cubes).forEach(cube => this.spawnChildrenFor(cube))
   }
-  /******
-   *
-   */
-
-  updateCube
-  spawnChildren(cubes, flowMap, queueBreadthFirst = []) {
-    queueBreadthFirst.push(...this._findSpacesToFlowInto(cubes, flowMap))
-    //shift can be optimized
+  spawnChildrenFor(cube, queueBreadthFirst = []) {
+    queueBreadthFirst.push(...this.findSpacesToFlowInto())
     const newChild = queueBreadthFirst.shift()
     if (newChild) {
-      newChild.spawnChildren(cubes, flowMap, queueBreadthFirst)
+      newChild.spawnChildrenFor(queueBreadthFirst)
     }
+    //shift can be optimized
   }
-  _findSpacesToFlowInto(cubes, flowMap) {
+  findSpacesToFlowInto() {
     const childrenThatSpawnMoreChildren = []
     const shouldFlowDown = !cubes[toKey(this._down)] && this.position.y > -64
     if (shouldFlowDown) {
