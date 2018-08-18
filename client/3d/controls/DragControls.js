@@ -95,34 +95,32 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     })
   }
 
-  // add avatar at initial camera position //
-  // let avatar = addAvatar(new THREE.Vector3(0, 0, 0), _scene)
-  // console.log(avatar.uuid)
-  // let initialAvatar = true
+  // add avatar to db on world load //
   updateAvatarInDb({x: 0, y: 0, z: 0}, worldId, yawObject.uuid)
-  // event listener for avatar position change in db //
   let avatars = {}
+  let avatar
+  // event listener to create and add avatar to scene //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
-    // if (snapshot.ref.key !== yawObject.uuid)
     console.log('child added to db')
     let avatarPosition = snapshot.val()
-    // if (!initialAvatar)
-    // deleteAvatar(_scene, avatar)
-    let avatar = addAvatar(
-      new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
-      _scene
-    )
+    if (snapshot.ref.key !== yawObject.uuid) {
+      avatar = addAvatar(
+        new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
+        _scene
+      )
+    }
     avatars[snapshot.ref.key] = avatar
   })
 
+  // event listener to check for any changes in avatar position //
   const avatarRef = db.ref(`/worlds/${worldId}/avatars/`)
   avatarRef.on('child_changed', snapshot => {
     let newPosition = snapshot.val()
-    // console.log(snapshot.ref.key)
-    let avatarToUpdate = avatars[snapshot.ref.key]
-    console.log('avatar to update', avatarToUpdate)
-    avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
+    if (snapshot.ref.key !== yawObject.uuid) {
+      let avatarToUpdate = avatars[snapshot.ref.key]
+      avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
+    }
   })
 
   function onColorChange(event) {
