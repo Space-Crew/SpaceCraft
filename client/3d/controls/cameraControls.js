@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-export function attatchCameraControls(camera, domElement) {
+export function attachCameraControls(camera, domElement) {
   const cameraControls = makeCameraControls(camera)
   cameraControls.activate = () =>
     domElement.addEventListener('mousemove', cameraControls.moveWithMouse)

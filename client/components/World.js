@@ -2,8 +2,10 @@ import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
+import {makeWaterCube} from '../3d/meshes'
+import FlowGraph from '../3d/meshes/WaterGraph'
 import {addBlock} from '../3d/controls/addBlock'
-import {attatchCameraControls} from '../3d/controls/cameraControls'
+import {attachCameraControls} from '../3d/controls/cameraControls'
 
 /*********************************
  * Construct the Three World
@@ -14,7 +16,7 @@ let onSpaceBar
 const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
-function generateWorld(cubes, worldId) {
+function generateWorld(cubes, worldId, water, rawWorldCubes) {
   //renders the scene, camera, and cubes using webGL
   const renderer = new THREE.WebGLRenderer()
   const color = new THREE.Color(0x0f4260)
@@ -30,7 +32,7 @@ function generateWorld(cubes, worldId) {
     0.1,
     1000
   )
-  camera.controls = attatchCameraControls(camera, renderer.domElement)
+  camera.controls = attachCameraControls(camera, renderer.domElement)
   //create a new scene
   const scene = new THREE.Scene()
 
@@ -48,6 +50,15 @@ function generateWorld(cubes, worldId) {
   const pointLight = new THREE.PointLight(0xffffff, 0.8)
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
+
+  scene.addWaterSources = function(waterSources, worldCubes) {
+    const waterGraph = new FlowGraph(waterSources, worldCubes)
+    const waterCubes = Object.values(waterGraph.flowCubes)
+    waterCubes.forEach(waterCube => {
+      this.add(makeWaterCube(waterCube.position))
+    })
+  }
+  scene.addWaterSources(water, rawWorldCubes)
 
   function render() {
     renderer.render(scene, camera)
@@ -127,6 +138,8 @@ class World extends Component {
     try {
       let cubes = []
       let worldId
+      let water
+      let rawWorldCubes
       if (this.props.match && this.props.match.params.id) {
         const uri = '/worlds/' + this.props.match.params.id
         const worldRef = db.ref(uri)
@@ -137,8 +150,10 @@ class World extends Component {
           cubes = Object.values(world.cubes)
         }
         worldId = world.id
+        water = world.water
+        rawWorldCubes = world.cubes
       }
-      this.unsubscribe = generateWorld(cubes, worldId)
+      this.unsubscribe = generateWorld(cubes, worldId, water, rawWorldCubes)
     } catch (error) {
       console.log(error)
     }

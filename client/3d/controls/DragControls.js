@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import {makeUnitCube} from '../meshes'
-import {addBlockToDb, addBlock, addTempBlockToDb} from './addBlock'
+import {addBlockToDb, addBlock} from './addBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 import {db, currentUser} from '../../firebase'
@@ -53,8 +53,7 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
   function activate() {
     _domElement.addEventListener('mousemove', onDocumentMouseMove, false)
     _domElement.addEventListener('mousedown', onDocumentMouseDown, false)
-    _domElement.addEventListener('mouseup', onDocumentMouseCancel, false) //able to release
-    // _domElement.addEventListener('mouseleave', onDocumentMouseCancel, false)
+    _domElement.addEventListener('mouseup', onDocumentMouseCancel, false)
     document
       .getElementById('color-palette')
       .addEventListener('change', onColorChange, false)
@@ -122,10 +121,6 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
     cubesRef.on('child_changed', function(snapshot) {
       if (snapshot.key.indexOf('temp') === 0) {
         let movedCube = snapshot.val()
-        // if (originalPosition) {
-        //   deleteBlockFromDb(originalPosition, worldId);
-        //   originalPosition = undefined;
-
         let newPosition = new THREE.Vector3(
           movedCube.x,
           movedCube.y,
@@ -133,9 +128,6 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
         )
 
         cubesToBeMoved[snapshot.key.slice(4)].position.copy(newPosition)
-        // }
-        // let toBeMoved = _scene.children.find(cube => cube.position.x === snapshot.val().x && cube.position.y === snapshot.val().y && cube.position.z === snapshot.val().z)
-        // cubesToBeMoved[snapshot.key.slice(4)] = toBeMoved
       }
     })
   }
@@ -170,7 +162,6 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
     _domElement.removeEventListener('mousemove', onDocumentMouseMove, false)
     _domElement.removeEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.removeEventListener('mouseup', onDocumentMouseCancel, false)
-    // _domElement.removeEventListener('mouseleave', onDocumentMouseCancel, false)
     window.removeEventListener('keydown', onDocumentOptionDown, false)
     window.removeEventListener('keyup', onDocumentOptionUp, false)
     document
@@ -182,7 +173,7 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
     deactivate()
   }
 
-  function onDocumentMouseMove(event) {
+  async function onDocumentMouseMove(event) {
     event.preventDefault()
     const rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
@@ -244,7 +235,7 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
 
   function onDocumentMouseDown(event) {
     event.preventDefault()
-    _selected = selectBlock(_mouse, _camera, _scene.objects)
+    _selected = selectBlock(_mouse, _camera, _objects)
     if (_selected) {
       distanceToSelected = yawObject.position.distanceTo(_selected.position)
       _domElement.style.cursor = 'move'
@@ -263,15 +254,14 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
       if (worldId === undefined) {
         _objects = deleteBlock(_selected, _scene, _objects)
       } else {
+        console.log(_selected)
         _objects = deleteBlock(_selected, _scene, _objects)
         if (_selected) {
           deleteBlockFromDb(_selected.position, worldId)
         }
       }
-    } else {
-      if (_selected) {
-        originalPosition = _selected.position
-      }
+    } else if (_selected) {
+      originalPosition = _selected.position
     }
   }
 
@@ -284,17 +274,11 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
     const tempRef = db.ref(
       `/worlds/${worldId}/cubes/temp${currentUser.displayName}`
     )
-    // const tempSnap = await tempRef.once('value');
-    // const tempVal = tempSnap.val();
     tempRef.remove()
     if (!_commandIsDown && !_shiftIsDown) {
-      // const tempPosition = new THREE.Vector3(tempVal.x, tempVal.y, tempVal.z)
-      // addBlockToDb(tempPosition, tempVal.color, worldId)
-
       _scene.remove(cubesToBeMoved[currentUser.displayName])
       delete cubesToBeMoved[currentUser.displayName]
     }
-
     _domElement.style.cursor = _hovered ? 'pointer' : 'auto'
   }
 
