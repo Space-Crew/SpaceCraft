@@ -139,7 +139,7 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
   let color = '#' + Math.floor(Math.random() * 16777215).toString(16)
   updateAvatarInDb({x: 0, y: 0, z: 0}, worldId, yawObject.uuid, color)
   let avatars = {}
-  let avatar, leftRef
+  let avatar, disconnectRef, avatarToUpdate
   // event listener to create and add avatar to scene //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
@@ -151,24 +151,29 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
         snapshot.val().color
       )
     }
-    leftRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
+    disconnectRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
     avatars[snapshot.ref.key] = avatar
   })
 
   // event listener to check for any changes in avatar position //
-  const avatarRef = db.ref(`/worlds/${worldId}/avatars/`)
-  avatarRef.on('child_changed', snapshot => {
-    let avatarToUpdate
+  avatarsRef.on('child_changed', snapshot => {
     let newPosition = snapshot.val()
     if (snapshot.ref.key !== yawObject.uuid) {
       avatarToUpdate = avatars[snapshot.ref.key]
       avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
     }
-    leftRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
+    disconnectRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
   })
 
   // remove avatar from db when they dissconnect //
-  leftRef.onDisconnect().remove()
+  disconnectRef.onDisconnect().remove(() => {
+    deleteAvatar(_scene, avatarToUpdate)
+  })
+
+  avatarsRef.on('child_removed', snapshot => {
+    let avatarToDelete = avatars[snapshot.ref.key]
+    deleteAvatar(_scene, avatarToDelete)
+  })
 
   function onColorChange(event) {
     chosenColor = parseInt(event.target.value.replace('#', ''), 16)
