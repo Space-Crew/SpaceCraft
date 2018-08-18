@@ -2,8 +2,10 @@ import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
+import {makeWaterCube} from '../3d/meshes'
+import FlowGraph from '../3d/meshes/WaterGraph'
 import {addBlock} from '../3d/controls/addBlock'
-import {deleteBlock} from '../3d/controls/deleteBlock'
+import {attachCameraControls} from '../3d/controls/cameraControls'
 
 /*********************************
  * Construct the Three World
@@ -14,9 +16,7 @@ let onSpaceBar
 const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
-function generateWorld(cubes, worldId) {
-  //container for all 3d objects that will be affected by event
-  let objects = []
+function generateWorld(cubes, worldId, water, rawWorldCubes) {
   //renders the scene, camera, and cubes using webGL
   const renderer = new THREE.WebGLRenderer()
   const color = new THREE.Color(0x0f4260)
@@ -32,21 +32,18 @@ function generateWorld(cubes, worldId) {
     0.1,
     1000
   )
-  camera.position.y = 0
-  camera.position.z = 0
-
+  camera.controls = attachCameraControls(camera, renderer.domElement)
   //create a new scene
   const scene = new THREE.Scene()
-  //allows for adding, deleting, and moving 3d objects with mouse drag
-  const dragControl = new DragControls(
-    objects,
-    camera,
-    renderer.domElement,
-    scene,
-    worldId
-  )
 
-  scene.add(dragControl.getObject())
+  scene.objects = []
+  scene.worldId = worldId
+  //allows for adding, deleting, and moving 3d objects with mouse drag
+  scene.addDragControls = function() {
+    this.dragControl = new DragControls(camera, renderer.domElement, this)
+    this.add(this.dragControl.getObject())
+  }
+  scene.addDragControls()
 
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
@@ -54,11 +51,16 @@ function generateWorld(cubes, worldId) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  // addCubesToScene(cubes, scene, objects)
-  // const clock = new THREE.Clock() //needed for controls
+  scene.addWaterSources = function(waterSources, worldCubes) {
+    const waterGraph = new FlowGraph(waterSources, worldCubes)
+    const waterCubes = Object.values(waterGraph.flowCubes)
+    waterCubes.forEach(waterCube => {
+      this.add(makeWaterCube(waterCube.position))
+    })
+  }
+  scene.addWaterSources(water, rawWorldCubes)
 
   function render() {
-    //   controls.update(clock.getDelta()) // needed for First Person Controls to work
     renderer.render(scene, camera)
   }
   function animate() {
@@ -79,8 +81,11 @@ function generateWorld(cubes, worldId) {
     }
   }
   window.addEventListener('keydown', onSpaceBar, false)
-
-  return dragControl.dispose
+  const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
+  const disposeWorld = () => {
+    tearDownFunctions.forEach(func => func())
+  }
+  return disposeWorld
 }
 
 /*********************************
@@ -128,11 +133,13 @@ const showInstructions = isPaused => {
  * Render the world
  ********************************/
 
-class Create extends Component {
+class World extends Component {
   async componentDidMount() {
     try {
       let cubes = []
       let worldId
+      let water
+      let rawWorldCubes
       if (this.props.match && this.props.match.params.id) {
         const uri = '/worlds/' + this.props.match.params.id
         const worldRef = db.ref(uri)
@@ -143,9 +150,10 @@ class Create extends Component {
           cubes = Object.values(world.cubes)
         }
         worldId = world.id
-        console.log(`plane mounted:`, cubes)
+        water = world.water
+        rawWorldCubes = world.cubes
       }
-      this.unsubscribe = generateWorld(cubes, worldId)
+      this.unsubscribe = generateWorld(cubes, worldId, water, rawWorldCubes)
     } catch (error) {
       console.log(error)
     }
@@ -155,9 +163,13 @@ class Create extends Component {
     this.unsubscribe()
   }
   render() {
-    return <div id="plane" />
+    return (
+      <div id="plane">
+        <input id="color-palette" type="color" defaultValue="#b9c4c0" />
+      </div>
+    )
   }
 }
 
 //water flow by doing BFS from source
-export default Create
+export default World

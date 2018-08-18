@@ -21,10 +21,16 @@ export default class WorldList extends Component {
     }
   }
   handleClick(id) {
-    this.props.history.push('/create/' + id)
+    this.props.history.push('/worlds/' + id)
   }
   render() {
-    const linkPath = '/create/'
-    return <ListPresentation items={this.state.worlds} linkPath={linkPath} />
+    const linkPath = '/worlds/'
+    return (
+      <div id="worldList">
+        <h3>World List</h3>
+        <p>Select a world below to explore</p>
+        <ListPresentation items={this.state.worlds} linkPath={linkPath} />
+      </div>
+    )
   }
 }
