@@ -5,9 +5,8 @@ import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 import {db} from '../../firebase'
 import {checkPositionOccupied} from './checkPositionOccupied'
-import {updateAvatarInDb} from './updateAvatarPosition'
+import {updateAvatarInDb} from './updateAvatarInDb'
 import {addAvatar} from './addAvatar'
-import {deleteAvatar} from './deleteAvatar'
 
 function darken(color, percent) {
   let t = percent < 0 ? 0 : 255,
@@ -102,7 +101,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   // event listener to create and add avatar to scene //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
-    console.log('child added to db')
     let avatarPosition = snapshot.val()
     if (snapshot.ref.key !== yawObject.uuid) {
       avatar = addAvatar(
@@ -203,15 +201,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   }
 
   function onDocumentKeyDown(event) {
-    //this currently deletes the camera
-    /* let avatarToDelete = _scene.children.find(
-      avatar =>
-        avatar.uuid !== yawObject.uuid &&
-        avatar.position.x === yawObject.position.x &&
-        avatar.position.y === yawObject.position.y &&
-        avatar.position.z === yawObject.position.z
-    )
-    deleteAvatar(_scene, avatarToDelete) */
     switch (event.which) {
       case 87: //W
         yawObject.translateZ(-1)
@@ -234,10 +223,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       default:
         break
     }
-    // initialAvatar = false
-    // let x = yawObject.position.x
-    // let y = yawObject.position.y
-    // let z = yawObject.position.z
     updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
   }
 

@@ -1,5 +1,4 @@
 import {db} from '../../firebase'
-import {cameraPositionToKey} from '..'
 
 export function updateAvatarInDb(position, worldId, uniqueId) {
   try {
