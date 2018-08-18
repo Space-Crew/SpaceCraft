@@ -4,16 +4,23 @@ import sinon from 'sinon'
 
 describe('FlowGraph', () => {
   xdescribe('spawnCubesFromSources', () => {})
-  describe('addSourceAt', () => {
+  describe('makeSourceAt', () => {
     let graph
     beforeEach(() => {
       graph = new FlowGraph()
     })
     it('creates a new source', () => {
-      graph.addSourceAt({x: 0, y: -64, z: 0})
-      expect(graph.sources).to.have.property('0,-64,0')
+      graph.makeSourceAt({x: 0, y: -64, z: 0})
+      expect(graph.sourcePositions).to.have.property('0,-64,0')
       expect(graph.flowCubes).to.have.property('0,-64,0')
     })
+  })
+  describe('findSpacesToFlowFor', () => {
+    let graph
+    beforeEach(() => {
+      graph = new FlowGraph()
+    })
+    it('works', () => {})
   })
   describe(`spawnSourceAt`, () => {
     let graph
@@ -40,13 +47,13 @@ describe('FlowGraph', () => {
     })
     it('does not change flowcubes or source if no flow cube there', () => {
       const originalFlowCubesLength = Object.values(graph.flowCubes).length
-      const originalSourcesLength = Object.values(graph.sources).length
+      const originalSourcesLength = Object.values(graph.sourcePositions).length
       const farAwayPosition = {x: 2, y: 0, z: 0}
       graph.createObstacleAt(farAwayPosition)
       expect(Object.values(graph.flowCubes)).to.have.lengthOf(
         originalFlowCubesLength
       )
-      expect(Object.values(graph.sources)).to.have.lengthOf(
+      expect(Object.values(graph.sourcePositions)).to.have.lengthOf(
         originalSourcesLength
       )
     })
@@ -61,25 +68,27 @@ describe('FlowGraph', () => {
       expect(mySpy.calledWith(flowCubeAtPosition)).to.be.true
     })
     it('triggers a respawn in parents', () => {
-      const mySpy = sinon.spy(graph, 'triggerParents')
+      const mySpy = sinon.spy(graph, 'makeCubesRespawn')
       const parents = graph.flowCubes['1,-64,0'].parents
       graph.createObstacleAt(position)
       expect(mySpy.calledWith(...Object.values(parents))).to.be.true
     })
   })
-  describe('triggerParents', () => {
-    it('calls spawnChildren on each parent', () => {
+  describe('makeCubesRespawn', () => {
+    it('calls spawnChildrenFor on each parent', () => {
       const sources = {
         '0,-64,0': {x: 0, y: -64, z: 0},
         '2,-64,0': {x: 2, y: -64, z: 0}
       }
       const graph = new FlowGraph(sources)
       const parents = graph.flowCubes['1,-64,0'].parents
-      const spies = Object.values(parents).map(parent =>
-        sinon.spy(parent, 'spawnChildren')
+      const spy = sinon.spy(graph, 'spawnChildrenFor')
+      graph.makeCubesRespawn(parents)
+      Object.values(parents).forEach(
+        parent => expect(spy.calledWith(parent)).to.be.true
       )
-      graph.triggerParents(parents)
-      spies.forEach(spy => expect(spy.calledOnce).to.equal(true))
+
+      // expect(spy.callCount).to.equal(Object.keys(parents).length)
     })
   })
   describe('destroyLineage', () => {
@@ -129,7 +138,54 @@ describe('FlowGraph', () => {
     it('removes the source from the flowCubes and the sources', () => {
       graph.removeFromGraph(source)
       expect(graph.flowCubes).to.not.have.property('0,-64,0')
-      expect(graph.sources).to.not.have.property('0,-64,0')
+      expect(graph.sourcePositions).to.not.have.property('0,-64,0')
+    })
+  })
+  describe('spawnChildrenFor', () => {
+    const cubes = {'0,-64,0': 'stuff'}
+    let graph
+    let source
+    before(() => {
+      graph = new FlowGraph({}, cubes)
+      graph.spawnSourceAt({x: 0, y: -62, z: 0})
+      source = graph.flowCubes['0,-62,0']
+    })
+    it('creates the flow cubes properly', () => {
+      const waterPositions = [
+        '0,-62,0',
+        '0,-63,0',
+        '0,-63,1',
+        '1,-63,0',
+        '0,-63,-1',
+        '-1,-63,0',
+        '0,-64,1',
+        '0,-64,2',
+        '1,-64,1',
+        '-1,-64,1',
+        '0,-64,3',
+        '1,-64,2',
+        '-1,-64,2',
+        '2,-64,1',
+        '1,-64,0',
+        '-1,-64,0',
+        '-2,-64,1',
+        '0,-64,-1',
+        '1,-64,-1',
+        '0,-64,-2',
+        '-1,-64,-1',
+        '2,-64,-1',
+        '1,-64,-2',
+        '0,-64,-3',
+        '-1,-64,-2',
+        '-2,-64,-1',
+        '-2,-64,0',
+        '-1,-64,0',
+        '1,-64,0',
+        '2,-64,0'
+      ]
+      expect(graph.flowCubes).to.have.all.keys(...waterPositions)
+      graph.spawnChildrenFor(source)
+      expect(graph.flowCubes).to.have.all.keys(...waterPositions)
     })
   })
 })

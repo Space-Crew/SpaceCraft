@@ -3,6 +3,8 @@ import {toKey} from '..'
 
 export default class FlowGraph {
   constructor(sourcePositions = {}, worldCubes = {}) {
+    //wish I had made all of these Maps so I could iterate and get/set better
+    //this is a take away for resume
     this.sourcePositions = sourcePositions
     this.worldCubes = worldCubes
     this.flowCubes = {}
@@ -27,7 +29,7 @@ export default class FlowGraph {
     }
   }
   hasSourceAt(position) {
-    return !!this.source[toKey(position)]
+    return !!this.sourcePositions[toKey(position)]
   }
   makeSourceAt(position) {
     const newSource = new FlowCube(position, true)
@@ -36,6 +38,8 @@ export default class FlowGraph {
     return newSource
   }
   deleteSourceAt(position) {
+    //BUG!!! deleting a source will delete some children it shouldn't
+    //since some other source might be producing it
     if (this.hasSourceAt(position)) {
       this.destroyLineage(this.flowCubes(toKey[position]))
     }
@@ -46,18 +50,21 @@ export default class FlowGraph {
   createObstacleAt(position) {
     this.worldCubes[toKey(position)] = true //data not that important I think
     if (this.hasCubeAt(position)) {
-      this.triggerUpdateAt(position)
+      this.rebuildAt(position)
     }
   }
-  triggerUpdateAt(position) {
+  hasCubeAt(position) {
+    return !!this.flowCubes[toKey(position)]
+  }
+  rebuildAt(position) {
     const cube = this.flowCubes[toKey(position)]
     const parents = Object.assign({}, cube.parents)
     this.destroyLineage(cube)
     this.makeCubesRespawn(parents)
   }
-  hasCubeAt(position) {
-    return !!this.flowCubes[toKey(position)]
-  }
+  /**********************
+   * Destroying
+   **********************/
   destroyLineage(cube) {
     let destroyTheseBreadthFirst = []
     while (cube) {
@@ -76,60 +83,63 @@ export default class FlowGraph {
     }
     delete this.flowCubes[toKey(cube.position)]
   }
+  /**********************
+   * Flowing
+   **********************/
   makeCubesRespawn(cubes) {
     Object.values(cubes).forEach(cube => this.spawnChildrenFor(cube))
   }
   spawnChildrenFor(cube, queueBreadthFirst = []) {
-    queueBreadthFirst.push(...this.findSpacesToFlowInto())
+    //makes all generations of children. better name?
+    queueBreadthFirst.push(...this.produceChildrenFor(cube))
     const newChild = queueBreadthFirst.shift()
     if (newChild) {
-      newChild.spawnChildrenFor(queueBreadthFirst)
+      this.spawnChildrenFor(newChild, queueBreadthFirst)
     }
     //shift can be optimized
   }
-  findSpacesToFlowInto() {
-    const childrenThatSpawnMoreChildren = []
-    const shouldFlowDown = !cubes[toKey(this._down)] && this.position.y > -64
-    if (shouldFlowDown) {
-      const child = this._flowDown(flowMap)
-      if (child) childrenThatSpawnMoreChildren.push(child)
-    } else {
-      this._flowHorizontally(cubes, flowMap).forEach(child => {
-        if (child) childrenThatSpawnMoreChildren.push(child)
-      })
-    }
-    return childrenThatSpawnMoreChildren
-  }
-  _flowDown(flowMap) {
-    return this._createChild(this._down, flowMap)
-  }
-  _flowHorizontally(cubes, flowMap) {
-    const createdChildren = []
-    const adjacentPositions = this._adjacentPositions
-    adjacentPositions.forEach(position => {
-      const shouldFlow = !cubes[toKey(position)]
-      if (shouldFlow) {
-        createdChildren.push(this._createChild(position, flowMap))
-      }
+  produceChildrenFor(cube) {
+    //makes one generations of children. better name?
+    return this.findSpacesToFlowFor(cube).map(position => {
+      return this.makeCubeFlowTo(cube, position)
     })
-    return createdChildren
   }
-  _createChild(childPosition, flowMap) {
-    //returns the child if the child needs to spawn more children
-    if (this._hasVolumeToFlow(childPosition)) {
-      const cubeAtPosition = flowMap[toKey(childPosition)]
-      if (cubeAtPosition) {
-        return this._combineWith(cubeAtPosition)
-      } else {
-        return this._flowInto(childPosition, flowMap)
-      }
+  findSpacesToFlowFor(cube) {
+    if (this.noCubeBelow(cube) && this.cubeCanFlowTo(cube, cube.down)) {
+      return [cube.down]
+    } else {
+      return cube.flatNeighbors.filter(position =>
+        this.cubeCanFlowTo(cube, position)
+      )
     }
-    return null
   }
-  _flowInto(childPosition, flowMap) {
-    const child = new FlowCube(childPosition, false)
-    this._linkChild(child)
-    flowMap[toKey(childPosition)] = child
+  noCubeBelow(cube) {
+    return !this.hasWorldCubeAt(cube.down)
+  }
+  cubeCanFlowTo(cube, position) {
+    return (
+      !this.hasWorldCubeAt(position) &&
+      cube.hasVolumeToFlowTo(position) &&
+      !cube.parents[toKey(position)] &&
+      position.y >= -64
+    )
+  }
+  hasWorldCubeAt(position) {
+    return !!this.worldCubes[toKey(position)]
+  }
+  makeCubeFlowTo(cube, position) {
+    if (this.hasCubeAt(position)) {
+      const child = this.flowCubes[toKey(position)]
+      cube.linkChild(child)
+      return child
+      //could cause a respawn unnecessarily, but who cares
+    } else {
+      return this.createAndStoreChild(cube, position)
+    }
+  }
+  createAndStoreChild(cube, position) {
+    const child = cube.createChildAt(position)
+    this.flowCubes[toKey(position)] = child
     return child
   }
 }
