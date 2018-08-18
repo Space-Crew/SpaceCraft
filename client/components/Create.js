@@ -2,6 +2,8 @@ import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
+import {makeWaterCube} from '../3d/meshes'
+import FlowGraph from '../3d/meshes/WaterGraph'
 import {addBlock} from '../3d/controls/addBlock'
 import {deleteBlock} from '../3d/controls/deleteBlock'
 
@@ -14,7 +16,7 @@ let onSpaceBar
 const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
-function generateWorld(cubes, worldId) {
+function generateWorld(cubes, worldId, water, rawWorldCubes) {
   //container for all 3d objects that will be affected by event
   let objects = []
   //renders the scene, camera, and cubes using webGL
@@ -53,11 +55,16 @@ function generateWorld(cubes, worldId) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  // addCubesToScene(cubes, scene, objects)
-  // const clock = new THREE.Clock() //needed for controls
+  scene.addWaterSources = function(waterSources, worldCubes) {
+    const waterGraph = new FlowGraph(waterSources, worldCubes)
+    const waterCubes = Object.values(waterGraph.flowCubes)
+    waterCubes.forEach(waterCube => {
+      this.add(makeWaterCube(waterCube.position))
+    })
+  }
+  scene.addWaterSources(water, rawWorldCubes)
 
   function render() {
-    //   controls.update(clock.getDelta()) // needed for First Person Controls to work
     renderer.render(scene, camera)
   }
   function animate() {
@@ -132,6 +139,8 @@ class Create extends Component {
     try {
       let cubes = []
       let worldId
+      let water
+      let rawWorldCubes
       if (this.props.match && this.props.match.params.id) {
         const uri = '/worlds/' + this.props.match.params.id
         const worldRef = db.ref(uri)
@@ -142,9 +151,11 @@ class Create extends Component {
           cubes = Object.values(world.cubes)
         }
         worldId = world.id
+        water = world.water
+        rawWorldCubes = world.cubes
         console.log(`plane mounted:`, cubes)
       }
-      this.unsubscribe = generateWorld(cubes, worldId)
+      this.unsubscribe = generateWorld(cubes, worldId, water, rawWorldCubes)
     } catch (error) {
       console.log(error)
     }
@@ -163,5 +174,4 @@ class Create extends Component {
   }
 }
 
-//water flow by doing BFS from source
 export default Create
