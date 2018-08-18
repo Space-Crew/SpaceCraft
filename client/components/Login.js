@@ -27,14 +27,13 @@ export default class AuthForm extends Component {
       event.preventDefault()
       const {email, password} = this.state
       await doSignInWithEmailAndPassword(email, password)
-      unsubscribe()
       this.setState({
         error: '',
         loginSuccess: true
       })
       setTimeout(() => {
         this.setState(initialState)
-        this.props.history.push('/worlds')
+        this.props.history.push('/account')
       }, 1500)
     } catch (err) {
       console.log('there is an error', err)

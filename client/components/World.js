@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
-import {db, currentUser} from '../firebase'
+import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
 
 /*********************************
@@ -13,7 +13,7 @@ let onSpaceBar
 const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
-function generateWorld(cubes, worldId) {
+function generateWorld(cubes, worldId, currentUser) {
   //container for all 3d objects that will be affected by event
   let objects = []
   //renders the scene, camera, and cubes using webGL
@@ -42,7 +42,8 @@ function generateWorld(cubes, worldId) {
     camera,
     renderer.domElement,
     scene,
-    worldId
+    worldId,
+    currentUser
   )
   scene.add(dragControl.getObject())
 
@@ -123,8 +124,17 @@ const showInstructions = isPaused => {
  ********************************/
 
 class World extends Component {
+  constructor() {
+    super();
+    this.state = {
+      currentWorldId: null,
+      players: [],
+      authorizedPlayers: [],
+      author: ''
+    }
+  }
   async componentDidMount() {
-    console.log(currentUser)
+    console.log('hi trying to load')
     try {
       let cubes = []
       let worldId
@@ -135,11 +145,12 @@ class World extends Component {
         if (!world.cubes) {
           cubes = []
         } else {
+          console.log(world)
           cubes = Object.values(world.cubes)
         }
         worldId = world.id
       }
-      this.unsubscribe = generateWorld(cubes, worldId)
+      this.unsubscribe = generateWorld(cubes, worldId, this.props.currentUser)
     } catch (error) {
       console.log(error)
     }

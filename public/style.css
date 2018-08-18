@@ -13,7 +13,10 @@ body {
   background-repeat: repeat;
   background-size: cover;
 }
-#worldList {
+.world-list {
+  margin-top: 80px;
+}
+#account {
   margin-top: 80px;
 }
 #worldList li {

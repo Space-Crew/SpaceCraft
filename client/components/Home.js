@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
+import {unsubscribe} from '../firebase'
 
 // main scene //
 const scene = new THREE.Scene()

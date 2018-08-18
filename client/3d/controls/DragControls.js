@@ -1,9 +1,9 @@
 import * as THREE from 'three'
 import {makeUnitCube} from '../meshes'
-import {addBlockToDb, addBlock, addTempBlockToDb} from './addBlock'
+import {addBlockToDb, addBlock} from './addBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
-import {db, currentUser} from '../../firebase'
+import {db} from '../../firebase'
 import {checkPositionOccupied} from './checkPositionOccupied'
 import makePreviewGrid from '../meshes/makePreviewGrid'
 
@@ -21,7 +21,7 @@ function darken(color, percent) {
   )
 }
 
-THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
+THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId, currentUser) {
   if (_objects instanceof THREE.Camera) {
     console.warn(
       'THREE.DragControls: Constructor now expects ( objects, camera, domElement )'
