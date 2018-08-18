@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
 import {doSignInWithEmailAndPassword} from '../firebase/auth'
 import {Button, Form, Grid, Header, Message, Segment} from 'semantic-ui-react'
+import {unsubscribe} from '../firebase'
 
 /**
  * COMPONENT
@@ -26,13 +27,14 @@ export default class AuthForm extends Component {
       event.preventDefault()
       const {email, password} = this.state
       await doSignInWithEmailAndPassword(email, password)
+      unsubscribe()
       this.setState({
         error: '',
         loginSuccess: true
       })
       setTimeout(() => {
         this.setState(initialState)
-        this.props.history.push('/create')
+        this.props.history.push('/worlds')
       }, 1500)
     } catch (err) {
       console.log('there is an error', err)
