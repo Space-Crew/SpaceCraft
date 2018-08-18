@@ -8,6 +8,7 @@ import {checkPositionOccupied} from './checkPositionOccupied'
 import {updateAvatarInDb} from './updateAvatarInDb'
 import {addAvatar} from './addAvatar'
 import makePreviewGrid from '../meshes/makePreviewGrid'
+import {deleteAvatar} from './deleteAvatar'
 
 function darken(color, percent) {
   let t = percent < 0 ? 0 : 255,
@@ -138,7 +139,7 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
   let color = '#' + Math.floor(Math.random() * 16777215).toString(16)
   updateAvatarInDb({x: 0, y: 0, z: 0}, worldId, yawObject.uuid, color)
   let avatars = {}
-  let avatar
+  let avatar, leftRef
   // event listener to create and add avatar to scene //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
@@ -150,25 +151,24 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
         snapshot.val().color
       )
     }
+    leftRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
     avatars[snapshot.ref.key] = avatar
   })
 
   // event listener to check for any changes in avatar position //
   const avatarRef = db.ref(`/worlds/${worldId}/avatars/`)
   avatarRef.on('child_changed', snapshot => {
+    let avatarToUpdate
     let newPosition = snapshot.val()
     if (snapshot.ref.key !== yawObject.uuid) {
-      let avatarToUpdate = avatars[snapshot.ref.key]
+      avatarToUpdate = avatars[snapshot.ref.key]
       avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
     }
-    let leftRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
-    leftRef.onDisconnect().remove(() => {
-      deleteAvatar()
-    })
+    leftRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
   })
 
-  // event listener to delete avatar from db when user leaves world //
-  // avatarRef.onDisconnect()
+  // remove avatar from db when they dissconnect //
+  leftRef.onDisconnect().remove()
 
   function onColorChange(event) {
     chosenColor = parseInt(event.target.value.replace('#', ''), 16)
