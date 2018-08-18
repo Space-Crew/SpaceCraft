@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 function selectBlock(mouse, camera, objects) {
-  console.log('objects length', objects.length)
   const raycaster = new THREE.Raycaster(
     new THREE.Vector3(),
     new THREE.Vector3(),
@@ -11,7 +10,6 @@ function selectBlock(mouse, camera, objects) {
   const intersections = raycaster
     .intersectObjects(objects)
     .filter(e => !e.unselectable)
-  console.log('intersections', intersections)
   if (intersections.length > 0) {
     return intersections[0].object
   } else return null

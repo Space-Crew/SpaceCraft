@@ -254,7 +254,6 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
       if (worldId === undefined) {
         _objects = deleteBlock(_selected, _scene, _objects)
       } else {
-        console.log(_selected)
         _objects = deleteBlock(_selected, _scene, _objects)
         if (_selected) {
           deleteBlockFromDb(_selected.position, worldId)
