@@ -128,39 +128,6 @@ export default class FlowCube {
     }
     return max - 1
   }
-  /*************
-   * RemoveChildren -- doesn't work right now
-   *************/
-  triggerChildRespawn(child) {
-    //has volume changed? if so respawn
-    if (volumeHasChanged) {
-      this.respawnChild(child)
-    }
-  }
-  _destroyChild(child) {
-    //what about other parents of this child
-    //this matters because a parent might be giving better volume
-    //refactor find max parent volume to cover this as well
-    const otherParents = Object.values(child.parents).filter(
-      parent => parent !== this
-    )
-    child._destroyChildren()
-    this._unlinkChild(child)
-    //updateFlowMap
-    otherParents.forEach(parent => {
-      parent._unlinkChild(child)
-      parent.spawnChildren(cubes, flowMap)
-    })
-  }
-  _destroyChildren(flowMap) {
-    Object.values(this.children).forEach(child => {
-      this._destroyChild(child)
-    })
-  }
-  _respawnChild(child) {
-    this._destroyChild(child)
-    this.spawnChildren()
-  }
 
   get _adjacentPositions() {
     const northPosition = this._clonePosition()

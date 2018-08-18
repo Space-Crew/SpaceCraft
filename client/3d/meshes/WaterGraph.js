@@ -22,21 +22,26 @@ export default class FlowGraph {
       )
     })
   }
+  spawnSourceAt(position) {
+    const source = this.addSourceAt(position)
+    source.spawnChildren(this.worldCubes, this.flowCubes)
+  }
   addSourceAt(position) {
-    const sourceAtPosition = this.flowCubes[toKey(position)]
+    let sourceAtPosition = this.flowCubes[toKey(position)]
     if (!sourceAtPosition) {
       const newSource = new FlowCube(position.x, position.y, position.z, true)
       this.flowCubes[toKey(position)] = newSource
       this.sources[toKey(position)] = newSource.position
-      newSource.spawnChildren(this.worldCubes, this.flowCubes)
+      sourceAtPosition = newSource
     }
+    return sourceAtPosition
   }
   createObstacleAt(position) {
     this.worldCubes[toKey(position)] = true //data not that important I think
-    const cubeAtPosition = this.flowCubes(toKey(position))
+    const cubeAtPosition = this.flowCubes[toKey(position)]
     if (cubeAtPosition) {
       const parents = cubeAtPosition.parents
-      this.destroy(cubeAtPosition)
+      this.destroyLineage(cubeAtPosition)
       this.triggerParents(parents)
     }
   }
@@ -45,12 +50,13 @@ export default class FlowGraph {
       parent.spawnChildren(this.worldCubes, this.flowCubes)
     )
   }
-  destroy(cube) {
-    const destroyTheseBreadthFirst = []
+  destroyLineage(cube) {
+    let destroyTheseBreadthFirst = []
     while (cube) {
-      Object.values(cube.children).forEach(child => cube._unlinkChild(child))
       destroyTheseBreadthFirst.push(...Object.values(cube.children))
-      Object.values(cube.parents).forEach(parent => parent._unlinkChild(cube))
+      Object.values(cube.parents).forEach(parent => {
+        parent._unlinkChild(cube)
+      })
       this.removeFromGraph(cube)
       cube = destroyTheseBreadthFirst.shift()
     }

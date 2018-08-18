@@ -151,42 +151,6 @@ describe('FlowCube', () => {
       expect(flowMap).to.have.all.keys(...waterPositions)
     })
   })
-  xdescribe('removeChildren', () => {
-    describe('simply', () => {
-      const cubes = {'0,-64,0': 'stuff'}
-      let source
-      let flowMap
-      beforeEach(() => {
-        source = new FlowCube(0, -62, 0, true, 2)
-        flowMap = {'0,-62,0': source}
-        source.spawnChildren(cubes, flowMap)
-        source.removeChildren(flowMap)
-      })
-      it('removes all children from this cube', () => {
-        expect(source.children).to.deep.equal({})
-      })
-      it('updates the flowMap', () => {
-        expect(flowMap).to.deep.equal({'0,-62,0': source})
-      })
-    })
-    it('does not delete a child if the child has other parents', () => {
-      const cubes = {'0,-64,0': 'stuff'}
-      const otherSource = new FlowCube(0, -62, 1, true, 1)
-      const source = new FlowCube(0, -62, 0, true, 2)
-      const flowMap = {'0,-62,0': source, '0,-62,1': otherSource}
-
-      source.spawnChildren(cubes, flowMap)
-      otherSource.spawnChildren(cubes, flowMap)
-      expect(otherSource.children).to.have.property('0,-63,1')
-
-      source.removeChildren(flowMap)
-      expect(Object.keys(flowMap)).to.have.lengthOf(4)
-      expect(flowMap).to.have.property('0,-62,0')
-      expect(flowMap).to.have.property('0,-62,1')
-      expect(flowMap).to.have.property('0,-63,1')
-      expect(flowMap).to.have.property('0,-64,1')
-    })
-  })
   describe('_up', () => {
     const source = new FlowCube(0, -62, 0, true)
     it('returns the position above this one', () => {
@@ -273,6 +237,23 @@ describe('FlowCube', () => {
       source1 = undefined
       source2 = undefined
       flowMap = undefined
+    })
+  })
+  describe('_unlinkChild', () => {
+    let source
+    let flowMap
+    let child
+    beforeEach(() => {
+      source = new FlowCube(0, 0, 0, true)
+      flowMap = {'0,0,0': source}
+      child = source._createChild({x: 0, y: 0, z: 1}, flowMap)
+      source._unlinkChild(child)
+    })
+    it('removes the child form the parent', () => {
+      expect(source.children).to.be.empty
+    })
+    it('removes the parent form the child', () => {
+      expect(child.parents).to.be.empty
     })
   })
 })
