@@ -5,7 +5,7 @@ import {db} from '../firebase'
 import {makeWaterCube} from '../3d/meshes'
 import FlowGraph from '../3d/meshes/WaterGraph'
 import {addBlock} from '../3d/controls/addBlock'
-import {deleteBlock} from '../3d/controls/deleteBlock'
+import {attachCameraControls} from '../3d/controls/cameraControls'
 
 /*********************************
  * Construct the Three World
@@ -17,8 +17,6 @@ const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
 function generateWorld(cubes, worldId, water, rawWorldCubes) {
-  //container for all 3d objects that will be affected by event
-  let objects = []
   //renders the scene, camera, and cubes using webGL
   const renderer = new THREE.WebGLRenderer()
   const color = new THREE.Color(0x0f4260)
@@ -34,20 +32,18 @@ function generateWorld(cubes, worldId, water, rawWorldCubes) {
     0.1,
     1000
   )
-  camera.position.y = 0
-  camera.position.z = 0
-
+  camera.controls = attachCameraControls(camera, renderer.domElement)
   //create a new scene
   const scene = new THREE.Scene()
+
+  scene.objects = []
+  scene.worldId = worldId
   //allows for adding, deleting, and moving 3d objects with mouse drag
-  const dragControl = new DragControls(
-    objects,
-    camera,
-    renderer.domElement,
-    scene,
-    worldId
-  )
-  scene.add(dragControl.getObject())
+  scene.addDragControls = function() {
+    this.dragControl = new DragControls(camera, renderer.domElement, this)
+    this.add(this.dragControl.getObject())
+  }
+  scene.addDragControls()
 
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
@@ -85,8 +81,11 @@ function generateWorld(cubes, worldId, water, rawWorldCubes) {
     }
   }
   window.addEventListener('keydown', onSpaceBar, false)
-
-  return dragControl.dispose
+  const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
+  const disposeWorld = () => {
+    tearDownFunctions.forEach(func => func())
+  }
+  return disposeWorld
 }
 
 /*********************************
@@ -134,7 +133,7 @@ const showInstructions = isPaused => {
  * Render the world
  ********************************/
 
-class Create extends Component {
+class World extends Component {
   async componentDidMount() {
     try {
       let cubes = []
@@ -153,7 +152,6 @@ class Create extends Component {
         worldId = world.id
         water = world.water
         rawWorldCubes = world.cubes
-        console.log(`plane mounted:`, cubes)
       }
       this.unsubscribe = generateWorld(cubes, worldId, water, rawWorldCubes)
     } catch (error) {
@@ -165,7 +163,6 @@ class Create extends Component {
     this.unsubscribe()
   }
   render() {
-    console.log('render')
     return (
       <div id="plane">
         <input id="color-palette" type="color" defaultValue="#b9c4c0" />
@@ -174,4 +171,5 @@ class Create extends Component {
   }
 }
 
-export default Create
+//water flow by doing BFS from source
+export default World

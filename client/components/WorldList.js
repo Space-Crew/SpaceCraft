@@ -21,10 +21,10 @@ export default class WorldList extends Component {
     }
   }
   handleClick(id) {
-    this.props.history.push('/create/' + id)
+    this.props.history.push('/worlds/' + id)
   }
   render() {
-    const linkPath = '/create/'
+    const linkPath = '/worlds/'
     return (
       <div id="worldList">
         <h3>World List</h3>
