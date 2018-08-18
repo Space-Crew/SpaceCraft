@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import {makeHead, makeBody, makeArms, makeLegs} from '../meshes'
 
 export const addAvatar = (position, scene) => {
+  console.log('avatar added to scene')
   // build character //
   const head = makeHead()
   const body = makeBody()

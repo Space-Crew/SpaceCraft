@@ -39,7 +39,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   var yawObject = new THREE.Object3D()
   yawObject.position.y = 0
   yawObject.add(pitchObject)
-  console.log(yawObject)
 
   var PI_2 = Math.PI / 2
   var _shiftIsDown = false
@@ -76,7 +75,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     window.addEventListener('keyup', onDocumentOptionUp, false)
     const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
     cubesRef.on('child_added', function(snapshot) {
-      console.log('fired')
       let newCube = snapshot.val()
       addBlock(
         new THREE.Vector3(newCube.x, newCube.y, newCube.z),
@@ -98,34 +96,33 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
   }
 
   // add avatar at initial camera position //
-  let {x, y, z} = yawObject.position
-  let avatar = addAvatar(new THREE.Vector3(x, y, z), _scene)
-  let initialAvatar = true
-  updateAvatarInDb({x, y, z}, worldId, yawObject.uuid)
+  // let avatar = addAvatar(new THREE.Vector3(0, 0, 0), _scene)
+  // console.log(avatar.uuid)
+  // let initialAvatar = true
+  updateAvatarInDb({x: 0, y: 0, z: 0}, worldId, yawObject.uuid)
   // event listener for avatar position change in db //
-
+  let avatars = {}
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
-    if (snapshot.ref.key !== yawObject.uuid) {
-      console.log('fired')
-      let newPosition = snapshot.val()
-      // if (!initialAvatar)
-      // deleteAvatar(_scene, avatar)
-      addAvatar(
-        new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
-        _scene
-      )
-    }
+    // if (snapshot.ref.key !== yawObject.uuid)
+    console.log('child added to db')
+    let avatarPosition = snapshot.val()
+    // if (!initialAvatar)
+    // deleteAvatar(_scene, avatar)
+    let avatar = addAvatar(
+      new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
+      _scene
+    )
+    avatars[snapshot.ref.key] = avatar
   })
 
   const avatarRef = db.ref(`/worlds/${worldId}/avatars/`)
   avatarRef.on('child_changed', snapshot => {
-    console.log(snapshot)
     let newPosition = snapshot.val()
-    addAvatar(
-      new THREE.Vector3(newPosition.x, newPosition.y, newPosition.z),
-      _scene
-    )
+    // console.log(snapshot.ref.key)
+    let avatarToUpdate = avatars[snapshot.ref.key]
+    console.log('avatar to update', avatarToUpdate)
+    avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
   })
 
   function onColorChange(event) {
@@ -209,14 +206,14 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
 
   function onDocumentKeyDown(event) {
     //this currently deletes the camera
-    let avatarToDelete = _scene.children.find(
+    /* let avatarToDelete = _scene.children.find(
       avatar =>
         avatar.uuid !== yawObject.uuid &&
         avatar.position.x === yawObject.position.x &&
         avatar.position.y === yawObject.position.y &&
         avatar.position.z === yawObject.position.z
     )
-    deleteAvatar(_scene, avatarToDelete)
+    deleteAvatar(_scene, avatarToDelete) */
     switch (event.which) {
       case 87: //W
         yawObject.translateZ(-1)
@@ -239,10 +236,10 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
       default:
         break
     }
-    initialAvatar = false
-    x = yawObject.position.x
-    y = yawObject.position.y
-    z = yawObject.position.z
+    // initialAvatar = false
+    // let x = yawObject.position.x
+    // let y = yawObject.position.y
+    // let z = yawObject.position.z
     updateAvatarInDb(yawObject.position, worldId, yawObject.uuid)
   }
 
@@ -334,7 +331,9 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId) {
     console.error(
       'THREE.DragControls: notify() has been deprecated. Use dispatchEvent() instead.'
     )
-    scope.dispatchEvent({type: type})
+    scope.dispatchEvent({
+      type: type
+    })
   }
 }
 
