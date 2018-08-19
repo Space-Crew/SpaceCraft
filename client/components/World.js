@@ -4,7 +4,6 @@ import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 // import {addBlock} from '../3d/controls/addBlock'
 import {attachCameraControls} from '../3d/controls/cameraControls'
-// import {attachWaterToScene} from '../3d/water'
 import {GameFlowGraph} from '../3d/water'
 
 /*********************************
@@ -47,6 +46,7 @@ function generateWorld(world) {
   const scene = new THREE.Scene()
   scene.objects = []
   scene.worldId = world.id
+
   //allows for adding, deleting, and moving 3d objects with mouse drag
   scene.addDragControls = function() {
     this.dragControl = new DragControls(camera, renderer.domElement, this)
@@ -106,7 +106,7 @@ function generateWorld(world) {
   /*********************************
    * Teardown functions
    ********************************/
-
+  
   const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
   const disposeWorld = () => {
     tearDownFunctions.forEach(func => func())
@@ -117,6 +117,7 @@ function generateWorld(world) {
 /*********************************
  * Helper functions
  ********************************/
+
 
 // function addCubesToScene(cubes, scene, objects) {
 //   if (cubes.length > 0) {
