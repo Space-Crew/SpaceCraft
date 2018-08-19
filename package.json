@@ -61,7 +61,8 @@
     "sequelize": "^4.38.0",
     "sinon": "^6.1.5",
     "socket.io": "^2.1.1",
-    "three": "^0.95.0"
+    "three": "^0.95.0",
+    "three-orbitcontrols": "^2.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.55",
