@@ -59,6 +59,7 @@
     "redux-thunk": "^2.3.0",
     "semantic-ui-react": "^0.82.2",
     "sequelize": "^4.38.0",
+    "sinon": "^6.1.5",
     "socket.io": "^2.1.1",
     "three": "^0.95.0"
   },

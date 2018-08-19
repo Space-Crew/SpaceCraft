@@ -20,7 +20,7 @@ class Navbar extends React.Component {
         <Link to="/">
           <div id="logo">SpaceCraft</div>
         </Link>
-        {this.props.location.pathname === '/create' && (
+        {this.props.location.pathname === '/worlds' && (
           <span
             id="nav-instructions"
             className="link-item"
@@ -30,10 +30,10 @@ class Navbar extends React.Component {
           </span>
         )}
         <div id="menu">
-          <Link to="/create">
+          <Link to="/worlds">
             <div className="link-item">Create</div>
           </Link>
-          <Link to="/worlds">
+          <Link to="/worldlist">
             <div className="link-item">Explore</div>
           </Link>
           <div className="link-item">Share</div>
