@@ -1,12 +1,12 @@
 import {expect} from 'chai'
-import {initializeWaterControls} from './waterControls'
+import {initializeWaterControlsObject} from './waterControls'
 import {baseCubes, baseSources, oldWater} from '../../../testData/water'
 import sinon from 'sinon'
 
 describe('waterControls', () => {
   let mockScene
   beforeEach(() => {
-    mockScene = initializeWaterControls(baseSources, baseCubes)
+    mockScene = initializeWaterControlsObject(baseSources, baseCubes)
     mockScene.addWaterAt = sinon.stub().callsFake(() => 'blah')
     mockScene.removeWaterAt = sinon.stub().callsFake(() => 'blah')
   })

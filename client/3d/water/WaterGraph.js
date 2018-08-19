@@ -16,87 +16,26 @@ export class FlowGraph {
   spawnCubesFromSourcePositions() {
     Object.values(this.sourcePositions).forEach(sourcePosition => {
       this.flowCubes[toKey(sourcePosition)] = new FlowCube(sourcePosition, true)
-      this.spawnChildrenFor(this.flowCubes[toKey(sourcePosition)])
+      this.spawnLineageFor(this.flowCubes[toKey(sourcePosition)])
     })
-  }
-  /**********************
-   * Edit sources
-   **********************/
-  spawnSourceAt(position) {
-    if (!this.hasSourceAt(position)) {
-      const source = this.makeSourceAt(position)
-      this.spawnChildrenFor(source)
-    }
-  }
-  hasSourceAt(position) {
-    return !!this.sourcePositions[toKey(position)]
-  }
-  makeSourceAt(position) {
-    const newSource = new FlowCube(position, true)
-    this.flowCubes[toKey(position)] = newSource
-    this.sourcePositions[toKey(position)] = newSource.position
-    return newSource
-  }
-  deleteSourceAt(position) {
-    //BUG!!! deleting a source will delete some children it shouldn't
-    //since some other source might be producing it
-    if (this.hasSourceAt(position)) {
-      this.destroyLineage(this.flowCubes(toKey[position]))
-    }
-  }
-  /**********************
-   * Change all the water when a player puts block in the way
-   **********************/
-  createObstacleAt(position) {
-    this.worldCubes[toKey(position)] = true //data not that important I think
-    if (this.hasCubeAt(position)) {
-      this.rebuildAt(position)
-    }
-  }
-  hasCubeAt(position) {
-    return !!this.flowCubes[toKey(position)]
-  }
-  rebuildAt(position) {
-    const cube = this.flowCubes[toKey(position)]
-    const parents = Object.assign({}, cube.parents)
-    this.destroyLineage(cube)
-    this.makeCubesRespawn(parents)
-  }
-  /**********************
-   * Destroying
-   **********************/
-  destroyLineage(cube) {
-    let destroyTheseBreadthFirst = []
-    while (cube) {
-      destroyTheseBreadthFirst.push(...Object.values(cube.children))
-      this.destoryCube(cube)
-      cube = destroyTheseBreadthFirst.shift()
-    }
-  }
-  destoryCube(cube) {
-    cube.unlinkParents()
-    this.removeFromGraph(cube)
-  }
-  removeFromGraph(cube) {
-    if (cube.isSource) {
-      delete this.sourcePositions[toKey(cube.position)]
-    }
-    delete this.flowCubes[toKey(cube.position)]
   }
   /**********************
    * Flowing
    **********************/
-  makeCubesRespawn(cubes) {
-    Object.values(cubes).forEach(cube => this.spawnChildrenFor(cube))
+  spawnLineageFor(cube) {
+    this.spawnLineageRecursion([cube])
   }
-  spawnChildrenFor(cube, queueBreadthFirst = []) {
-    //makes all generations of children. better name?
-    queueBreadthFirst.push(...this.produceChildrenFor(cube))
-    const newChild = queueBreadthFirst.shift()
-    if (newChild) {
-      this.spawnChildrenFor(newChild, queueBreadthFirst)
+  spawnLineageRecursion(currentGeneration) {
+    if (currentGeneration.length > 0) {
+      let nextGeneration = this.spawnNextGeneration(currentGeneration)
+      this.spawnLineageRecursion(nextGeneration)
     }
-    //shift can be optimized
+  }
+  spawnNextGeneration(generation) {
+    return generation.reduce((allNewchildren, parent) => {
+      const newChildren = this.produceChildrenFor(parent)
+      return allNewchildren.concat(newChildren)
+    }, [])
   }
   produceChildrenFor(cube) {
     //makes one generations of children. better name?
@@ -145,6 +84,73 @@ export class FlowGraph {
     return child
   }
   /**********************
+   * Change all the water when a player puts block in the way
+   **********************/
+  createObstacleAt(position) {
+    this.worldCubes[toKey(position)] = true //data not that important I think
+    if (this.hasCubeAt(position)) {
+      this.rebuildAt(position)
+    }
+  }
+  hasCubeAt(position) {
+    return !!this.flowCubes[toKey(position)]
+  }
+  rebuildAt(position) {
+    const cube = this.flowCubes[toKey(position)]
+    const parents = Object.assign({}, cube.parents)
+    // this.destroyCubeAndLineage(cube)
+    this.makeCubesRespawn(parents)
+  }
+  makeCubesRespawn(cubes) {
+    Object.values(cubes).forEach(cube => {
+      this.respawnCube(cube)
+    })
+  }
+  respawnCube(cube) {
+    this.destroyLineage(cube)
+    this.spawnLineageFor(cube)
+  }
+  /**********************
+   * Destroying
+   **********************/
+  destroyCubeAndLineage(cube) {
+    this.destroyCube(cube)
+    this.destroyLineage(cube)
+  }
+  destroyCube(cube) {
+    cube.unlinkParents()
+    this.removeFromGraph(cube)
+  }
+  removeFromGraph(cube) {
+    if (cube.isSource) {
+      delete this.sourcePositions[toKey(cube.position)]
+    }
+    delete this.flowCubes[toKey(cube.position)]
+  }
+  destroyLineage(cube) {
+    let currentGeneration = Object.values(cube.children)
+    while (currentGeneration.length > 0) {
+      const nextGeneration = this.getNextGeneration(currentGeneration)
+      this.destroyCubes(currentGeneration)
+      currentGeneration = nextGeneration
+    }
+  }
+  getNextGeneration(generation) {
+    return generation.reduce((nextGeneration, cube) => {
+      return nextGeneration.concat(Object.values(cube.children))
+    }, [])
+  }
+  destroyCubes(cubes) {
+    //remind me why do i need to bind the callback function?
+    cubes.forEach(cube => {
+      if (typeof cube !== 'object') {
+        console.log(cubes)
+      }
+      this.destroyCube(cube)
+    })
+  }
+
+  /**********************
    * Change all the water when a player removes a block
    **********************/
   deleteWorldCubeAt(position) {
@@ -152,12 +158,37 @@ export class FlowGraph {
     const upAndFlatNeighbors = this.getUpAndFlatNeighborsFor(position)
     upAndFlatNeighbors.forEach(neighbor => {
       if (this.hasCubeAt(neighbor)) {
-        this.spawnChildrenFor(this.flowCubes[toKey(neighbor)])
+        this.respawnCube(this.flowCubes[toKey(neighbor)])
       }
     })
   }
   getUpAndFlatNeighborsFor(position) {
     const cube = new FlowCube(position)
     return [cube.up, ...cube.flatNeighbors]
+  }
+  /**********************
+   * Edit sources
+   **********************/
+  spawnSourceAt(position) {
+    if (!this.hasSourceAt(position)) {
+      const source = this.makeSourceAt(position)
+      this.spawnLineageFor(source)
+    }
+  }
+  hasSourceAt(position) {
+    return !!this.sourcePositions[toKey(position)]
+  }
+  makeSourceAt(position) {
+    const newSource = new FlowCube(position, true)
+    this.flowCubes[toKey(position)] = newSource
+    this.sourcePositions[toKey(position)] = newSource.position
+    return newSource
+  }
+  deleteSourceAt(position) {
+    //BUG!!! ... maybe. deleting a source will delete some children it shouldn't
+    //since some other source might be producing it
+    if (this.hasSourceAt(position)) {
+      this.destroyCubeAndLineage(this.flowCubes(toKey[position]))
+    }
   }
 }

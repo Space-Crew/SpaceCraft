@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
-import {addBlock} from '../3d/controls/addBlock'
+// import {addBlock} from '../3d/controls/addBlock'
 import {attachCameraControls} from '../3d/controls/cameraControls'
 import {attachWaterToScene} from '../3d/water'
 

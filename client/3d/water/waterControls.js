@@ -4,10 +4,10 @@ import {makeWaterCube} from './makeWaterCube'
 import {toKey} from '..'
 
 export function attachWaterToScene(scene, world) {
-  const waterControls = initializeWaterControls(world.water, world.cubes)
+  const waterControls = initializeWaterControlsObject(world.water, world.cubes)
   Object.assign(scene, waterControls)
 }
-export function initializeWaterControls(waterSources, worldCubes) {
+export function initializeWaterControlsObject(waterSources, worldCubes) {
   return {
     waterGraph: new FlowGraph(waterSources, worldCubes),
     threeMap: {},
