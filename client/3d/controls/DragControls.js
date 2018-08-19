@@ -228,6 +228,11 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
       case 71: //G
         previewBox.togglePreviewGridVisibility()
         break
+      case 90:
+        if (_commandIsDown) {
+          _scene.undoStack.undo()
+        }
+        break
       default:
         break
     }
@@ -249,6 +254,7 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
         addBlock(previewBox.position, chosenColor, _scene, _objects)
       } else {
         addBlockToDb(previewBox.position, chosenColor, worldId)
+        _scene.undoStack.add(previewBox.position, chosenColor, 'ADD')
       }
     } else if (_commandIsDown) {
       if (worldId === undefined) {
@@ -257,6 +263,7 @@ THREE.DragControls = function(_camera, _domElement, _scene) {
         _objects = deleteBlock(_selected, _scene, _objects)
         if (_selected) {
           deleteBlockFromDb(_selected.position, worldId)
+          _scene.undoStack.add(_selected.position, _selected.color, 'DELETE')
         }
       }
     } else if (_selected) {
