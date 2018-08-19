@@ -4,7 +4,8 @@ import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 // import {addBlock} from '../3d/controls/addBlock'
 import {attachCameraControls} from '../3d/controls/cameraControls'
-import {attachWaterToScene} from '../3d/water'
+// import {attachWaterToScene} from '../3d/water'
+import {GameFlowGraph} from '../3d/water'
 
 /*********************************
  * Construct the Three World
@@ -53,9 +54,8 @@ function generateWorld(world) {
   }
   scene.addDragControls()
 
-  attachWaterToScene(scene, world)
-  scene.addAllWater()
-  scene.listenForChangesToUpdateWater(scene, world.id)
+  const water = new GameFlowGraph(world.water, world.cubes, scene)
+  water.connectToWorld(world.id)
 
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)

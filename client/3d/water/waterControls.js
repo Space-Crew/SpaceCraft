@@ -1,5 +1,6 @@
 import {db} from '../../firebase'
-import {FlowGraph} from './WaterGraph'
+import {GameFlowGraph} from './GameFlowGraph'
+// import {FlowGraph} from './waterGraph'
 import {makeWaterCube} from './makeWaterCube'
 import {toKey} from '..'
 
@@ -7,15 +8,14 @@ export function attachWaterToScene(scene, world) {
   const waterControls = initializeWaterControlsObject(world.water, world.cubes)
   Object.assign(scene, waterControls)
 }
-export function initializeWaterControlsObject(waterSources, worldCubes) {
+export function initializeWaterControlsObject(scene, waterSources, worldCubes) {
   return {
-    waterGraph: new FlowGraph(waterSources, worldCubes),
+    waterGraph: new GameFlowGraph(waterSources, worldCubes, scene),
     threeMap: {},
     addAllWater,
     addWaterAt,
     addWaterCubes,
     removeWaterCubes,
-    removeWaterAt,
     updateSceneWithDifferences,
     listenForChangesToUpdateWater,
     disposeOfCubeAt
@@ -29,7 +29,6 @@ function listenForChangesToUpdateWater(scene, worldId) {
 }
 function listenForAdditions(scene, cubesRef) {
   cubesRef.on('child_added', function(snapshot) {
-    console.log(`child Added to Db`)
     const newCubePosition = snapshot.val()
     const oldFlowCubes = Object.assign({}, scene.waterGraph.flowCubes)
     scene.waterGraph.createObstacleAt(newCubePosition)
@@ -56,10 +55,15 @@ function getWaterToDelete(newWater, oldFlowCubes) {
   })
 }
 function removeWaterCubes(cubes) {
-  cubes.forEach(cube => this.removeWaterAt(cube.position))
+  cubes.forEach(cube => this.disposeOfCubeAt(cube.position))
 }
-function removeWaterAt(position) {
-  this.disposeOfCubeAt(position)
+function disposeOfCubeAt(position) {
+  let threeCube = this.threeMap[toKey(position)]
+  this.remove(threeCube)
+  threeCube.geometry.dispose()
+  threeCube.material.dispose()
+  delete this.threeMap[position]
+  threeCube = undefined
 }
 function getWaterToAdd(newWater, oldFlowCubes) {
   return Object.values(newWater.flowCubes).filter(cube => {
@@ -76,14 +80,6 @@ function addWaterAt(position) {
     this.disposeOfCubeAt(position)
   }
   this.threeMap[toKey(position)] = threeObject
-}
-function disposeOfCubeAt(position) {
-  let threeCube = this.threeMap[toKey(position)]
-  this.remove(threeCube)
-  threeCube.geometry.dispose()
-  threeCube.material.dispose()
-  delete this.threeMap[position]
-  threeCube = undefined
 }
 function addAllWater() {
   Object.values(this.waterGraph.flowCubes).forEach(waterCube => {

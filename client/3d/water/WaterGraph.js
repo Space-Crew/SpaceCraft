@@ -8,13 +8,13 @@ export class FlowGraph {
     this.sourcePositions = sourcePositions
     this.worldCubes = worldCubes
     this.flowCubes = {}
-    this.spawnCubesFromSourcePositions()
   }
   /**********************
    * Initialize graph
    **********************/
   spawnCubesFromSourcePositions() {
     Object.values(this.sourcePositions).forEach(sourcePosition => {
+      console.log(`I was run for sourcePosition`, sourcePosition)
       this.flowCubes[toKey(sourcePosition)] = new FlowCube(sourcePosition, true)
       this.spawnLineageFor(this.flowCubes[toKey(sourcePosition)])
     })
@@ -78,6 +78,9 @@ export class FlowGraph {
       return this.createAndStoreChild(cube, position)
     }
   }
+  hasCubeAt(position) {
+    return !!this.flowCubes[toKey(position)]
+  }
   createAndStoreChild(cube, position) {
     const child = cube.createChildAt(position)
     this.flowCubes[toKey(position)] = child
@@ -89,13 +92,10 @@ export class FlowGraph {
   createObstacleAt(position) {
     this.worldCubes[toKey(position)] = true //data not that important I think
     if (this.hasCubeAt(position)) {
-      this.rebuildAt(position)
+      this.respawnParentsOfCubeAt(position)
     }
   }
-  hasCubeAt(position) {
-    return !!this.flowCubes[toKey(position)]
-  }
-  rebuildAt(position) {
+  respawnParentsOfCubeAt(position) {
     const cube = this.flowCubes[toKey(position)]
     const parents = Object.assign({}, cube.parents)
     // this.destroyCubeAndLineage(cube)
@@ -128,11 +128,13 @@ export class FlowGraph {
     delete this.flowCubes[toKey(cube.position)]
   }
   destroyLineage(cube) {
-    let currentGeneration = Object.values(cube.children)
-    while (currentGeneration.length > 0) {
+    this.destroyLineageRecursion(Object.values(cube.children))
+  }
+  destroyLineageRecursion(currentGeneration) {
+    if (currentGeneration.length > 0) {
       const nextGeneration = this.getNextGeneration(currentGeneration)
       this.destroyCubes(currentGeneration)
-      currentGeneration = nextGeneration
+      this.destroyLineageRecursion(nextGeneration)
     }
   }
   getNextGeneration(generation) {
@@ -142,12 +144,7 @@ export class FlowGraph {
   }
   destroyCubes(cubes) {
     //remind me why do i need to bind the callback function?
-    cubes.forEach(cube => {
-      if (typeof cube !== 'object') {
-        console.log(cubes)
-      }
-      this.destroyCube(cube)
-    })
+    cubes.forEach(this.destroyCube.bind(this))
   }
 
   /**********************
