@@ -92,7 +92,7 @@ function generateWorld(cubes, worldId, currentUser) {
   return function() {
     cameraControl.dispose();
     blockControl.dispose();
-    previewBox.dispose();
+    previewControl.dispose();
   }
 }
 

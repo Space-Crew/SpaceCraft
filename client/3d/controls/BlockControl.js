@@ -12,7 +12,7 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
   const mouseVector = new THREE.Vector3()
   const mouseVectorForBox = new THREE.Vector3()
   const _raycaster = new THREE.Raycaster()
-  const {_domElement, _objects, _camera, _scene} = essentials;
+  let {_domElement, _objects, _camera, _scene} = essentials;
   let distanceToSelected;
   let _shiftIsDown = false;
   let _commandIsDown = false;
@@ -191,6 +191,7 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
       }
     } else if (_selected) {
       originalPosition = _selected.position
+      console.log('original position', originalPosition)
     }
   }
   
