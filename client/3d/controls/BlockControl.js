@@ -31,13 +31,20 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     document
     .getElementById('color-palette')
     .addEventListener('change', onColorChange, false)
+
     const cubesRef = db.ref(`/worlds/${worldId}/cubes/`)
     cubesRef.on('child_added', async function(snapshot) {
       if (snapshot.key.indexOf('temp') === 0) {
+        console.log('temp created in database!')
         if (snapshot.key.slice(4) === currentUser.displayName) {
+          console.log('your own temp!')
           await deleteBlockFromDb(originalPosition, worldId)
           cubesToBeMoved[snapshot.key.slice(4)] = addBlock(
-            originalPosition,
+            new THREE.Vector3(
+              snapshot.val().x,
+              snapshot.val().y,
+              snapshot.val().z
+            ),
             snapshot.val().color,
             _scene,
             _objects
@@ -74,19 +81,20 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
             cube.position.y === deletedCube.y &&
             cube.position.z === deletedCube.z 
         )
-        deleteBlock(selectedCube, _scene, _objects)
-      } else if (snapshot.key.slice(4) === currentUser.displayName) {
-        addBlockToDb(
-          new THREE.Vector3(
-            snapshot.val().x,
-            snapshot.val().y,
-            snapshot.val().z
-          ),
-          snapshot.val().color,
-          worldId
-        )
+        _objects = deleteBlock(selectedCube, _scene, _objects)
       } else {
-        deleteBlock(cubesToBeMoved[snapshot.key.slice(4)], _scene, _objects)
+        _objects = deleteBlock(cubesToBeMoved[snapshot.key.slice(4)], _scene, _objects)
+        if (snapshot.key.slice(4) === currentUser.displayName) {
+          addBlockToDb(
+            new THREE.Vector3(
+              snapshot.val().x,
+              snapshot.val().y,
+              snapshot.val().z
+            ),
+            snapshot.val().color,
+            worldId
+          )
+        }
       }
     })
     cubesRef.on('child_changed', function(snapshot) {
@@ -161,7 +169,9 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
           z: mouseVector.z,
           color: _selected.material.color.getHex()
         })
-        _selected.position.copy(mouseVector)
+        if (_selected) { //sometimes user drags and releases too fast. this prevents err log when _selected becomes null while user still dragging
+          _selected.position.copy(mouseVector)
+        }
       }
     }
     mouseVectorForBox.copy(yawObject.position)
@@ -176,6 +186,7 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     if (_selected) {
       distanceToSelected = yawObject.position.distanceTo(_selected.position)
       _domElement.style.cursor = 'move'
+      originalPosition = _selected.position
     }
     const isAddPositionOccupied = checkPositionOccupied(
       previewBox.position,
@@ -189,9 +200,6 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
       if (_selected) {
         deleteBlockFromDb(_selected.position, worldId)
       }
-    } else if (_selected) {
-      originalPosition = _selected.position
-      console.log('original position', originalPosition)
     }
   }
   
@@ -205,7 +213,7 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     )
     await tempRef.remove()
     if (!_commandIsDown && !_shiftIsDown) {
-      _scene.remove(cubesToBeMoved[currentUser.displayName])
+      // _scene.remove(cubesToBeMoved[currentUser.displayName])
       delete cubesToBeMoved[currentUser.displayName]
     }
   }
