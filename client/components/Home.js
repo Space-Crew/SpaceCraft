@@ -22,11 +22,6 @@ const lightAmb = new THREE.AmbientLight(0x777777, 0.5)
 scene.add(lightAmb)
 
 // START PLANETS //
-const addToGroup = (orbitGroup, circle, planet) => {
-  orbitGroup.add(circle)
-  orbitGroup.add(planet)
-}
-const lineMaterial = new THREE.LineDashedMaterial({color: 'teal'})
 const textureLoader = new THREE.TextureLoader()
 
 // first planet from the sun //
@@ -110,14 +105,9 @@ firstPlanet.position.set(2, 0, 0)
 // const geo = new THREE.geomet()
 const firstOrbit = new THREE.Group()
 firstOrbit.add(firstPlanet)
-// addToGroup(firstOrbit, firstCircle, firstPlanet)
 
 // second planet from the sun //
 const jupiterTexture = textureLoader.load('/textures/jupiter.jpg')
-// const secondCircleGeo = new THREE.CircleGeometry(3.5, 100)
-// secondCircleGeo.vertices.shift()
-// const secondCircle = new THREE.Line(secondCircleGeo, lineMaterial)
-// secondCircle.rotation.x = Math.PI * 0.51
 const secondPlanetMat = new THREE.MeshPhongMaterial()
 secondPlanetMat.map = jupiterTexture
 const secondPlanet = new THREE.Mesh(
@@ -127,15 +117,9 @@ const secondPlanet = new THREE.Mesh(
 secondPlanet.position.set(3.5, 0, 0)
 const secondOrbit = new THREE.Group()
 secondOrbit.add(secondPlanet)
-// addToGroup(secondOrbit, secondCircle, secondPlanet)
 
 // third planet from the sun //
-
 const earthTexture = textureLoader.load('/textures/earth.jpg')
-// const thirdCircleGeo = new THREE.CircleGeometry(5, 100)
-// thirdCircleGeo.vertices.shift()
-// const thirdCircle = new THREE.Line(thirdCircleGeo, lineMaterial)
-// thirdCircle.rotation.x = Math.PI * 0.5
 const thirdPlanetMat = new THREE.MeshPhongMaterial()
 thirdPlanetMat.map = earthTexture
 const thirdPlanet = new THREE.Mesh(
@@ -148,10 +132,6 @@ thirdOrbit.add(thirdPlanet)
 
 // fourth planet from the sun //
 const marsTexture = textureLoader.load('/textures/mars.jpg')
-// const fourthCircleGeo = new THREE.CircleGeometry(7.5, 100)
-// fourthCircleGeo.vertices.shift()
-// const fourthCircle = new THREE.Line(fourthCircleGeo, lineMaterial)
-// fourthCircle.rotation.x = Math.PI * 0.5
 const fourthPlanetMap = new THREE.MeshPhongMaterial()
 fourthPlanetMap.map = marsTexture
 const fourthPlanet = new THREE.Mesh(
@@ -161,7 +141,6 @@ const fourthPlanet = new THREE.Mesh(
 fourthPlanet.position.set(7.5, 0, 0)
 const fourthOrbit = new THREE.Group()
 fourthOrbit.add(fourthPlanet)
-// addToGroup(fourthOrbit, fourthCircle, fourthPlanet)
 
 const orbitDir = new THREE.Group()
 // shooting stars //
@@ -182,7 +161,6 @@ orbitDir.add(firstOrbit)
 orbitDir.add(secondOrbit)
 orbitDir.add(thirdOrbit)
 orbitDir.add(fourthOrbit)
-// orbitDir.add(star1Orbit)
 scene.add(orbitDir)
 
 // sun //
@@ -198,8 +176,6 @@ const sun = new THREE.Mesh(sunGeo, sunMat)
 var pointLight = new THREE.PointLight(0xffffff, 1.0, 10.0)
 sun.add(pointLight)
 scene.add(sun)
-
-// FINISHED PLANETS //
 
 // renderer //
 const renderer = new THREE.WebGLRenderer()
