@@ -138,7 +138,7 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     }
   }
   
-  function onDocumentMouseMove(event) {
+  async function onDocumentMouseMove(event) {
     event.preventDefault()
     const rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
@@ -155,7 +155,7 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
       )
       if (!isMovePositionOccupied && !_commandIsDown && !_shiftIsDown) {
         const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
-        cubesRef.child('temp' + currentUser.displayName).set({
+        await cubesRef.child('temp' + currentUser.displayName).set({
           x: mouseVector.x,
           y: mouseVector.y,
           z: mouseVector.z,
@@ -195,7 +195,7 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     }
   }
   
-  function onDocumentMouseCancel(event) {
+  async function onDocumentMouseCancel(event) {
     event.preventDefault()
     if (_selected) {
       _selected = null
@@ -203,7 +203,7 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     const tempRef = db.ref(
       `/worlds/${worldId}/cubes/temp${currentUser.displayName}`
     )
-    tempRef.remove()
+    await tempRef.remove()
     if (!_commandIsDown && !_shiftIsDown) {
       _scene.remove(cubesToBeMoved[currentUser.displayName])
       delete cubesToBeMoved[currentUser.displayName]

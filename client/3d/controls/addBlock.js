@@ -39,6 +39,7 @@ export function addTempBlockToDb(position, color = 0xb9c4c0, worldId, username) 
 }
 
 export function addBlock(position, color, scene, objects) {
+  console.log('block added to', position)
   const cube = makeUnitCube(position, color, 1)
   scene.add(cube)
   objects.push(cube)
