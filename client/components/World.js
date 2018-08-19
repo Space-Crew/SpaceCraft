@@ -6,6 +6,7 @@ import {makeWaterCube} from '../3d/meshes'
 import FlowGraph from '../3d/meshes/WaterGraph'
 import {addBlock} from '../3d/controls/addBlock'
 import {attachCameraControls} from '../3d/controls/cameraControls'
+import UndoStack from '../3d/controls/undoStack'
 
 /*********************************
  * Construct the Three World
@@ -38,6 +39,7 @@ function generateWorld(cubes, worldId, water, rawWorldCubes) {
 
   scene.objects = []
   scene.worldId = worldId
+  scene.undoStack = new UndoStack(worldId)
   //allows for adding, deleting, and moving 3d objects with mouse drag
   scene.addDragControls = function() {
     this.dragControl = new DragControls(camera, renderer.domElement, this)
