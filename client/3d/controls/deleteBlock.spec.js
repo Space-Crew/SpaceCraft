@@ -1,6 +1,6 @@
-const {expect} = require('chai')
-const THREE = require('three')
-const {deleteBlock} = require('./deleteBlock')
+import {expect} from 'chai'
+import * as THREE from 'three'
+import {deleteBlock} from './deleteBlock'
 const position = new THREE.Vector3(1, 6, 9)
 const color = 0x4286f4
 const scene = new THREE.Scene()
