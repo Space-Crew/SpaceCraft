@@ -5,70 +5,52 @@ import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import selectBlock from './selectBlock'
 import {db} from '../../firebase'
 import {checkPositionOccupied} from './checkPositionOccupied'
-import makePreviewGrid from '../meshes/makePreviewGrid'
-
-function darken(color, percent) {
-  let t = percent < 0 ? 0 : 255,
-    p = percent < 0 ? percent * -1 : percent,
-    R = color >> 16,
-    G = (color >> 8) & 0x00ff,
-    B = color & 0x0000ff
-  return (
-    0x1000000 +
-    (Math.round((t - R) * p) + R) * 0x10000 +
-    (Math.round((t - G) * p) + G) * 0x100 +
-    (Math.round((t - B) * p) + B)
-  )
-}
+import makePreviewGrid from '../utilities/makePreviewGrid'
+import darken from '../utilities/darken'
 
 THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId, currentUser) {
-  if (_objects instanceof THREE.Camera) {
-    console.warn(
-      'THREE.DragControls: Constructor now expects ( objects, camera, domElement )'
-    )
-    let temp = _objects
-    _objects = _camera
-    _camera = temp
-  }
+
+  const cameraZoom = 6       // always add cubes 6 units away
+  // camera essentials
+  const _raycaster = new THREE.Raycaster()
+  const _mouse = new THREE.Vector2()
+  //utilities
+  const mouseVectorForBox = new THREE.Vector3()
+  const mouseVector = new THREE.Vector3()
+  const position = new THREE.Vector3(0, 0, 0)
+  const previewGrid = makePreviewGrid()
+  const cubesToBeMoved = {}
+  //pitchObject
   let pitchObject = new THREE.Object3D()
   pitchObject.add(_camera)
   pitchObject.rotation.x = Math.PI / 2
-
+  //yawObject
   let yawObject = new THREE.Object3D()
   yawObject.position.y = 0
   yawObject.add(pitchObject)
-
-  let PI_2 = Math.PI / 2
-  let _shiftIsDown = false
-  let _commandIsDown = false
-  let _raycaster = new THREE.Raycaster()
-  const mouseVectorForBox = new THREE.Vector3()
-  const mouseVector = new THREE.Vector3()
-  let scale = 6
-  let distanceToSelected
-
-  let _mouse = new THREE.Vector2()
-  const position = new THREE.Vector3(0, 0, 0)
+  //previewBlock
   let previewBox = makeUnitCube(position, 0xb9c4c0, 0.3)
   previewBox.unselectable = true
   previewBox.visible = false
-  const previewGrid = makePreviewGrid()
   previewBox.add(previewGrid.grid)
   previewBox.togglePreviewGridVisibility = previewGrid.boundToggleVisibility
+  //variables
+  let _shiftIsDown = false,
+      _commandIsDown = false,
+      _selected = null,
+      _hovered = null,
+      distanceToSelected,
+      chosenColor,
+      originalPosition
+
   _scene.add(previewBox)
-  let chosenColor
-  let originalPosition
-  let _selected = null,
-    _hovered = null
 
   let scope = this
-  let cubesToBeMoved = {}
 
   function activate() {
     _domElement.addEventListener('mousemove', onDocumentMouseMove, false)
     _domElement.addEventListener('mousedown', onDocumentMouseDown, false)
-    _domElement.addEventListener('mouseup', onDocumentMouseCancel, false) //able to release
-    // _domElement.addEventListener('mouseleave', onDocumentMouseCancel, false)
+    _domElement.addEventListener('mouseup', onDocumentMouseCancel, false)
     document
       .getElementById('color-palette')
       .addEventListener('change', onColorChange, false)
@@ -212,8 +194,8 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId, c
     pitchObject.rotation.x -= movementY * 0.004
 
     pitchObject.rotation.x = Math.max(
-      -PI_2,
-      Math.min(PI_2, pitchObject.rotation.x)
+      -Math.PI / 2,
+      Math.min(Math.PI / 2, pitchObject.rotation.x)
     )
 
     if (_selected && scope.enabled) {
@@ -236,7 +218,7 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId, c
       }
     }
     mouseVectorForBox.copy(yawObject.position)
-    mouseVectorForBox.addScaledVector(_raycaster.ray.direction, scale)
+    mouseVectorForBox.addScaledVector(_raycaster.ray.direction, cameraZoom)
     mouseVectorForBox.round()
     previewBox.position.copy(mouseVectorForBox)
   }
@@ -350,33 +332,6 @@ THREE.DragControls = function(_objects, _camera, _domElement, _scene, worldId, c
   this.activate = activate
   this.deactivate = deactivate
   this.dispose = dispose
-
-  // Backward compatibility
-
-  this.setObjects = function() {
-    console.error('THREE.DragControls: setObjects() has been removed.')
-  }
-
-  this.on = function(type, listener) {
-    console.warn(
-      'THREE.DragControls: on() has been deprecated. Use addEventListener() instead.'
-    )
-    scope.addEventListener(type, listener)
-  }
-
-  this.off = function(type, listener) {
-    console.warn(
-      'THREE.DragControls: off() has been deprecated. Use removeEventListener() instead.'
-    )
-    scope.removeEventListener(type, listener)
-  }
-
-  this.notify = function(type) {
-    console.error(
-      'THREE.DragControls: notify() has been deprecated. Use dispatchEvent() instead.'
-    )
-    scope.dispatchEvent({type: type})
-  }
 }
 
 THREE.DragControls.prototype = Object.create(THREE.EventDispatcher.prototype)

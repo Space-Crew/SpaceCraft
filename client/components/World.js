@@ -3,6 +3,10 @@ import * as THREE from 'three'
 import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
+import CameraControl from '../3d/controls/cameraControl';
+import ListenToDb from '../3d/controls/dblisteners';
+import BlockControl from '../3d/controls/BlockControl';
+import PreviewControl from '../3d/controls/previewControl';
 
 /*********************************
  * Construct the Three World
@@ -16,6 +20,7 @@ const instructions = document.getElementById('instructions')
 function generateWorld(cubes, worldId, currentUser) {
   //container for all 3d objects that will be affected by event
   let objects = []
+  const cubesToBeMoved = {}
   //renders the scene, camera, and cubes using webGL
   const renderer = new THREE.WebGLRenderer()
   const color = new THREE.Color(0x0f4260)
@@ -37,16 +42,26 @@ function generateWorld(cubes, worldId, currentUser) {
   //create a new scene
   const scene = new THREE.Scene()
   //allows for adding, deleting, and moving 3d objects with mouse drag
-  const dragControl = new DragControls(
-    objects,
-    camera,
-    renderer.domElement,
-    scene,
-    worldId,
-    currentUser
+  // const dragControl = new DragControls(
+  //   objects,
+  //   camera,
+  //   renderer.domElement,
+  //   scene,
+  //   worldId,
+  //   currentUser
+  // )
+  // scene.add(dragControl.getObject())
+  // addCubesToScene(cubes, scene, objects)
+  const cameraControl = new CameraControl(
+    camera, renderer.domElement 
   )
-  scene.add(dragControl.getObject())
-
+  
+  scene.add(cameraControl.getObject())
+  const previewControl = new PreviewControl(scene);
+  const previewBox = previewControl.previewBox;
+  const blockControl = new BlockControl(
+    renderer.domElement, objects, camera, scene, currentUser, worldId, cameraControl.getObject(), previewBox, cubesToBeMoved
+  )
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
   const pointLight = new THREE.PointLight(0xffffff, 0.8)
@@ -75,7 +90,7 @@ function generateWorld(cubes, worldId, currentUser) {
   }
   window.addEventListener('keydown', onSpaceBar, false)
 
-  return dragControl.dispose
+  return cameraControl.dispose
 }
 
 /*********************************

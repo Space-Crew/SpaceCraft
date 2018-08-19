@@ -13,19 +13,18 @@ class Navbar extends React.Component {
     this.handleCreateWorld = this.handleCreateWorld.bind(this);
   }
 
-  handleCreateWorld() {
+  async handleCreateWorld() {
     const currentUser = this.props.currentUser
     const worldsRef = db.ref('/worlds');
-    const newWorld = worldsRef.push({
-      author: currentUser ? currentUser.displayName : 'guest'
-    })
+    const newWorld = await worldsRef.push()
     const worldId = newWorld.key;
     if (currentUser) {
       const userRef = db.ref(`users/${currentUser.uid}/worlds`);
       userRef.push(worldId);
     }
     newWorld.set({
-      id: worldId
+      id: worldId,
+      author: currentUser ? currentUser.displayName : 'guest'
     })
     this.props.history.push(`/worlds/${worldId}`);
   }
