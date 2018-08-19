@@ -35,9 +35,7 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     const cubesRef = db.ref(`/worlds/${worldId}/cubes/`)
     cubesRef.on('child_added', async function(snapshot) {
       if (snapshot.key.indexOf('temp') === 0) {
-        console.log('temp created in database!')
         if (snapshot.key.slice(4) === currentUser.displayName) {
-          console.log('your own temp!')
           await deleteBlockFromDb(originalPosition, worldId)
           cubesToBeMoved[snapshot.key.slice(4)] = addBlock(
             new THREE.Vector3(
@@ -130,7 +128,6 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
   function onDocumentKeyDown(event) {
     if (event.which === 16) {
       _shiftIsDown = true
-      console.log(_shiftIsDown)
     }
     if (event.which === 91) {
       _commandIsDown = true
@@ -139,7 +136,6 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
   function onDocumentKeyUp(event) {
     if (event.which === 16) {
       _shiftIsDown = false
-      console.log(_shiftIsDown)
     }
     if (event.which === 91) {
       _commandIsDown = false
@@ -192,7 +188,6 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
       previewBox.position,
       _objects
     )
-    console.log(isAddPositionOccupied, _shiftIsDown);
     if (!isAddPositionOccupied && _shiftIsDown) {
       addBlockToDb(previewBox.position, chosenColor, worldId)
     } else if (_commandIsDown) {
@@ -213,7 +208,6 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     )
     await tempRef.remove()
     if (!_commandIsDown && !_shiftIsDown) {
-      // _scene.remove(cubesToBeMoved[currentUser.displayName])
       delete cubesToBeMoved[currentUser.displayName]
     }
   }

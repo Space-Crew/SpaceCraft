@@ -152,7 +152,6 @@ class World extends Component {
     }
   }
   async componentDidMount() {
-    console.log('hi trying to load')
     try {
       let cubes = []
       let worldId
@@ -163,7 +162,6 @@ class World extends Component {
         if (!world.cubes) {
           cubes = []
         } else {
-          console.log(world)
           cubes = Object.values(world.cubes)
         }
         worldId = world.id
