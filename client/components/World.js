@@ -1,10 +1,8 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
-import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
 import {addBlock} from '../3d/controls/addBlock'
 import CameraControl from '../3d/controls/cameraControl';
-import ListenToDb from '../3d/controls/dblisteners';
 import BlockControl from '../3d/controls/BlockControl';
 import PreviewControl from '../3d/controls/previewControl';
 

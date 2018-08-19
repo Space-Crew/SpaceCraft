@@ -1,8 +1,6 @@
 import * as THREE from 'three'
-import CameraControl from './cameraControl'
 import {checkPositionOccupied} from './checkPositionOccupied'
 import {db} from '../../firebase'
-import PreviewControl from './previewControl'
 import selectBlock from './selectBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import {addBlock, addBlockToDb} from './addBlock'
@@ -124,6 +122,7 @@ const BlockControl = function(_domElement, _objects, _camera, _scene, currentUse
   function onDocumentKeyDown(event) {
     if (event.which === 16) {
       _shiftIsDown = true
+      console.log(_shiftIsDown)
     }
     if (event.which === 91) {
       _commandIsDown = true
@@ -132,6 +131,7 @@ const BlockControl = function(_domElement, _objects, _camera, _scene, currentUse
   function onDocumentKeyUp(event) {
     if (event.which === 16) {
       _shiftIsDown = false
+      console.log(_shiftIsDown)
     }
     if (event.which === 91) {
       _commandIsDown = false
@@ -181,6 +181,7 @@ const BlockControl = function(_domElement, _objects, _camera, _scene, currentUse
       previewBox.position,
       _objects
     )
+    console.log(isAddPositionOccupied, _shiftIsDown);
     if (!isAddPositionOccupied && _shiftIsDown) {
       addBlockToDb(previewBox.position, chosenColor, worldId)
     } else if (_commandIsDown) {
@@ -196,7 +197,6 @@ const BlockControl = function(_domElement, _objects, _camera, _scene, currentUse
   function onDocumentMouseCancel(event) {
     event.preventDefault()
     if (_selected) {
-      window.removeEventListener('keydown', onDocumentKeyDown, false)
       _selected = null
     }
     const tempRef = db.ref(
