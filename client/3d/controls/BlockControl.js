@@ -6,13 +6,13 @@ import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import {addBlock, addBlockToDb} from './addBlock'
 import darken from '../utilities/darken'
 
-const BlockControl = function(_domElement, _objects, _camera, _scene, currentUser, worldId, yawObject, previewBox, cubesToBeMoved) {
+const BlockControl = function(essentials, currentUser, worldId, yawObject, previewBox, cubesToBeMoved) {
 
   const _mouse = new THREE.Vector2()
   const mouseVector = new THREE.Vector3()
   const mouseVectorForBox = new THREE.Vector3()
   const _raycaster = new THREE.Raycaster()
-
+  const {_domElement, _objects, _camera, _scene} = essentials;
   let distanceToSelected;
   let _shiftIsDown = false;
   let _commandIsDown = false;

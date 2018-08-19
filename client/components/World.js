@@ -57,8 +57,9 @@ function generateWorld(cubes, worldId, currentUser) {
   scene.add(cameraControl.getObject())
   const previewControl = new PreviewControl(scene);
   const previewBox = previewControl.previewBox;
+  const essentials = {_domElement: renderer.domElement, _objects: objects, _camera: camera, _scene: scene}
   const blockControl = new BlockControl(
-    renderer.domElement, objects, camera, scene, currentUser, worldId, cameraControl.getObject(), previewBox, cubesToBeMoved
+    essentials, currentUser, worldId, cameraControl.getObject(), previewBox, cubesToBeMoved
   )
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
@@ -88,7 +89,11 @@ function generateWorld(cubes, worldId, currentUser) {
   }
   window.addEventListener('keydown', onSpaceBar, false)
 
-  return cameraControl.dispose
+  return function() {
+    cameraControl.dispose();
+    blockControl.dispose();
+    previewBox.dispose();
+  }
 }
 
 /*********************************
@@ -169,7 +174,7 @@ class World extends Component {
     }
   }
   componentWillUnmount() {
-    window.removeEventListener('keydown', onSpaceBar, false)
+    // window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {
