@@ -1,7 +1,7 @@
-import FlowCube from './water'
+import {FlowCube} from './water'
 import {toKey} from '..'
 
-export default class FlowGraph {
+export class FlowGraph {
   constructor(sourcePositions = {}, worldCubes = {}) {
     //wish I had made all of these Maps so I could iterate and get/set better
     //this is a take away for resume
@@ -100,9 +100,12 @@ export default class FlowGraph {
   }
   produceChildrenFor(cube) {
     //makes one generations of children. better name?
-    return this.findSpacesToFlowFor(cube).map(position => {
-      return this.makeCubeFlowTo(cube, position)
-    })
+    return this.findSpacesToFlowFor(cube)
+      .map(position => {
+        return this.makeCubeFlowTo(cube, position)
+      })
+      .filter(newCube => newCube !== null)
+    //returns an array of new children created
   }
   findSpacesToFlowFor(cube) {
     if (this.noCubeBelow(cube) && this.cubeCanFlowTo(cube, cube.down)) {
@@ -131,8 +134,7 @@ export default class FlowGraph {
     if (this.hasCubeAt(position)) {
       const child = this.flowCubes[toKey(position)]
       cube.linkChild(child)
-      return child
-      //could cause a respawn unnecessarily, but who cares
+      return null //because we did not create a new child
     } else {
       return this.createAndStoreChild(cube, position)
     }
@@ -141,5 +143,21 @@ export default class FlowGraph {
     const child = cube.createChildAt(position)
     this.flowCubes[toKey(position)] = child
     return child
+  }
+  /**********************
+   * Change all the water when a player removes a block
+   **********************/
+  deleteWorldCubeAt(position) {
+    delete this.worldCubes[toKey(position)]
+    const upAndFlatNeighbors = this.getUpAndFlatNeighborsFor(position)
+    upAndFlatNeighbors.forEach(neighbor => {
+      if (this.hasCubeAt(neighbor)) {
+        this.spawnChildrenFor(this.flowCubes[toKey(neighbor)])
+      }
+    })
+  }
+  getUpAndFlatNeighborsFor(position) {
+    const cube = new FlowCube(position)
+    return [cube.up, ...cube.flatNeighbors]
   }
 }

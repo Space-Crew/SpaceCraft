@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import FlowGraph from './WaterGraph'
+import {FlowGraph} from './WaterGraph'
 import sinon from 'sinon'
 
 describe('FlowGraph', () => {
@@ -186,6 +186,29 @@ describe('FlowGraph', () => {
       expect(graph.flowCubes).to.have.all.keys(...waterPositions)
       graph.spawnChildrenFor(source)
       expect(graph.flowCubes).to.have.all.keys(...waterPositions)
+    })
+  })
+  describe('deleteWorldCubeAt', () => {
+    let worldCubes
+    let sources
+    let graph
+    let position
+    beforeEach(() => {
+      worldCubes = {'2,-64,0': true}
+      position = {x: 2, y: -64, z: 0}
+      sources = {
+        '0,-64,0': {x: 0, y: -64, z: 0}
+      }
+      graph = new FlowGraph(sources, worldCubes)
+    })
+    it('updates worldCubes', () => {
+      graph.deleteWorldCubeAt(position)
+      expect(graph.worldCubes).to.not.have.property('2,-64,0')
+    })
+    it('makes flowCubes where they can now go', () => {
+      graph.deleteWorldCubeAt(position)
+      expect(graph.flowCubes).to.have.property('2,-64,0')
+      expect(graph.flowCubes).to.have.property('3,-64,0')
     })
   })
 })
