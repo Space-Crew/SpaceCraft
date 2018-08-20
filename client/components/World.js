@@ -7,6 +7,7 @@ import {makeWaterCube} from '../3d/meshes'
 import FlowGraph from '../3d/meshes/WaterGraph'
 import CameraControl from '../3d/controls/cameraControl'
 import avatarControl from '../3d/controls/avatarControl'
+import UndoStack from '../3d/controls/UndoStack'
 
 /*********************************
  * Construct the Three World
@@ -39,12 +40,10 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   // camera.controls = attachCameraControls(camera, renderer.domElement)
   //create a new scene
   const scene = new THREE.Scene()
-
   scene.objects = []
   scene.worldId = worldId
-
+  scene.undoStack = new UndoStack(scene.worldId)
   const cameraControl = new CameraControl(camera, renderer.domElement)
-
   scene.add(cameraControl.getObject())
   const previewControl = new PreviewControl(scene)
   const previewBox = previewControl.previewBox
@@ -63,11 +62,6 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
     cubesToBeMoved
   )
   avatarControl(worldId, cameraControl.getObject(), scene)
-  // scene.addDragControls = function() {
-  //   this.dragControl = new DragControls(camera, renderer.domElement, this)
-  //   this.add(this.dragControl.getObject())
-  // }
-  // scene.addDragControls()
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
   const pointLight = new THREE.PointLight(0xffffff, 0.8)
