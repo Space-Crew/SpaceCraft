@@ -10,7 +10,6 @@ export const doSignInWithEmailAndPassword = (email, password) =>
 
 // Sign out
 export const doSignOut = () => {
-  console.log('signed out')
   auth.signOut()
 }
 
@@ -20,3 +19,7 @@ export const doPasswordReset = email => auth.sendPasswordResetEmail(email)
 // Password Change
 export const doPasswordUpdate = password =>
   auth.currentUser.updatePassword(password)
+
+// Set Display Name
+export const doDisplayNameUpdate = username =>
+  auth.currentUser.updateProfile({displayName: username})
