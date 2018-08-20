@@ -11,13 +11,13 @@ const CameraControl = function(_camera, _domElement) {
   function activate() {
     _domElement.addEventListener('mousemove', onMouseMove, false)
     window.addEventListener('keydown', onKeyDown, false)
-    window.addEventListener('keydown', onKeyDown, false)
+    window.addEventListener('keyup', onKeyUp, false)
   }
 
   function deactivate() {
     _domElement.removeEventListener('mousemove', onMouseMove, false)
     window.removeEventListener('keydown', onKeyDown, false)
-    window.removeEventListener('keydown', onKeyUp, false)
+    window.removeEventListener('keyup', onKeyUp, false)
   }
 
   function onMouseMove(event) {
@@ -38,9 +38,15 @@ const CameraControl = function(_camera, _domElement) {
   //yawObject.translateZ(-1)
 
   let vectors = {}
-  let isMoving = false
+  vectors.isMoving = function() {
+    return (
+      this.movingForward ||
+      this.movingBackward ||
+      this.movingLeft ||
+      this.movingRight
+    )
+  }
   function onKeyDown(event) {
-    isMoving = true
     switch (event.which) {
       case 87: //W
         vectors.movingForward = true
@@ -59,32 +65,32 @@ const CameraControl = function(_camera, _domElement) {
     }
   }
   function updatePlayerPosition() {
-    if (isMoving) {
-      const cameraDirection = _camera.getWorldDirection()
-      const motionVector = getMotionVector(vectors)
-      moveYawObject(cameraDirection, motionVector)
+    if (vectors.isMoving()) {
+      const motionVector = vectors.getMotionVector()
+      moveYawObject(motionVector)
     }
   }
-  function getMotionVector(vectors) {
-    const motionVector = new THREE.Vector2()
-    if (vectors.movingForward) {
-      motionVector.y += 1
+  vectors.getMotionVector = function() {
+    const motionVector = new THREE.Vector3()
+    if (this.movingForward) {
+      motionVector.z -= 1
     }
-    if (vectors.movingBackward) {
-      motionVector.y -= 1
+    if (this.movingBackward) {
+      motionVector.z += 1
     }
-    if (vectors.movingLeft) {
+    if (this.movingLeft) {
       motionVector.x -= 1
     }
-    if (vectors.movingRight) {
+    if (this.movingRight) {
       motionVector.x += 1
     }
     motionVector.normalize()
     return motionVector
   }
-  function moveYawObject(cameraDirection, motionVector) {}
+  function moveYawObject(motionVector, speed = 0.167) {
+    yawObject.translateOnAxis(motionVector, speed)
+  }
   function onKeyUp(event) {
-    isMoving = false
     switch (event.which) {
       case 87: //W
         vectors.movingForward = false
@@ -97,6 +103,12 @@ const CameraControl = function(_camera, _domElement) {
         break
       case 68: //D
         vectors.movingRight = false
+        break
+      case 69: //Q
+        yawObject.translateY(1)
+        break
+      case 81: //E
+        yawObject.translateY(-1)
         break
       default:
         break
