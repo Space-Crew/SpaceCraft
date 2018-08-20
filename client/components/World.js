@@ -40,12 +40,10 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   // camera.controls = attachCameraControls(camera, renderer.domElement)
   //create a new scene
   const scene = new THREE.Scene()
-
   scene.objects = []
   scene.worldId = worldId
   scene.undoStack = new UndoStack(scene.worldId)
   const cameraControl = new CameraControl(camera, renderer.domElement)
-
   scene.add(cameraControl.getObject())
   const previewControl = new PreviewControl(scene)
   const previewBox = previewControl.previewBox
@@ -146,11 +144,11 @@ const showInstructions = isPaused => {
   if (isPaused) {
     blocker.style.display = 'block'
     blocker.style.zIndex = '99'
-    instructions.style.display = ''
+    console.log('game paused', blocker.style.display)
   } else {
     blocker.style.display = 'none'
     blocker.style.zIndex = ''
-    instructions.style.display = 'none'
+    console.log('game unpaused', blocker.style.display)
   }
 }
 
@@ -198,7 +196,8 @@ class World extends Component {
     }
   }
   componentWillUnmount() {
-    // window.removeEventListener('keydown', onSpaceBar, false)
+    // do not remove/comment out line below, this causes the pause-game functionality to work consistently //
+    window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {
