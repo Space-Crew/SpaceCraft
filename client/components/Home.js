@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import OrbitControls from 'three-orbitcontrols'
+import {makeAvatar} from '../3d/meshes/makeAvatar'
 
 // main scene //
 const scene = new THREE.Scene()
@@ -105,10 +106,6 @@ const indicesOfFaces = [
   4
 ]
 const sirusTexture = textureLoader.load('/textures/sirus.jpg')
-// const firstCircleGeo = new THREE.CircleGeometry(2, 100)
-// firstCircleGeo.vertices.shift()
-// const firstCircle = new THREE.Line(firstCircleGeo, lineMaterial)
-// firstCircle.rotation.x = Math.PI * 0.5
 const firstPlanetMat = new THREE.MeshPhongMaterial()
 firstPlanetMat.map = sirusTexture
 const firstPlanet = new THREE.Mesh(
@@ -116,7 +113,6 @@ const firstPlanet = new THREE.Mesh(
   firstPlanetMat
 )
 firstPlanet.position.set(2, 0, 0)
-// const geo = new THREE.geomet()
 const firstOrbit = new THREE.Group()
 firstOrbit.add(firstPlanet)
 
@@ -170,6 +166,12 @@ for (let i = 1; i < 6; i++) {
 }
 
 // floating avatars //
+const [head, body, leftArm, rightArm, legs] = makeAvatar('white')
+const av1 = new THREE.Object3D()
+av1.position.set(15, 0, -10)
+av1.add(body, head, leftArm, rightArm, legs)
+const av1Group = new THREE.Group()
+av1Group.add(av1)
 
 // combine orbits //
 orbitDir.rotation.x = 0.02
@@ -177,6 +179,7 @@ orbitDir.add(firstOrbit)
 orbitDir.add(secondOrbit)
 orbitDir.add(thirdOrbit)
 orbitDir.add(fourthOrbit)
+orbitDir.add(av1Group)
 scene.add(orbitDir)
 
 // renderer //
@@ -202,9 +205,10 @@ backgroundScene.add(backgroundCamera)
 backgroundScene.add(backgroundMesh)
 
 // render function //
-
 const renderThree = () => {
   controls.update()
+  av1Group.rotation.y += 0.0075
+  av1Group.rotation.x += 0.008
   firstOrbit.rotation.y += 0.015
   secondOrbit.rotation.y += 0.02
   secondOrbit.rotation.x += 0.005
