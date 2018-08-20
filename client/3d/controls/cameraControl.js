@@ -4,6 +4,8 @@ const CameraControl = function(_camera, _domElement) {
 
   const _mouse = new THREE.Vector2()
   const _raycaster = new THREE.Raycaster()
+
+  _camera.rotation.x = -Math.PI / 2
   
   //pitchObject
   let pitchObject = new THREE.Object3D()
