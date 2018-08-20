@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
-import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
-// import {addBlock} from '../3d/controls/addBlock'
-import {attachCameraControls} from '../3d/controls/cameraControls'
+import BlockControl from '../3d/controls/blockControl'
+import PreviewControl from '../3d/controls/previewControl'
+import CameraControl from '../3d/controls/cameraControl'
+import avatarControl from '../3d/controls/avatarControl'
 import {GameFlowGraph} from '../3d/water'
 
 /*********************************
@@ -15,7 +16,12 @@ let onSpaceBar
 const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
-function generateWorld(world) {
+function generateWorld(world, currentUser) {
+  // function generateWorld(worldId, currentUser, water, rawWorldCubes) {
+  //container for all 3d objects that will be affected by event
+  let objects = []
+  const cubesToBeMoved = {}
+
   /*********************************
    * Renderer
    ********************************/
@@ -37,22 +43,36 @@ function generateWorld(world) {
     0.1,
     1000
   )
-  camera.controls = attachCameraControls(camera, renderer.domElement)
 
   /*********************************
    * Scene
    ********************************/
+
   //create a new scene
   const scene = new THREE.Scene()
-  scene.objects = []
-  scene.worldId = world.id
 
-  //allows for adding, deleting, and moving 3d objects with mouse drag
-  scene.addDragControls = function() {
-    this.dragControl = new DragControls(camera, renderer.domElement, this)
-    this.add(this.dragControl.getObject())
+  const cameraControl = new CameraControl(camera, renderer.domElement)
+  scene.add(cameraControl.getObject())
+
+  const previewControl = new PreviewControl(scene)
+  const previewBox = previewControl.previewBox
+  const essentials = {
+    _domElement: renderer.domElement,
+    _objects: objects,
+    _camera: camera,
+    _scene: scene
   }
-  scene.addDragControls()
+
+  const blockControl = new BlockControl(
+    essentials,
+    currentUser,
+    world.id,
+    cameraControl.getObject(),
+    previewBox,
+    cubesToBeMoved
+  )
+
+  avatarControl(world.id, cameraControl.getObject(), scene)
 
   const water = new GameFlowGraph(world.water, world.cubes, scene)
   water.connectToWorld(world.id)
@@ -104,50 +124,30 @@ function generateWorld(world) {
   window.addEventListener('keydown', onSpaceBar, false)
 
   /*********************************
-   * Teardown functions
+   * Dispose functions
    ********************************/
-  
-  const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
-  const disposeWorld = () => {
-    tearDownFunctions.forEach(func => func())
+  return function() {
+    cameraControl.dispose()
+    blockControl.dispose()
+    previewControl.dispose()
   }
-  return disposeWorld
 }
-
-/*********************************
- * Helper functions
- ********************************/
-
-
-// function addCubesToScene(cubes, scene, objects) {
-//   if (cubes.length > 0) {
-//     cubes.forEach(cube => {
-//       addBlock(
-//         new THREE.Vector3(cube.x, cube.y, cube.z),
-//         cube.color,
-//         scene,
-//         objects
-//       )
-//     })
-//   } else {
-//     generateDefaultPlane(scene, objects)
-//   }
-// }
-
-// function generateDefaultPlane(scene, objects) {
-//   for (let z = -10; z < 10; z += 1) {
-//     for (let x = -10; x <= 10; x += 1) {
-//       const y = -1
-//       addBlock(new THREE.Vector3(x, y, z), 0xb9c4c0, scene, objects)
-//     }
-//   }
-// }
 
 /*********************************
  * Render Component
  ********************************/
 
 class World extends Component {
+  constructor() {
+    super()
+    this.state = {
+      //TODO
+      currentWorldId: null,
+      players: [],
+      authorizedPlayers: [],
+      author: ''
+    }
+  }
   async componentDidMount() {
     try {
       let world
@@ -158,7 +158,7 @@ class World extends Component {
       } else {
         world = await this.getDefaultWorld()
       }
-      this.unsubscribe = generateWorld(world)
+      this.unsubscribe = generateWorld(world, this.props.currentUser)
     } catch (error) {
       console.log(error)
     }
@@ -173,7 +173,7 @@ class World extends Component {
     }
   }
   componentWillUnmount() {
-    window.removeEventListener('keydown', onSpaceBar, false)
+    // window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {

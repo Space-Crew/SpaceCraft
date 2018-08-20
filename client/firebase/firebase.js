@@ -1,7 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
-let currentUser;
 // initialize firebase //
 var config = {
   apiKey: 'AIzaSyD-wIw2XP-wlc6oqJOTzOCziYVSk1Y5khE',
@@ -19,13 +18,5 @@ if (!firebase.apps.length) {
 const db = firebase.database()
 const auth = firebase.auth()
 
-const unsubscribe = auth.onAuthStateChanged(function(user) {
-  if (user) {
-    currentUser = user;
-  } else {
-    // No user is signed in.
-    currentUser = 'guest';
-  }
-});
 
-export {auth, db, currentUser, unsubscribe}
+export {auth, db}

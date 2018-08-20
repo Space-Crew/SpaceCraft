@@ -26,7 +26,7 @@ export default class WorldList extends Component {
   render() {
     const linkPath = '/worlds/'
     return (
-      <div id="worldList">
+      <div className="world-list">
         <h3>World List</h3>
         <p>Select a world below to explore</p>
         <ListPresentation items={this.state.worlds} linkPath={linkPath} />
