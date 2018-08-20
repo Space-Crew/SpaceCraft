@@ -8,6 +8,8 @@ import FlowGraph from '../3d/meshes/WaterGraph'
 import CameraControl from '../3d/controls/cameraControl'
 import avatarControl from '../3d/controls/avatarControl'
 import UndoStack from '../3d/controls/undoStack'
+import {GameFlowGraph} from '../3d/water'
+
 /*********************************
  * Construct the Three World
  ********************************/
@@ -17,7 +19,7 @@ let onSpaceBar
 const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
-function generateWorld(worldId, currentUser, water, rawWorldCubes) {
+function generateWorld(world, currentUser) {
   //container for all 3d objects that will be affected by event
   let objects = []
   const cubesToBeMoved = {}
@@ -29,6 +31,9 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   //sets the resolution of the view
   renderer.setSize(window.innerWidth, window.innerHeight)
 
+  /*********************************
+   * Camera
+   ********************************/
   //create a perspective camera (field-of-view, aspect ratio, min distance, max distance)
   const camera = new THREE.PerspectiveCamera(
     75,
@@ -39,10 +44,9 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   // camera.controls = attachCameraControls(camera, renderer.domElement)
   //create a new scene
   const scene = new THREE.Scene()
-
   scene.objects = []
-  scene.worldId = worldId
-  scene.undoStack = new UndoStack(worldId)
+  scene.worldId = world.id
+  scene.undoStack = new UndoStack(world.id)
 
   const cameraControl = new CameraControl(
     camera, renderer.domElement 
@@ -53,7 +57,7 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   const previewBox = previewControl.previewBox;
   const essentials = {_domElement: renderer.domElement, _objects: objects, _camera: camera, _scene: scene}
   const blockControl = new BlockControl(
-    essentials, currentUser, worldId, cameraControl.getObject(), previewBox, cubesToBeMoved
+    essentials, currentUser, world.id, cameraControl.getObject(), previewBox, cubesToBeMoved
   )
   avatarControl(worldId, cameraControl.getObject(), scene)
   // scene.addDragControls = function() {
@@ -67,14 +71,12 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  scene.addWaterSources = function(waterSources, worldCubes) {
-    const waterGraph = new FlowGraph(waterSources, worldCubes)
-    const waterCubes = Object.values(waterGraph.flowCubes)
-    waterCubes.forEach(waterCube => {
-      this.add(makeWaterCube(waterCube.position))
-    })
-  }
-  scene.addWaterSources(water, rawWorldCubes)
+  const water = new GameFlowGraph(world.water, world.cubes, scene)
+  water.connectToWorld(world.id)
+
+  /*********************************
+   * Render To Screen
+   ********************************/
 
   function render() {
     renderer.render(scene, camera)
@@ -87,13 +89,27 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   document.getElementById('plane').appendChild(renderer.domElement)
   animate()
 
-  // pause the world //
+  /*********************************
+   * Pause The World
+   ********************************/
 
   onSpaceBar = event => {
     if (event.which === 32) {
       isPaused = !isPaused
       showInstructions(isPaused)
       animate()
+    }
+  }
+  const showInstructions = isPaused => {
+    blocker.style.visibility = 'visible'
+    if (isPaused) {
+      blocker.style.display = 'block'
+      blocker.style.zIndex = '99'
+      instructions.style.display = ''
+    } else {
+      blocker.style.display = 'none'
+      blocker.style.zIndex = ''
+      instructions.style.display = 'none'
     }
   }
   window.addEventListener('keydown', onSpaceBar, false)
@@ -152,7 +168,7 @@ const showInstructions = isPaused => {
 }
 
 /*********************************
- * Render the world
+ * Render Component
  ********************************/
 
 class World extends Component {
@@ -167,24 +183,24 @@ class World extends Component {
   }
   async componentDidMount() {
     try {
-      let cubes = []
-      let worldId
-      let water
-      let rawWorldCubes
+      let world
       if (this.props.match && this.props.match.params.id) {
         const uri = '/worlds/' + this.props.match.params.id
         const worldRef = db.ref(uri)
-        const world = (await worldRef.once('value')).val()
-        if (!world.cubes) {
-          cubes = []
-        } else {
-          cubes = Object.values(world.cubes)
-        }
-        worldId = world.id
-        water = world.water
-        rawWorldCubes = world.cubes
+        world = (await worldRef.once('value')).val()
+      } else {
+        world = await this.getDefaultWorld()
       }
-      this.unsubscribe = generateWorld(worldId, this.props.currentUser, water, rawWorldCubes)
+      this.unsubscribe = generateWorld(world, this.props.currentUser)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async getDefaultWorld() {
+    try {
+      const uri = '/worlds/0'
+      const worldRef = db.ref(uri)
+      return (await worldRef.once('value')).val()
     } catch (error) {
       console.log(error)
     }
@@ -202,5 +218,4 @@ class World extends Component {
   }
 }
 
-//water flow by doing BFS from source
 export default World

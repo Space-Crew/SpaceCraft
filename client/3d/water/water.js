@@ -1,6 +1,6 @@
 import {toKey} from '..'
 
-export default class FlowCube {
+export class FlowCube {
   constructor(position = {x: 0, y: 0, z: 0}, isSource = false) {
     this.position = position
     this.isSource = isSource

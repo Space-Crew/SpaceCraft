@@ -12,5 +12,6 @@ export function makeWaterCube(position) {
   material.map = waterTexture
   const cube = new THREE.Mesh(geometry, material)
   cube.position.copy(position)
+  cube.name = 'water'
   return cube
 }
