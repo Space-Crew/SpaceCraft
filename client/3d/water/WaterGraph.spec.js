@@ -279,23 +279,4 @@ describe('FlowGraph', () => {
       })
     })
   })
-  describe('determineIfShouldRespawn', () => {
-    let source
-    let graph
-    let child
-    beforeEach(() => {
-      const sources = {
-        '0,-64,0': {x: 0, y: -64, z: 0}
-      }
-      graph = new FlowGraph(sources)
-      graph.spawnCubesFromSourcePositions()
-      child = graph.flowCubes['3,-64,0']
-      source = graph.makeSourceAt({x: 3, y: -63, z: 0})
-    })
-    it('returns true if does', () => {
-      source.linkChild(child)
-      expect(graph.determineIfShouldRespawn(child)).to.be.true
-    })
-    it("returns false if doesn't", () => {})
-  })
 })

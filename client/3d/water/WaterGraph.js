@@ -73,16 +73,16 @@ export class FlowGraph {
       const child = this.flowCubes[toKey(position)]
       const oldVolume = child.volume
       cube.linkChild(child)
-      return this.determineIfShouldRespawn(child, oldVolume) ? child : null
+      return this.shouldRespawn(child, oldVolume) ? child : null
     } else {
       return this.createAndStoreChild(cube, position)
     }
   }
+  shouldRespawn(child, oldVolume) {
+    return child.becameBigger(oldVolume) || child.isFlowingDown()
+  }
   hasCubeAt(position) {
     return !!this.flowCubes[toKey(position)]
-  }
-  determineIfShouldRespawn(child, oldVolume) {
-    return oldVolume < child.volume
   }
   createAndStoreChild(cube, position) {
     const child = cube.createChildAt(position)
@@ -142,7 +142,7 @@ export class FlowGraph {
   }
   getNextGeneration(generation) {
     return generation.reduce((nextGeneration, cube) => {
-      return nextGeneration.concat(Object.values(cube.children))
+      return nextGeneration.concat(Object.values(cube.children)) //filter if has parents
     }, [])
   }
   destroyCubes(cubes) {
@@ -180,8 +180,11 @@ export class FlowGraph {
   }
   makeSourceAt(position) {
     const newSource = new FlowCube(position, true)
+    this.sourcePositions[toKey(position)] = position
+    if (this.hasCubeAt(position)) {
+      this.destroyCube(this.flowCubes[toKey(position)])
+    }
     this.flowCubes[toKey(position)] = newSource
-    this.sourcePositions[toKey(position)] = newSource.position
     return newSource
   }
   deleteSourceAt(position) {

@@ -9,7 +9,7 @@ export function makeWaterCube(flowCube) {
     color: 0xffffff
   }) //Lambert is so that the material can be affected by light
   material.transparent = true
-  material.opacity = 0.4 + 0.2 * getHeight(flowCube)
+  material.opacity = 0.3 + 0.3 * getHeight(flowCube)
   material.map = waterTexture
   const cube = new THREE.Mesh(geometry, material)
   cube.position.copy(getAdjustedPosition(flowCube))

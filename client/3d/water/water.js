@@ -51,6 +51,9 @@ export class FlowCube {
   samePosition(a, b) {
     return a.x === b.x && a.y === b.y && a.z === b.z
   }
+  becameBigger(oldVolume) {
+    return oldVolume < this.volume
+  }
   /*****************
    * Public methods
    *****************/

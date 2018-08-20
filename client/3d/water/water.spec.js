@@ -189,4 +189,27 @@ describe('FlowCube', () => {
       expect(childSide.isFlowingDown()).to.be.false
     })
   })
+  describe('becameBigger', () => {
+    let otherCube
+    let source
+    let child
+    beforeEach(() => {
+      source = new FlowCube({x: 0, y: -64, z: 0}, true)
+      child = source
+        .createChildAt({x: 1, y: -64, z: 0})
+        .createChildAt({x: 2, y: -64, z: 0})
+        .createChildAt({x: 3, y: -64, z: 0})
+      otherCube = new FlowCube({x: 0, y: -64, z: 0}, true)
+    })
+    it('returns true if does', () => {
+      const oldVolume = child.volume
+      otherCube.linkChild(child)
+      expect(child.becameBigger(oldVolume)).to.be.true
+    })
+    it("returns false if doesn't", () => {
+      const oldVolume = otherCube.volume
+      child.linkChild(otherCube)
+      expect(otherCube.becameBigger(oldVolume)).to.be.false
+    })
+  })
 })
