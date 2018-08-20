@@ -24,6 +24,20 @@ scene.add(lightAmb)
 // START PLANETS //
 const textureLoader = new THREE.TextureLoader()
 
+// sun //
+const sunTexture = textureLoader.load('/textures/sun.jpg')
+const sunGeo = new THREE.SphereBufferGeometry(1.0, 32, 32)
+const sunMat = new THREE.MeshPhongMaterial({
+  emissive: 0xff5800,
+  emissiveIntensity: 0.5
+})
+sunMat.map = sunTexture
+const sun = new THREE.Mesh(sunGeo, sunMat)
+
+var pointLight = new THREE.PointLight(0xffffff, 1.0, 10.0)
+sun.add(pointLight)
+scene.add(sun)
+
 // first planet from the sun //
 const verticesOfCube = [
   -1,
@@ -143,7 +157,7 @@ const fourthOrbit = new THREE.Group()
 fourthOrbit.add(fourthPlanet)
 
 const orbitDir = new THREE.Group()
-// shooting stars //
+// shooting planets //
 for (let i = 1; i < 6; i++) {
   let star = new THREE.Mesh(
     new THREE.SphereBufferGeometry(0.2, 32, 32),
@@ -155,6 +169,8 @@ for (let i = 1; i < 6; i++) {
   orbitDir.add(starOrbit)
 }
 
+// floating avatars //
+
 // combine orbits //
 orbitDir.rotation.x = 0.02
 orbitDir.add(firstOrbit)
@@ -163,20 +179,6 @@ orbitDir.add(thirdOrbit)
 orbitDir.add(fourthOrbit)
 scene.add(orbitDir)
 
-// sun //
-const sunTexture = textureLoader.load('/textures/sun.jpg')
-const sunGeo = new THREE.SphereBufferGeometry(1.0, 32, 32)
-const sunMat = new THREE.MeshPhongMaterial({
-  emissive: 0xff5800,
-  emissiveIntensity: 0.5
-})
-sunMat.map = sunTexture
-const sun = new THREE.Mesh(sunGeo, sunMat)
-
-var pointLight = new THREE.PointLight(0xffffff, 1.0, 10.0)
-sun.add(pointLight)
-scene.add(sun)
-
 // renderer //
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -184,7 +186,7 @@ document.body.appendChild(renderer.domElement)
 const controls = new OrbitControls(camera, renderer.domElement)
 
 // load background texture //
-const texture = textureLoader.load('/starrybackground.png')
+const texture = textureLoader.load('/textures/deep-space.jpg')
 const backgroundMesh = new THREE.Mesh(
   new THREE.PlaneGeometry(2, 2, 0),
   new THREE.MeshBasicMaterial({map: texture})
@@ -211,11 +213,11 @@ const renderThree = () => {
   fourthOrbit.rotation.x += 0.007
   fourthPlanet.rotation.x += 0.005
   fourthPlanet.rotation.y += 0.005
-  orbitDir.children[0].rotation.y += 0.06
-  orbitDir.children[1].rotation.y += 0.09
-  orbitDir.children[2].rotation.y += 0.1
+  orbitDir.children[0].rotation.y += 0.008
+  orbitDir.children[1].rotation.y += 0.009
+  orbitDir.children[2].rotation.y += 0.0009
   orbitDir.children[3].rotation.y += 0.002
-  orbitDir.children[4].rotation.y += 0.011
+  orbitDir.children[4].rotation.y += 0.001
 
   sun.rotation.x += 0.005
   sun.rotation.y += 0.005
