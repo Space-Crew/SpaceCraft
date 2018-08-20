@@ -59,6 +59,25 @@ describe('FlowCube', () => {
       expect(child.parents).to.have.property('0,0,0')
     })
   })
+  describe('linkChild', () => {
+    let source
+    let child
+    let otherSource
+    beforeEach(() => {
+      source = new FlowCube({x: 0, y: 0, z: 0}, true)
+      otherSource = new FlowCube({x: 0, y: 1, z: 2}, true)
+      child = source
+        .createChildAt({x: 0, y: 0, z: 1})
+        .createChildAt({x: 0, y: 0, z: 2})
+    })
+    it('resets the volume of the child', () => {
+      let targetVolume = source.volume - 2
+      console.log(child.volume, targetVolume)
+      expect(child.volume).to.equal(targetVolume)
+      otherSource.linkChild(child)
+      expect(child.volume).to.equal(otherSource.volume)
+    })
+  })
   describe('unlinkChild', () => {
     let source
     let child
@@ -152,6 +171,22 @@ describe('FlowCube', () => {
         {x: 0, y: -62, z: -1},
         {x: -1, y: -62, z: 0}
       ])
+    })
+  })
+  describe('isFlowingDown', () => {
+    let source
+    let childDown
+    let childSide
+    before(() => {
+      source = new FlowCube({x: 0, y: 0, z: 0}, true)
+      childDown = source.createChildAt({x: 0, y: -1, z: 0})
+      childSide = new FlowCube({x: 20, y: 0, z: 0})
+    })
+    it('returns true if parent is above', () => {
+      expect(childDown.isFlowingDown()).to.be.true
+    })
+    it('returns false if parent is not above', () => {
+      expect(childSide.isFlowingDown()).to.be.false
     })
   })
 })

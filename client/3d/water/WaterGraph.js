@@ -13,10 +13,11 @@ export class FlowGraph {
    * Initialize graph
    **********************/
   spawnCubesFromSourcePositions() {
-    Object.values(this.sourcePositions).forEach(sourcePosition => {
-      console.log(`I was run for sourcePosition`, sourcePosition)
-      this.flowCubes[toKey(sourcePosition)] = new FlowCube(sourcePosition, true)
-      this.spawnLineageFor(this.flowCubes[toKey(sourcePosition)])
+    return Object.values(this.sourcePositions).map(sourcePosition => {
+      const source = new FlowCube(sourcePosition, true)
+      this.flowCubes[toKey(sourcePosition)] = source
+      this.spawnLineageFor(source)
+      return source
     })
   }
   /**********************
@@ -38,13 +39,11 @@ export class FlowGraph {
     }, [])
   }
   produceChildrenFor(cube) {
-    //makes one generations of children. better name?
     return this.findSpacesToFlowFor(cube)
       .map(position => {
         return this.makeCubeFlowTo(cube, position)
       })
-      .filter(newCube => newCube !== null)
-    //returns an array of new children created
+      .filter(child => child !== null)
   }
   findSpacesToFlowFor(cube) {
     if (this.noCubeBelow(cube) && this.cubeCanFlowTo(cube, cube.down)) {
@@ -72,14 +71,18 @@ export class FlowGraph {
   makeCubeFlowTo(cube, position) {
     if (this.hasCubeAt(position)) {
       const child = this.flowCubes[toKey(position)]
+      const oldVolume = child.volume
       cube.linkChild(child)
-      return null //because we did not create a new child
+      return this.determineIfShouldRespawn(child, oldVolume) ? child : null
     } else {
       return this.createAndStoreChild(cube, position)
     }
   }
   hasCubeAt(position) {
     return !!this.flowCubes[toKey(position)]
+  }
+  determineIfShouldRespawn(child, oldVolume) {
+    return oldVolume < child.volume
   }
   createAndStoreChild(cube, position) {
     const child = cube.createChildAt(position)
