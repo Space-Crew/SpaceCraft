@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import {db} from '../firebase'
-import BlockControl from '../3d/controls/blockControl';
-import PreviewControl from '../3d/controls/previewControl';
+import BlockControl from '../3d/controls/blockControl'
+import PreviewControl from '../3d/controls/previewControl'
 import {makeWaterCube} from '../3d/meshes'
 import FlowGraph from '../3d/meshes/WaterGraph'
 import CameraControl from '../3d/controls/cameraControl'
@@ -43,16 +43,24 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   scene.objects = []
   scene.worldId = worldId
 
-  const cameraControl = new CameraControl(
-    camera, renderer.domElement 
-  )
-  
+  const cameraControl = new CameraControl(camera, renderer.domElement)
+
   scene.add(cameraControl.getObject())
-  const previewControl = new PreviewControl(scene);
-  const previewBox = previewControl.previewBox;
-  const essentials = {_domElement: renderer.domElement, _objects: objects, _camera: camera, _scene: scene}
+  const previewControl = new PreviewControl(scene)
+  const previewBox = previewControl.previewBox
+  const essentials = {
+    _domElement: renderer.domElement,
+    _objects: objects,
+    _camera: camera,
+    _scene: scene
+  }
   const blockControl = new BlockControl(
-    essentials, currentUser, worldId, cameraControl.getObject(), previewBox, cubesToBeMoved
+    essentials,
+    currentUser,
+    worldId,
+    cameraControl.getObject(),
+    previewBox,
+    cubesToBeMoved
   )
   avatarControl(worldId, cameraControl.getObject(), scene)
   // scene.addDragControls = function() {
@@ -98,9 +106,9 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   window.addEventListener('keydown', onSpaceBar, false)
 
   return function() {
-    cameraControl.dispose();
-    blockControl.dispose();
-    previewControl.dispose();
+    cameraControl.dispose()
+    blockControl.dispose()
+    previewControl.dispose()
   }
   // const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
   // const disposeWorld = () => {
@@ -142,11 +150,11 @@ const showInstructions = isPaused => {
   if (isPaused) {
     blocker.style.display = 'block'
     blocker.style.zIndex = '99'
-    instructions.style.display = ''
+    console.log('game paused', blocker.style.display)
   } else {
     blocker.style.display = 'none'
     blocker.style.zIndex = ''
-    instructions.style.display = 'none'
+    console.log('game unpaused', blocker.style.display)
   }
 }
 
@@ -156,7 +164,7 @@ const showInstructions = isPaused => {
 
 class World extends Component {
   constructor() {
-    super();
+    super()
     this.state = {
       currentWorldId: null,
       players: [],
@@ -183,13 +191,19 @@ class World extends Component {
         water = world.water
         rawWorldCubes = world.cubes
       }
-      this.unsubscribe = generateWorld(worldId, this.props.currentUser, water, rawWorldCubes)
+      this.unsubscribe = generateWorld(
+        worldId,
+        this.props.currentUser,
+        water,
+        rawWorldCubes
+      )
     } catch (error) {
       console.log(error)
     }
   }
   componentWillUnmount() {
-    // window.removeEventListener('keydown', onSpaceBar, false)
+    // do not remove/comment out line below, this causes the pause-game functionality to work consistently //
+    window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {
