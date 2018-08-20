@@ -1,32 +1,32 @@
 import React, {Component} from 'react'
-import {db} from '../firebase';
+import {db} from '../firebase'
 import {Link} from 'react-router-dom'
 
 export default class Account extends Component {
   constructor() {
-    super();
+    super()
     this.state = {
       user: '',
       userWorlds: []
     }
-    this.handleCreateWorld = this.handleCreateWorld.bind(this);
+    this.handleCreateWorld = this.handleCreateWorld.bind(this)
   }
 
   handleCreateWorld() {
     const currentUser = this.props.currentUser
-    const worldsRef = db.ref('/worlds');
+    const worldsRef = db.ref('/worlds')
     const newWorld = worldsRef.push({
       author: currentUser ? currentUser.displayName : 'guest'
     })
-    const worldId = newWorld.key;
+    const worldId = newWorld.key
     if (currentUser) {
-      const userWorldsRef = db.ref(`users/${currentUser.uid}/worlds`);
-      userWorldsRef.push(worldId);
+      const userWorldsRef = db.ref(`users/${currentUser.uid}/worlds`)
+      userWorldsRef.push(worldId)
     }
     newWorld.set({
       id: worldId
     })
-    this.props.history.push(`/worlds/${worldId}`);
+    this.props.history.push(`/worlds/${worldId}`)
   }
 
   async componentDidMount() {
@@ -48,34 +48,35 @@ export default class Account extends Component {
     console.log(this.state.user)
     return (
       <div id="account">
-        {
-        this.state.user
-        ?
-        <div>
-          <h3>Welcome, {this.state.user}</h3>
-          {
-            this.state.userWorlds.length ? 
-            <div>
-              <h3>Your creations</h3>
-              <div className="world-list">
-                {this.state.userWorlds.map(worldId => {
-                  return (
-                    <Link to={`/worlds/${worldId}`} key={worldId}>
-                      <div>{`${this.state.user}'s world - ${worldId}`}</div>
-                    </Link>
-                  )
-                })}
+        {this.state.user ? (
+          <div>
+            <h3>Welcome, {this.state.user}</h3>
+            {this.state.userWorlds.length ? (
+              <div>
+                <h3>Your creations</h3>
+                <div className="world-list">
+                  {this.state.userWorlds.map(worldId => {
+                    return (
+                      <Link to={`/worlds/${worldId}`} key={worldId}>
+                        <div>{`${this.state.user}'s world - ${worldId}`}</div>
+                      </Link>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-            :
-            <h3>You have no creation now, <a onClick={this.handleCreateWorld}>create</a> one now!</h3>
-          }
-        </div>
-        :
-        <div>
-          Welcome to SpaceCraft! You do not have an account right now, please <a href="/signup">sign up</a>!
-        </div>
-        }
+            ) : (
+              <h3>
+                You have no creation now,{' '}
+                <a onClick={this.handleCreateWorld}>create</a> one now!
+              </h3>
+            )}
+          </div>
+        ) : (
+          <div>
+            Welcome to SpaceCraft! You do not have an account right now, please{' '}
+            <a href="/signup">sign up</a>!
+          </div>
+        )}
       </div>
     )
   }

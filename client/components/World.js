@@ -46,16 +46,24 @@ function generateWorld(world, currentUser) {
   scene.worldId = world.id
   scene.undoStack = new UndoStack(world.id)
 
-  const cameraControl = new CameraControl(
-    camera, renderer.domElement 
-  )
-  
+  const cameraControl = new CameraControl(camera, renderer.domElement)
+
   scene.add(cameraControl.getObject())
-  const previewControl = new PreviewControl(scene);
-  const previewBox = previewControl.previewBox;
-  const essentials = {_domElement: renderer.domElement, _objects: objects, _camera: camera, _scene: scene}
+  const previewControl = new PreviewControl(scene)
+  const previewBox = previewControl.previewBox
+  const essentials = {
+    _domElement: renderer.domElement,
+    _objects: objects,
+    _camera: camera,
+    _scene: scene
+  }
   const blockControl = new BlockControl(
-    essentials, currentUser, world.id, cameraControl.getObject(), previewBox, cubesToBeMoved
+    essentials,
+    currentUser,
+    worldId,
+    cameraControl.getObject(),
+    previewBox,
+    cubesToBeMoved
   )
   avatarControl(world.id, cameraControl.getObject(), scene)
   // scene.addDragControls = function() {
@@ -113,9 +121,9 @@ function generateWorld(world, currentUser) {
   window.addEventListener('keydown', onSpaceBar, false)
 
   return function() {
-    cameraControl.dispose();
-    blockControl.dispose();
-    previewControl.dispose();
+    cameraControl.dispose()
+    blockControl.dispose()
+    previewControl.dispose()
   }
   // const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
   // const disposeWorld = () => {
@@ -157,11 +165,11 @@ const showInstructions = isPaused => {
   if (isPaused) {
     blocker.style.display = 'block'
     blocker.style.zIndex = '99'
-    instructions.style.display = ''
+    console.log('game paused', blocker.style.display)
   } else {
     blocker.style.display = 'none'
     blocker.style.zIndex = ''
-    instructions.style.display = 'none'
+    console.log('game unpaused', blocker.style.display)
   }
 }
 
@@ -171,7 +179,7 @@ const showInstructions = isPaused => {
 
 class World extends Component {
   constructor() {
-    super();
+    super()
     this.state = {
       currentWorldId: null,
       players: [],
@@ -204,6 +212,7 @@ class World extends Component {
     }
   }
   componentWillUnmount() {
+    // do not remove/comment out line below, this causes the pause-game functionality to work consistently //
     window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
