@@ -184,7 +184,7 @@ document.body.appendChild(renderer.domElement)
 const controls = new OrbitControls(camera, renderer.domElement)
 
 // load background texture //
-const texture = textureLoader.load('/starrybackground.png')
+const texture = textureLoader.load('/textures/deep-space.jpg')
 const backgroundMesh = new THREE.Mesh(
   new THREE.PlaneGeometry(2, 2, 0),
   new THREE.MeshBasicMaterial({map: texture})

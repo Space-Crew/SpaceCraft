@@ -58,7 +58,7 @@ export default class Account extends Component {
                   {this.state.userWorlds.map(worldId => {
                     return (
                       <Link to={`/worlds/${worldId}`} key={worldId}>
-                        <div>{`${this.state.user}'s world - ${worldId}`}</div>
+                        <div>{`${this.state.user}'s world: ${worldId}`}</div>
                       </Link>
                     )
                   })}

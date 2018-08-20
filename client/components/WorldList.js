@@ -15,7 +15,7 @@ export default class WorldList extends Component {
   async componentDidMount() {
     try {
       const worlds = (await db.ref('worlds').once('value')).val()
-      this.setState({worlds: Object.values(worlds)})
+      this.setState({worlds: Object.values(worlds).filter(world => !world.private)})
     } catch (error) {
       console.log(error)
     }
