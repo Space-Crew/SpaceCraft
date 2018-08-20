@@ -5,8 +5,16 @@
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width initial-scale=1.0'>
   <title>SpaceCraft</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.css" />
   <link rel="stylesheet" href="/style.css" />
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
   <script defer src="/bundle.js"></script>
 </head>
 
@@ -14,20 +22,57 @@
   <div id="app">
   </div>
   <div id='blocker'>
-    <div id='instructions'>
-      <span class="instructionsSub">Moving Around</span>
-      <br />W, A, S, D, Q, E: Move
-      <br />MOUSE: Look around
-      <br/><br/>
-      <span>
-        <span class="instructionsSub">Adding/Removing/Dragging cubes</span>
-        <br />SHIFT + CLICK: Add cube
-        <br />CMD + CLICK: Remove cube
-        <br/> CLICK + MOVE MOUSE: Drag cube
-        <br/><br/>
-        <span id='instructionsHeader'>Tap SPACE BAR to play/pause</span>
-      </span>
-    </div>
+    <table class="table table-bordered table-dark table-condensed movement">
+      <thead class="text-center">
+        <tr>
+          <th scope="col" colspan="2" class="h4">Moving Around</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope='row'>Move player</th>
+          <td>W, A, S, D, Q, E</td>
+        </tr>
+        <tr>
+          <th>Rotate camera</th>
+          <td>Move mouse</td>
+        </tr>
+        <tr>
+          <th>Pause game</th>
+          <td>Space bar</td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    <table class="table table-bordered table-dark building">
+      <thead class="text-center">
+        <tr>
+          <th scope="col" colspan="2" class="h4">Building</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope='row'>Add cube</th>
+          <td>SHIFT + Mouse Click</td>
+        </tr>
+        <tr>
+          <th scope='row'>Delete cube</th>
+          <td>CMD + Mouse Click</td>
+        </tr>
+        <tr>
+          <th scope='row'>Drag cube</th>
+          <td>Click + Move mouse</td>
+        </tr>
+        <tr>
+          <th scope='row'>Undo</th>
+          <td>CMD + Z</td>
+        </tr>
+        <tr>
+          <th scope='row'>Select color</th>
+          <td>PLACE HOLDER</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </body>
 
