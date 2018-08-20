@@ -53,14 +53,9 @@ class UndoStack {
     }
   }
   redo() {
-    console.log('redo out')
     if (this.checkBlocksAbovePointer()) {
-      console.log('redo if')
       this.incrementPointer()
-      console.log('pointer', this.pointer)
-      console.log('stack', this.stack)
       const currentBlock = this.getCurrentBlock()
-      console.log('currentBlock', currentBlock)
       const {position, color, type} = currentBlock
       if (type === 'ADD') {
         this.addBlockToDb(position, color, this.worldId)
