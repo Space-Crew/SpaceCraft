@@ -204,7 +204,7 @@ class World extends Component {
     }
   }
   componentWillUnmount() {
-    // window.removeEventListener('keydown', onSpaceBar, false)
+    window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {
