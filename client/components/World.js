@@ -7,7 +7,7 @@ import {makeWaterCube} from '../3d/meshes'
 import FlowGraph from '../3d/meshes/WaterGraph'
 import CameraControl from '../3d/controls/cameraControl'
 import avatarControl from '../3d/controls/avatarControl'
-
+import UndoStack from '../3d/controls/undoStack'
 /*********************************
  * Construct the Three World
  ********************************/
@@ -42,6 +42,7 @@ function generateWorld(worldId, currentUser, water, rawWorldCubes) {
 
   scene.objects = []
   scene.worldId = worldId
+  scene.undoStack = new UndoStack(worldId)
 
   const cameraControl = new CameraControl(
     camera, renderer.domElement 

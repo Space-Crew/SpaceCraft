@@ -132,6 +132,9 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     if (event.which === 91) {
       _commandIsDown = true
     }
+    if (event.which === 90 && _commandIsDown) {  // Z 
+      _scene.undoStack.undo()
+    }
   }
   function onDocumentKeyUp(event) {
     if (event.which === 16) {
@@ -190,10 +193,12 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     )
     if (!isAddPositionOccupied && _shiftIsDown) {
       addBlockToDb(previewBox.position, chosenColor, worldId)
+      _scene.undoStack.add(previewBox.position, chosenColor, 'ADD')
     } else if (_commandIsDown) {
       _objects = deleteBlock(_selected, _scene, _objects)
       if (_selected) {
         deleteBlockFromDb(_selected.position, worldId)
+        _scene.undoStack.add(_selected.position, _selected.color, 'DELETE')
       }
     }
   }
