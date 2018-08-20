@@ -27,7 +27,7 @@ class UndoStack {
         color,
         type: 'DRAG'
       }
-    } else if (type === 'END_DRAG') {
+    } else if (this.dragging && type === 'END_DRAG') {
       this.dragging.position.end = {x, y, z}
       this.stack.push({...this.dragging})
       this.dragging = null
