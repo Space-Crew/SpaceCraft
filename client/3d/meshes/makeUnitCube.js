@@ -38,6 +38,5 @@ export function makeUnitCube(position, color = 0xb9c4c0, opacity, texture) {
   wireframe.renderOrder = 1
   mesh.add(wireframe)
   mesh.position.copy(position)
-  mesh.color = color
   return mesh
 }

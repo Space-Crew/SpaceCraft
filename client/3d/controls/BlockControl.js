@@ -171,6 +171,11 @@ const BlockControl = function(
         _objects
       )
       if (!isMovePositionOccupied && !_commandIsDown && !_shiftIsDown) {
+        _scene.undoStack.addDrag(
+          _selected.position,
+          _selected.material.color.getHex(),
+          'START_DRAG'
+        )
         const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
         await cubesRef.child('temp' + currentUser.displayName).set({
           x: mouseVector.x,
@@ -206,17 +211,20 @@ const BlockControl = function(
       addBlockToDb(previewBox.position, chosenColor, worldId)
       _scene.undoStack.add(previewBox.position, chosenColor, 'ADD')
     } else if (_selected && _commandIsDown) {
-      // if (_selected) {
       _objects = deleteBlock(_selected, _scene, _objects)
       deleteBlockFromDb(_selected.position, worldId)
-      _scene.undoStack.add(_selected.position, _selected.color, 'DELETE')
-      // }
+      _scene.undoStack.add(
+        _selected.position,
+        _selected.material.color.getHex(),
+        'DELETE'
+      )
     }
   }
 
   async function onDocumentMouseCancel(event) {
     event.preventDefault()
     if (_selected) {
+      _scene.undoStack.addDrag(_selected.position, null, 'END_DRAG')
       _selected = null
     }
     const tempRef = db.ref(

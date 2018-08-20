@@ -11,11 +11,27 @@ class UndoStack {
     */
     this.worldId = worldId
     this.stack = []
+    this.dragging = null
+
     this.addBlockToDb = addBlockToDb
     this.deleteBlockFromDb = deleteBlockFromDb
   }
   add({x, y, z}, color, type) {
     this.stack.push({position: {x, y, z}, color, type})
+  }
+
+  addDrag({x, y, z}, color, type) {
+    if (!this.dragging && type === 'START_DRAG') {
+      this.dragging = {
+        position: {start: {x, y, z}},
+        color,
+        type: 'DRAG'
+      }
+    } else if (type === 'END_DRAG') {
+      this.dragging.position.end = {x, y, z}
+      this.stack.push({...this.dragging})
+      this.dragging = null
+    }
   }
   undo() {
     if (this.stack.length) {
@@ -25,6 +41,9 @@ class UndoStack {
         this.deleteBlockFromDb(position, this.worldId)
       } else if (type === 'DELETE') {
         this.addBlockToDb(position, color, this.worldId)
+      } else if (type === 'DRAG') {
+        this.deleteBlockFromDb(position.end, this.worldId)
+        this.addBlockToDb(position.start, color, this.worldId)
       }
     }
   }
