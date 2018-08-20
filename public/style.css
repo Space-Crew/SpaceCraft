@@ -9,9 +9,6 @@ body {
   height: 100%;
   width: 100%;
   margin: 0;
-  /* background-image: url('./starrybackground.png'); */
-  /* background-repeat: repeat;
-  background-size: cover; */
 }
 .world-list {
   margin-top: 80px;
