@@ -1,3 +1,5 @@
+export {attachCameraControls} from './cameraControls'
+
 import * as THREE from 'three'
 
 export function getMouse(event) {

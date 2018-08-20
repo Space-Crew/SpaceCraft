@@ -1,31 +1,35 @@
 import {toKey} from '..'
 
-export default class FlowCube {
-  constructor(position = {x: 0, y: 0, z: 0}, isSource = false) {
+export class FlowCube {
+  constructor(
+    position = {x: 0, y: 0, z: 0},
+    isSource = false,
+    volume = 4,
+    sourceVolume = 4
+  ) {
     this.position = position
     this.isSource = isSource
     this.parents = {}
     this.children = {}
-    //volume REFACTOR maybe idk
-    //neighbors
-    //up
+    this.volume = volume
+    this.sourceVolume = sourceVolume
   }
   /*************
    * Volume
    *************/
-  get volume() {
-    if (this.storedVolume != undefined) return this.storedVolume
-    if (this.isSource) return 4 //default value
-    this.storedVolume = this.findVolumeBasedOnParents()
-    return this.storedVolume
-  }
+  // get volume() {
+  //   if (this.storedVolume != undefined) return this.storedVolume
+  //   if (this.isSource) return this.sourceVolume
+  //   this.storedVolume = this.findVolumeBasedOnParents()
+  //   return this.storedVolume
+  // }
   get maxVolumeOfParents() {
     if (Object.values(this.parents).length === 0) {
       if (!this.isSource) {
         console.log(`maxVolumeOfParents`, this.parents, this)
         throw new Error('flowing cube has no parents but is not a source')
       }
-      return 4
+      return this.sourceVolume
     }
     // console.log(Object.values(this.parents))
     return Math.max(...Object.values(this.parents).map(parent => parent.volume))
@@ -40,14 +44,24 @@ export default class FlowCube {
     return max - 1
   }
   hasVolumeToFlowTo(position) {
-    return samePosition(this.down, position) ? this.volume > 0 : this.volume > 1
-    function samePosition(a, b) {
-      return a.x === b.x && a.y === b.y && a.z === b.z
-    }
+    return this.samePosition(this.down, position)
+      ? this.volume > 0
+      : this.volume > 1
+  }
+  samePosition(a, b) {
+    return a.x === b.x && a.y === b.y && a.z === b.z
+  }
+  becameBigger(oldVolume) {
+    return oldVolume < this.volume
   }
   /*****************
    * Public methods
    *****************/
+  isFlowingDown() {
+    return Object.values(this.parents).some(parent => {
+      return this.samePosition(parent.position, this.up)
+    })
+  }
   createChildAt(position) {
     const child = new FlowCube(position)
     this.linkChild(child)
@@ -57,6 +71,7 @@ export default class FlowCube {
     if (!child.isSource) {
       this.addChild(child)
       child.addParent(this)
+      child.volume = child.findVolumeBasedOnParents()
     }
   }
   unlinkChild(child) {
