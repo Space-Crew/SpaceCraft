@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import {db} from '../firebase'
-import {addBlock} from '../3d/controls/addBlock'
-import CameraControl from '../3d/controls/cameraControl';
-import BlockControl from '../3d/controls/BlockControl';
+import BlockControl from '../3d/controls/blockControl';
 import PreviewControl from '../3d/controls/previewControl';
+import {makeWaterCube} from '../3d/meshes'
+import FlowGraph from '../3d/meshes/WaterGraph'
+import CameraControl from '../3d/controls/cameraControl'
+import avatarControl from '../3d/controls/avatarControl'
 
 /*********************************
  * Construct the Three World
@@ -15,7 +17,7 @@ let onSpaceBar
 const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
-function generateWorld(cubes, worldId, currentUser) {
+function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   //container for all 3d objects that will be affected by event
   let objects = []
   const cubesToBeMoved = {}
@@ -34,22 +36,13 @@ function generateWorld(cubes, worldId, currentUser) {
     0.1,
     1000
   )
-  camera.position.y = 0
-  camera.position.z = 0
-
+  // camera.controls = attachCameraControls(camera, renderer.domElement)
   //create a new scene
   const scene = new THREE.Scene()
-  //allows for adding, deleting, and moving 3d objects with mouse drag
-  // const dragControl = new DragControls(
-  //   objects,
-  //   camera,
-  //   renderer.domElement,
-  //   scene,
-  //   worldId,
-  //   currentUser
-  // )
-  // scene.add(dragControl.getObject())
-  // addCubesToScene(cubes, scene, objects)
+
+  scene.objects = []
+  scene.worldId = worldId
+
   const cameraControl = new CameraControl(
     camera, renderer.domElement 
   )
@@ -61,11 +54,26 @@ function generateWorld(cubes, worldId, currentUser) {
   const blockControl = new BlockControl(
     essentials, currentUser, worldId, cameraControl.getObject(), previewBox, cubesToBeMoved
   )
+  avatarControl(worldId, cameraControl.getObject(), scene)
+  // scene.addDragControls = function() {
+  //   this.dragControl = new DragControls(camera, renderer.domElement, this)
+  //   this.add(this.dragControl.getObject())
+  // }
+  // scene.addDragControls()
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
   const pointLight = new THREE.PointLight(0xffffff, 0.8)
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
+
+  scene.addWaterSources = function(waterSources, worldCubes) {
+    const waterGraph = new FlowGraph(waterSources, worldCubes)
+    const waterCubes = Object.values(waterGraph.flowCubes)
+    waterCubes.forEach(waterCube => {
+      this.add(makeWaterCube(waterCube.position))
+    })
+  }
+  scene.addWaterSources(water, rawWorldCubes)
 
   function render() {
     renderer.render(scene, camera)
@@ -94,35 +102,40 @@ function generateWorld(cubes, worldId, currentUser) {
     blockControl.dispose();
     previewControl.dispose();
   }
+  // const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
+  // const disposeWorld = () => {
+  //   tearDownFunctions.forEach(func => func())
+  // }
+  // return disposeWorld
 }
 
 /*********************************
  * Helper functions
  ********************************/
 
-function addCubesToScene(cubes, scene, objects) {
-  if (cubes.length > 0) {
-    cubes.forEach(cube => {
-      addBlock(
-        new THREE.Vector3(cube.x, cube.y, cube.z),
-        cube.color,
-        scene,
-        objects
-      )
-    })
-  } else {
-    generateDefaultPlane(scene, objects)
-  }
-}
+// function addCubesToScene(cubes, scene, objects) {
+//   if (cubes.length > 0) {
+//     cubes.forEach(cube => {
+//       addBlock(
+//         new THREE.Vector3(cube.x, cube.y, cube.z),
+//         cube.color,
+//         scene,
+//         objects
+//       )
+//     })
+//   } else {
+//     generateDefaultPlane(scene, objects)
+//   }
+// }
 
-function generateDefaultPlane(scene, objects) {
-  for (let z = -10; z < 10; z += 1) {
-    for (let x = -10; x <= 10; x += 1) {
-      const y = -1
-      addBlock(new THREE.Vector3(x, y, z), 0xb9c4c0, scene, objects)
-    }
-  }
-}
+// function generateDefaultPlane(scene, objects) {
+//   for (let z = -10; z < 10; z += 1) {
+//     for (let x = -10; x <= 10; x += 1) {
+//       const y = -1
+//       addBlock(new THREE.Vector3(x, y, z), 0xb9c4c0, scene, objects)
+//     }
+//   }
+// }
 
 const showInstructions = isPaused => {
   blocker.style.visibility = 'visible'
@@ -155,6 +168,8 @@ class World extends Component {
     try {
       let cubes = []
       let worldId
+      let water
+      let rawWorldCubes
       if (this.props.match && this.props.match.params.id) {
         const uri = '/worlds/' + this.props.match.params.id
         const worldRef = db.ref(uri)
@@ -165,8 +180,10 @@ class World extends Component {
           cubes = Object.values(world.cubes)
         }
         worldId = world.id
+        water = world.water
+        rawWorldCubes = world.cubes
       }
-      this.unsubscribe = generateWorld(cubes, worldId, this.props.currentUser)
+      this.unsubscribe = generateWorld(worldId, this.props.currentUser, water, rawWorldCubes)
     } catch (error) {
       console.log(error)
     }

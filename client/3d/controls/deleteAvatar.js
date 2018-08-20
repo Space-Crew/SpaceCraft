@@ -1,0 +1,14 @@
+export const deleteAvatar = (scene, avatarGroup) => {
+  if (avatarGroup) {
+    for (let i = 0; i < avatarGroup.children.length; i++) {
+      let bodyPart = avatarGroup.children[i]
+      avatarGroup.remove(bodyPart)
+      scene.remove(bodyPart)
+      bodyPart.geometry.dispose()
+      bodyPart.material.dispose()
+      bodyPart = undefined
+    }
+    scene.remove(avatarGroup)
+    avatarGroup = undefined
+  }
+}
