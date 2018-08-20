@@ -88,6 +88,7 @@ function generateWorld(world, currentUser) {
    ********************************/
 
   function render() {
+    cameraControl.updatePlayerPosition()
     renderer.render(scene, camera)
   }
   function animate() {
