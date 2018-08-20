@@ -142,8 +142,9 @@ const BlockControl = function(
     if (event.which === 91) {
       _commandIsDown = true
     }
-    if (event.which === 90 && _commandIsDown) {
-      _scene.undoStack.undo()
+    if (event.which === 90) {
+      if (_commandIsDown && !_shiftIsDown) _scene.undoStack.undo()
+      else if (_commandIsDown && _shiftIsDown) _scene.undoStack.redo()
     }
   }
   function onDocumentKeyUp(event) {

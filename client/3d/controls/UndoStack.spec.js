@@ -42,25 +42,25 @@ describe('Undo Stack', () => {
     expect(scene.undoStack.stack[1].color).to.equal(color2)
     expect(scene.undoStack.stack[1].type).to.equal(deleteType)
   })
-  it('undo reduces the stack and makes add/delete calls to the db', () => {
-    const startLength = scene.undoStack.stack.length
+  it('undo decrements the pointer and makes add/delete calls to the db', () => {
+    const startPointer = scene.undoStack.pointer
     let addStub = sinon.stub(scene.undoStack, 'addBlockToDb').callsFake()
     let deleteStub = sinon
       .stub(scene.undoStack, 'deleteBlockFromDb')
       .callsFake()
     scene.undoStack.add(position, color, addType)
     scene.undoStack.add(position2, color2, deleteType)
-    const middleLength = scene.undoStack.stack.length
+    const middlePointer = scene.undoStack.pointer
     scene.undoStack.undo()
     expect(addStub.calledWith(position2, color2, id)).to.be.true
     expect(addStub.callCount).to.equal(1)
     scene.undoStack.undo()
     expect(deleteStub.callCount).to.equal(1)
     expect(deleteStub.calledWith(position, id)).to.be.true
-    expect(scene.undoStack.stack.length).to.equal(startLength)
-    const endLength = scene.undoStack.stack.length
-    expect(startLength).to.equal(middleLength - 2)
-    expect(endLength).to.equal(middleLength - 2)
-    expect(startLength).to.equal(endLength)
+    expect(scene.undoStack.pointer).to.equal(startPointer)
+    const endPointer = scene.undoStack.pointer
+    expect(startPointer).to.equal(middlePointer - 2)
+    expect(endPointer).to.equal(middlePointer - 2)
+    expect(startPointer).to.equal(endPointer)
   })
 })
