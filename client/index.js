@@ -10,10 +10,8 @@ import App from './app'
 // import './socket'
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router history={history}>
-      <App />
-    </Router>
-  </Provider>,
+  <Router history={history}>
+    <App />
+  </Router>,
   document.getElementById('app')
 )
