@@ -1,18 +1,20 @@
 import React, {Component} from 'react'
-import {doCreateUserWithEmailAndPassword} from '../firebase/auth'
-import {db, currentUser} from '../firebase'
+import {
+  doCreateUserWithEmailAndPassword,
+  doDisplayNameUpdate
+} from '../firebase/auth'
+import {db} from '../firebase'
 import {Button, Form, Grid, Header, Message, Segment} from 'semantic-ui-react'
 
 /**
  * COMPONENT
  */
 
-function writeUserData(userId, name, email, imageUrl, worlds = []) {
+function writeUserData(userId, name, email, imageUrl) {
   db.ref('users/' + userId).set({
     username: name,
     email: email,
-    avatar: imageUrl,
-    worlds: worlds
+    avatar: imageUrl
   })
 }
 
@@ -39,14 +41,14 @@ export default class Signup extends Component {
         this.state.email,
         this.state.password
       )
-      await writeUserData(
+      writeUserData(
         user.user.uid,
         this.state.username,
         this.state.email,
         this.state.imageUrl
       )
       this.setState({error: '', signupSuccess: true})
-      currentUser.updateProfile({displayName: this.state.username})
+      doDisplayNameUpdate(this.state.username)
       setTimeout(() => this.props.history.push('/worlds'), 1500)
     } catch (err) {
       this.setState({error: 'There was a problem creating an account'})
