@@ -6,21 +6,27 @@ import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import {addBlock, addBlockToDb} from './addBlock'
 import darken from '../utilities/darken'
 
-const BlockControl = function(essentials, currentUser, worldId, yawObject, previewBox, cubesToBeMoved) {
-
+const BlockControl = function(
+  essentials,
+  currentUser,
+  worldId,
+  yawObject,
+  previewBox,
+  cubesToBeMoved
+) {
   const _mouse = new THREE.Vector2()
   const mouseVector = new THREE.Vector3()
   const mouseVectorForBox = new THREE.Vector3()
   const _raycaster = new THREE.Raycaster()
-  let {_domElement, _objects, _camera, _scene} = essentials;
-  let distanceToSelected;
-  let _shiftIsDown = false;
-  let _commandIsDown = false;
-  let originalPosition;
-  let chosenColor;
+  let {_domElement, _objects, _camera, _scene} = essentials
+  let distanceToSelected
+  let _shiftIsDown = false
+  let _commandIsDown = false
+  let originalPosition
+  let chosenColor
 
-  let scope = this;
-  let _selected = null;
+  let scope = this
+  let _selected = null
 
   function activate() {
     window.addEventListener('keydown', onDocumentKeyDown, false)
@@ -29,8 +35,8 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     _domElement.addEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.addEventListener('mouseup', onDocumentMouseCancel, false)
     document
-    .getElementById('color-palette')
-    .addEventListener('change', onColorChange, false)
+      .getElementById('color-palette')
+      .addEventListener('change', onColorChange, false)
 
     const cubesRef = db.ref(`/worlds/${worldId}/cubes/`)
     cubesRef.on('child_added', async function(snapshot) {
@@ -77,11 +83,15 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
           cube =>
             cube.position.x === deletedCube.x &&
             cube.position.y === deletedCube.y &&
-            cube.position.z === deletedCube.z 
+            cube.position.z === deletedCube.z
         )
         _objects = deleteBlock(selectedCube, _scene, _objects)
       } else {
-        _objects = deleteBlock(cubesToBeMoved[snapshot.key.slice(4)], _scene, _objects)
+        _objects = deleteBlock(
+          cubesToBeMoved[snapshot.key.slice(4)],
+          _scene,
+          _objects
+        )
         if (snapshot.key.slice(4) === currentUser.displayName) {
           addBlockToDb(
             new THREE.Vector3(
@@ -115,8 +125,8 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     _domElement.removeEventListener('mousedown', onDocumentMouseDown, false)
     _domElement.removeEventListener('mouseup', onDocumentMouseCancel, false)
     document
-    .getElementById('color-palette')
-    .removeEventListener('change', onColorChange, false)
+      .getElementById('color-palette')
+      .removeEventListener('change', onColorChange, false)
   }
 
   function onColorChange(event) {
@@ -132,8 +142,9 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     if (event.which === 91) {
       _commandIsDown = true
     }
-    if (event.which === 90 && _commandIsDown) {  // Z 
-      _scene.undoStack.undo()
+    if (event.which === 90) {
+      if (_commandIsDown && !_shiftIsDown) _scene.undoStack.undo()
+      else if (_commandIsDown && _shiftIsDown) _scene.undoStack.redo()
     }
   }
   function onDocumentKeyUp(event) {
@@ -144,14 +155,14 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
       _commandIsDown = false
     }
   }
-  
+
   async function onDocumentMouseMove(event) {
     event.preventDefault()
     const rect = _domElement.getBoundingClientRect()
     _mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1
     _mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
     _raycaster.setFromCamera(_mouse, _camera)
-  
+
     if (_selected && scope.enabled) {
       mouseVector.copy(yawObject.position)
       mouseVector.addScaledVector(_raycaster.ray.direction, distanceToSelected)
@@ -161,6 +172,11 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
         _objects
       )
       if (!isMovePositionOccupied && !_commandIsDown && !_shiftIsDown) {
+        _scene.undoStack.addDrag(
+          _selected.position,
+          _selected.material.color.getHex(),
+          'START_DRAG'
+        )
         const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
         await cubesRef.child('temp' + currentUser.displayName).set({
           x: mouseVector.x,
@@ -168,7 +184,8 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
           z: mouseVector.z,
           color: _selected.material.color.getHex()
         })
-        if (_selected) { //sometimes user drags and releases too fast. this prevents err log when _selected becomes null while user still dragging
+        if (_selected) {
+          //sometimes user drags and releases too fast. this prevents err log when _selected becomes null while user still dragging
           _selected.position.copy(mouseVector)
         }
       }
@@ -194,18 +211,21 @@ const BlockControl = function(essentials, currentUser, worldId, yawObject, previ
     if (!isAddPositionOccupied && _shiftIsDown) {
       addBlockToDb(previewBox.position, chosenColor, worldId)
       _scene.undoStack.add(previewBox.position, chosenColor, 'ADD')
-    } else if (_commandIsDown) {
+    } else if (_selected && _commandIsDown) {
       _objects = deleteBlock(_selected, _scene, _objects)
-      if (_selected) {
-        deleteBlockFromDb(_selected.position, worldId)
-        _scene.undoStack.add(_selected.position, _selected.color, 'DELETE')
-      }
+      deleteBlockFromDb(_selected.position, worldId)
+      _scene.undoStack.add(
+        _selected.position,
+        _selected.material.color.getHex(),
+        'DELETE'
+      )
     }
   }
-  
+
   async function onDocumentMouseCancel(event) {
     event.preventDefault()
     if (_selected) {
+      _scene.undoStack.addDrag(_selected.position, null, 'END_DRAG')
       _selected = null
     }
     const tempRef = db.ref(
