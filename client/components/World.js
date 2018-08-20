@@ -3,8 +3,6 @@ import * as THREE from 'three'
 import {db} from '../firebase'
 import BlockControl from '../3d/controls/blockControl';
 import PreviewControl from '../3d/controls/previewControl';
-import {makeWaterCube} from '../3d/meshes'
-import FlowGraph from '../3d/meshes/WaterGraph'
 import CameraControl from '../3d/controls/cameraControl'
 import avatarControl from '../3d/controls/avatarControl'
 import UndoStack from '../3d/controls/undoStack'
@@ -59,7 +57,7 @@ function generateWorld(world, currentUser) {
   const blockControl = new BlockControl(
     essentials, currentUser, world.id, cameraControl.getObject(), previewBox, cubesToBeMoved
   )
-  avatarControl(worldId, cameraControl.getObject(), scene)
+  avatarControl(world.id, cameraControl.getObject(), scene)
   // scene.addDragControls = function() {
   //   this.dragControl = new DragControls(camera, renderer.domElement, this)
   //   this.add(this.dragControl.getObject())
