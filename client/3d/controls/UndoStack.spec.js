@@ -44,17 +44,19 @@ describe('Undo Stack', () => {
   })
   it('undo reduces the stack and makes add/delete calls to the db', () => {
     const startLength = scene.undoStack.stack.length
-    let addSpy = sinon.spy(scene.undoStack, 'addBlockToDb')
-    let deleteSpy = sinon.spy(scene.undoStack, 'deleteBlockFromDb')
+    let addStub = sinon.stub(scene.undoStack, 'addBlockToDb').callsFake()
+    let deleteStub = sinon
+      .stub(scene.undoStack, 'deleteBlockFromDb')
+      .callsFake()
     scene.undoStack.add(position, color, addType)
     scene.undoStack.add(position2, color2, deleteType)
     const middleLength = scene.undoStack.stack.length
     scene.undoStack.undo()
-    expect(addSpy.calledWith(position2, color2, id)).to.be.true
-    expect(addSpy.callCount).to.equal(1)
+    expect(addStub.calledWith(position2, color2, id)).to.be.true
+    expect(addStub.callCount).to.equal(1)
     scene.undoStack.undo()
-    expect(deleteSpy.callCount).to.equal(1)
-    expect(deleteSpy.calledWith(position, id)).to.be.true
+    expect(deleteStub.callCount).to.equal(1)
+    expect(deleteStub.calledWith(position, id)).to.be.true
     expect(scene.undoStack.stack.length).to.equal(startLength)
     const endLength = scene.undoStack.stack.length
     expect(startLength).to.equal(middleLength - 2)
