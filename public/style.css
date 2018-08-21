@@ -45,14 +45,14 @@ p {
 }
 
 ul {
-  padding: 0
+  padding: 0;
 }
 
 .world-list li {
   padding: 10px;
   margin: 3px;
   font-size: 1.2rem;
-  text-align: center
+  text-align: center;
 }
 
 #account {
@@ -133,7 +133,6 @@ p {
   width: auto;
   color: rgb(198, 2222, 255);
   text-shadow: 0px 0.5px 3px rgb(0, 0, 0);
-  margin: auto;
 }
 
 label {
