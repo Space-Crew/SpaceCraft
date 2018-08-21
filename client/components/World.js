@@ -125,11 +125,9 @@ function generateWorld(world, currentUser) {
     if (isPaused) {
       blocker.style.display = 'block'
       blocker.style.zIndex = '99'
-      instructions.style.display = ''
     } else {
       blocker.style.display = 'none'
       blocker.style.zIndex = ''
-      instructions.style.display = 'none'
     }
   }
   window.addEventListener('keydown', onSpaceBar, false)
