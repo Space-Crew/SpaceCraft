@@ -38,7 +38,6 @@ const sun = new THREE.Mesh(sunGeo, sunMat)
 var pointLight = new THREE.PointLight(0xffffff, 1.0, 10.0)
 sun.add(pointLight)
 scene.add(sun)
-
 // first planet from the sun //
 const verticesOfCube = [
   -1,
@@ -153,7 +152,7 @@ const fourthOrbit = new THREE.Group()
 fourthOrbit.add(fourthPlanet)
 
 const orbitDir = new THREE.Group()
-// shooting planets //
+
 for (let i = 1; i < 6; i++) {
   let star = new THREE.Mesh(
     new THREE.SphereBufferGeometry(0.2, 32, 32),
@@ -179,6 +178,7 @@ orbitDir.add(firstOrbit)
 orbitDir.add(secondOrbit)
 orbitDir.add(thirdOrbit)
 orbitDir.add(fourthOrbit)
+
 orbitDir.add(av1Group)
 scene.add(orbitDir)
 

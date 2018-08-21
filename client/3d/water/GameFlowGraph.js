@@ -22,6 +22,7 @@ export class GameFlowGraph extends FlowGraph {
   }
   spawnCubesFromSourcePositionsQuickly() {
     // const copy = new FlowGraph(this.sourcePositions, this.worldCubes)
+
     return this.spawnCubesFromSourcePositions()
   }
   spawnCubesFromSourcePositions() {

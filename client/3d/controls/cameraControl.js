@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 
 const CameraControl = function(_camera, _domElement) {
+
   let pitchObject = new THREE.Object3D()
   pitchObject.add(_camera)
 

@@ -11,6 +11,7 @@ class Navbar extends React.Component {
       style: 'block'
     }
     this.handleCreateWorld = this.handleCreateWorld.bind(this);
+    this.redirect = this.redirect.bind(this);
   }
 
   async handleCreateWorld() {
@@ -24,9 +25,27 @@ class Navbar extends React.Component {
     }
     newWorld.set({
       id: worldId,
-      author: currentUser ? currentUser.displayName : 'guest'
+      author: currentUser ? currentUser.displayName : 'guest',
+      name: currentUser ? `${currentUser.displayName}'s world: ${worldId}` : `Guest's world: ${worldId}`,
+      private: !!currentUser,
+      authorizedPlayers: [currentUser.displayName]
     })
     this.props.history.push(`/worlds/${worldId}`);
+  }
+
+  toggleDropdown(event) {
+    const dropdown = event.target.nextElementSibling;
+    if (dropdown.style.display === 'none') {
+      dropdown.style.display = 'flex';
+    } else {
+      dropdown.style.display = 'none';
+    }
+
+  }
+
+  redirect(event) {
+    this.props.history.push('/account')
+    document.getElementById('dropdown').style.display = 'none'
   }
 
   render() {
@@ -39,18 +58,20 @@ class Navbar extends React.Component {
         {this.props.location.pathname.indexOf('/worlds') === 0 && (
           <span
             id="nav-instructions"
-            className="link-item"
             style={{display: this.state.style}}
           >
             Instructions? Press Space Bar
           </span>
         )}
         <div id="menu">
-          <a onClick={this.handleCreateWorld}><div className="link-item">Create</div></a>
+          <div className="link-item dropdown" onClick={this.toggleDropdown}>Create</div>
+          <div id="dropdown">
+            <div className="link-item" onClick={this.handleCreateWorld}>New world</div>
+            <div className="link-item" onClick={this.redirect}>Your creations</div>
+          </div>
           <Link to="/worldlist">
             <div className="link-item">Explore</div>
           </Link>
-          <div className="link-item">Share</div>
           {
             !currentUser || !currentUser.displayName?
             <Link to="/login">
@@ -60,9 +81,6 @@ class Navbar extends React.Component {
             <React.Fragment>
               <Link to="/account">
                 <div className="link-item">Account</div>
-              </Link>
-              <Link to="/" onClick={doSignOut}>
-                <div className="link-item">Sign Out</div>
               </Link>
             </React.Fragment>
             )
