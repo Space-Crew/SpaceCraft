@@ -28,6 +28,7 @@ const CameraControl = function(_camera, _domElement) {
       -Math.PI / 2,
       Math.min(Math.PI / 2, pitchObject.rotation.x)
     )
+    console.log(yawObject)
   }
 
   function dispose() {
