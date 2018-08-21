@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {auth} from './firebase/firebase'
 import {Navbar} from './components'
 import Routes from './routes'
-import {generateGuestName} from '../client/3d/utilities/generateGuestName'
+import {generateGuestName} from './3d/utilities'
 
 class App extends Component {
   constructor() {
