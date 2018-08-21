@@ -19,7 +19,6 @@ import {configureRenderer} from '../3d/configure'
 let isPaused = false
 let onSpaceBar
 const blocker = document.getElementById('blocker')
-const instructions = document.getElementById('instructions')
 
 function generateWorld(world, currentUser, guestAvatar) {
   //container for all 3d objects that will be affected by event
@@ -119,50 +118,7 @@ function generateWorld(world, currentUser, guestAvatar) {
 }
 
 /*********************************
-<<<<<<< HEAD
- * Helper functions
- ********************************/
-
-// function addCubesToScene(cubes, scene, objects) {
-//   if (cubes.length > 0) {
-//     cubes.forEach(cube => {
-//       addBlock(
-//         new THREE.Vector3(cube.x, cube.y, cube.z),
-//         cube.color,
-//         scene,
-//         objects
-//       )
-//     })
-//   } else {
-//     generateDefaultPlane(scene, objects)
-//   }
-// }
-
-// function generateDefaultPlane(scene, objects) {
-//   for (let z = -10; z < 10; z += 1) {
-//     for (let x = -10; x <= 10; x += 1) {
-//       const y = -1
-//       addBlock(new THREE.Vector3(x, y, z), 0xb9c4c0, scene, objects)
-//     }
-//   }
-// }
-
-const showInstructions = isPaused => {
-  blocker.style.visibility = 'visible'
-  if (isPaused) {
-    blocker.style.display = 'block'
-    blocker.style.zIndex = '99'
-  } else {
-    blocker.style.display = 'none'
-    blocker.style.zIndex = ''
-  }
-}
-
-/*********************************
- * Render the world
-=======
  * Render Component
->>>>>>> master
  ********************************/
 
 class World extends Component {

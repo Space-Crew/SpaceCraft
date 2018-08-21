@@ -5,8 +5,10 @@ import {addAvatar} from './addAvatar'
 import {deleteAvatar} from './deleteAvatar'
 
 export function avatarControl(worldId, yawObject, _scene, currentUser) {
+  //check if user is guest or logged in //
   let username =
     typeof currentUser === 'string' ? currentUser : currentUser.displayName
+  console.log(username)
   let avatars = {}
   let avatar, disconnectRef
   let color = '#' + Math.floor(Math.random() * 16777215).toString(16)
@@ -24,7 +26,8 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
       avatar = addAvatar(
         new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
         _scene,
-        snapshot.val().color
+        snapshot.val().color,
+        snapshot.ref.key
       )
     }
     avatars[snapshot.ref.key] = avatar
