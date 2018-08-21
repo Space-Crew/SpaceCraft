@@ -16,20 +16,26 @@ class UndoStack {
     this.addBlockToDb = addBlockToDb
     this.deleteBlockFromDb = deleteBlockFromDb
   }
-  add({x, y, z}, color, type) {
+  stackPushAdd({x, y, z}, color) {
     this.clearBlocksAbovePointer()
     this.incrementPointer()
-    this.stack.push({position: {x, y, z}, color, type})
+    this.stack.push({position: {x, y, z}, color, type: 'ADD'})
   }
-
-  addDrag({x, y, z}, color, type) {
-    if (!this.dragging && type === 'START_DRAG') {
+  stackPushDelete({x, y, z}, color) {
+    this.clearBlocksAbovePointer()
+    this.incrementPointer()
+    this.stack.push({position: {x, y, z}, color, type: 'DELETE'})
+  }
+  startDrag({x, y, z}, color) {
+    if (!this.dragging)
       this.dragging = {
         position: {start: {x, y, z}},
         color,
         type: 'DRAG'
       }
-    } else if (this.dragging && type === 'END_DRAG') {
+  }
+  endDrag({x, y, z}) {
+    if (this.dragging) {
       this.clearBlocksAbovePointer()
       this.incrementPointer()
       this.dragging.position.end = {x, y, z}
