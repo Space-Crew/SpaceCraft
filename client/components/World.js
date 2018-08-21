@@ -150,11 +150,9 @@ const showInstructions = isPaused => {
   if (isPaused) {
     blocker.style.display = 'block'
     blocker.style.zIndex = '99'
-    console.log('game paused', blocker.style.display)
   } else {
     blocker.style.display = 'none'
     blocker.style.zIndex = ''
-    console.log('game unpaused', blocker.style.display)
   }
 }
 

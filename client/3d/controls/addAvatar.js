@@ -5,6 +5,7 @@ export const addAvatar = (position, scene, color, name) => {
   // build character //
   const [head, body, leftArm, rightArm, legs] = makeAvatar(color)
   const username = makeUsername(name)
+
   // bring it to LIFE //
   const group = new THREE.Object3D()
   group.add(body)

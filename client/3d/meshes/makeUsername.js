@@ -1,24 +1,19 @@
 import * as THREE from 'three'
+import fontJson from '../../../public/fonts/gentilis_regular.typeface.json'
+const font = new THREE.Font(fontJson)
 
 export const makeUsername = username => {
   let userMesh
   const textToDisplay = username ? username : 'guest'
-  const fontLoader = new THREE.FontLoader()
-  fontLoader.load('/fonts/gentilis_regular.typeface.json', font => {
-    const material = new THREE.MeshPhongMaterial({
-      color: '#F9EDEB',
-      side: THREE.DoubleSide
-    })
-    const geom = new THREE.TextGeometry(textToDisplay, {
-      font: font,
-      size: 2,
-      height: 1
-    })
-    userMesh = new THREE.Mesh(geom, material)
-    console.log(userMesh)
+  const material = new THREE.MeshBasicMaterial({
+    color: '#F9EDEB'
   })
-
-  // place name above avatar //
-  userMesh.position.set(0, 2.5, 0)
+  const geom = new THREE.TextGeometry(textToDisplay, {
+    font: font,
+    size: 0.1,
+    height: 0.05
+  })
+  userMesh = new THREE.Mesh(geom, material)
+  userMesh.position.set(-0.2, 2.5, 0)
   return userMesh
 }
