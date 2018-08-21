@@ -15,7 +15,7 @@ export default class WorldList extends Component {
   async componentDidMount() {
     try {
       const worlds = (await db.ref('worlds').once('value')).val()
-      this.setState({worlds: Object.values(worlds)})
+      this.setState({worlds: Object.values(worlds).filter(world => !world.private)})
     } catch (error) {
       console.log(error)
     }
@@ -27,8 +27,6 @@ export default class WorldList extends Component {
     const linkPath = '/worlds/'
     return (
       <div className="world-list">
-        <h3>World List</h3>
-        <p>Select a world below to explore</p>
         <ListPresentation items={this.state.worlds} linkPath={linkPath} />
       </div>
     )
