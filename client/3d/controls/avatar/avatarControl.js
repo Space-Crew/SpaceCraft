@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import {db} from '../../firebase'
+import {db} from '../../../firebase'
 import {updateAvatarInDb} from './updateAvatarInDb'
 import {addAvatar} from './addAvatar'
 import {deleteAvatar} from './deleteAvatar'

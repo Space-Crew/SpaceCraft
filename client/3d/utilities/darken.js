@@ -1,4 +1,4 @@
-function darken(color, percent) {
+export function darken(color, percent) {
   let t = percent < 0 ? 0 : 255,
     p = percent < 0 ? percent * -1 : percent,
     R = color >> 16,
@@ -11,5 +11,3 @@ function darken(color, percent) {
     (Math.round((t - B) * p) + B)
   )
 }
-
-export default darken;

@@ -1,4 +1,4 @@
-import {db} from '../../firebase'
+import {db} from '../../../firebase'
 
 export function updateAvatarInDb(position, worldId, uniqueId, color) {
   try {

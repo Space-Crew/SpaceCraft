@@ -1,14 +1,15 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import {db} from '../firebase'
-import BlockControl from '../3d/controls/blockControl'
-import PreviewControl from '../3d/controls/previewControl'
-
-import CameraControl from '../3d/controls/cameraControl'
-import MotionControl from '../3d/controls/motionControl'
-import avatarControl from '../3d/avatar/avatarControl'
 import {GameFlowGraph} from '../3d/water'
-import UndoStack from '../3d/controls/UndoStack'
+import {
+  BlockControl,
+  PreviewControl,
+  CameraControl,
+  MotionControl,
+  avatarControl,
+  UndoStack
+} from '../3d/controls'
 
 /*********************************
  * Construct the Three World

@@ -1,10 +1,9 @@
 import {expect} from 'chai'
-import {FlowGraph} from './WaterGraph'
+import {FlowGraph} from './FlowGraph'
 import sinon from 'sinon'
-import {FlowCube} from './water'
+import {FlowCube} from './FlowCube'
 
 describe('FlowGraph', () => {
-  xdescribe('spawnCubesFromSources', () => {})
   describe('makeSourceAt', () => {
     let graph
     beforeEach(() => {

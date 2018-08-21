@@ -1,4 +1,4 @@
-import {FlowCube} from './water'
+import {FlowCube} from './FlowCube'
 import {toKey} from '../utilities'
 
 export class FlowGraph {

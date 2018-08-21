@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import {FlowCube} from './water'
+import {FlowCube} from './FlowCube'
 
 describe('FlowCube', () => {
   /*************
