@@ -5,3 +5,6 @@ secrets.js
 .DS_Store
 npm-debug.log
 yarn-error.log
+.firebase
+.firebaserc
+firebase.json
