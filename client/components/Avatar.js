@@ -18,9 +18,9 @@ camera.position.y = 4
 camera.position.x = 0
 
 // add avatar //
-const avPosition = new THREE.Vector3(0, 0, 0)
-const avatar = addAvatar(avPosition, scene, 'white')
-avatar.lookAt(camera.position)
+// const avPosition = new THREE.Vector3(0, 0, 0)
+// const avatar = addAvatar(avPosition, scene, 'white')
+// avatar.lookAt(camera.position)
 
 // lights
 const rightLight = new THREE.PointLight(0xffffff, 0.85)
