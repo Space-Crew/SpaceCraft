@@ -186,7 +186,7 @@ class World extends Component {
         <input id="color-palette" type="color" defaultValue="#b9c4c0" />
       </div>
     ) : (
-      <div>
+      <div className="world-list">
         <p>You have no authorization to access this world.</p>
       </div>
     )
