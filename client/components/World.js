@@ -75,7 +75,7 @@ function generateWorld(world, currentUser) {
     cubesToBeMoved
   )
 
-  avatarControl(world.id, cameraControl.getObject(), scene)
+  avatarControl(world.id, cameraControl.getObject(), scene, currentUser)
 
   const water = new GameFlowGraph(world.water, world.cubes, scene)
   water.connectToWorld(world.id)
