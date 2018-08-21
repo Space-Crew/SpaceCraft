@@ -1,6 +1,7 @@
 import {addBlockToDb} from './addBlock'
 import {deleteBlockFromDb} from './deleteBlock'
-class UndoStack {
+
+export class UndoStack {
   constructor(worldId) {
     /*
     example of array elements = {
@@ -86,7 +87,7 @@ class UndoStack {
   }
   checkBlocksAbovePointer() {
     if (this.pointer === null) {
-      return this.stack.length ? true : false
+      return !!this.stack.length
     } else {
       return this.stack.length > this.pointer + 1
     }
@@ -105,4 +106,3 @@ class UndoStack {
     this.stack = []
   }
 }
-export default UndoStack

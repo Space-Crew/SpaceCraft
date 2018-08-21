@@ -4,7 +4,7 @@ import {updateAvatarInDb} from './updateAvatarInDb'
 import {addAvatar} from './addAvatar'
 import {deleteAvatar} from './deleteAvatar'
 
-export default function avatarControl(worldId, yawObject, _scene) {
+export function avatarControl(worldId, yawObject, _scene) {
   let color = '#' + Math.floor(Math.random() * 16777215).toString(16)
   updateAvatarInDb({x: 0, y: 0, z: 0}, worldId, yawObject.uuid, color)
   let avatars = {}

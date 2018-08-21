@@ -1,1 +1,1 @@
-export {default as avatarControl} from './avatarControl'
+export {avatarControl} from './avatarControl'

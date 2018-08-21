@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-export default class MotionControl {
+export class MotionControl {
   constructor(yawObject) {
     this.yawObject = yawObject
     this.pitchObject = yawObject.children[0]

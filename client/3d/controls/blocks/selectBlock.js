@@ -1,5 +1,6 @@
 import * as THREE from 'three'
-function selectBlock(mouse, camera, objects) {
+
+export function selectBlock(mouse, camera, objects) {
   const raycaster = new THREE.Raycaster(
     new THREE.Vector3(),
     new THREE.Vector3(),
@@ -14,5 +15,3 @@ function selectBlock(mouse, camera, objects) {
     return intersections[0].object
   } else return null
 }
-
-export default selectBlock

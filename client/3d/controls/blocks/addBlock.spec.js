@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import {expect} from 'chai'
-import {makeUnitCube} from '../meshes'
+import {makeUnitCube} from '../../meshes'
 import {addBlock} from './addBlock'
 
 const scene = new THREE.Scene()

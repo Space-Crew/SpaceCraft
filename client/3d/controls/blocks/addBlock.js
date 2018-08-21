@@ -1,6 +1,6 @@
-import {makeUnitCube} from '../meshes'
-import {db} from '../../firebase'
-import {toKey} from '..'
+import {makeUnitCube} from '../../meshes'
+import {db} from '../../../firebase'
+import {toKey} from '../../utilities'
 
 export function addBlockToDb(position, color = 0xb9c4c0, worldId) {
   try {

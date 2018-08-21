@@ -1,4 +1,4 @@
-import {toKey} from '..'
+import {toKey} from '../utilities'
 
 export class FlowCube {
   constructor(

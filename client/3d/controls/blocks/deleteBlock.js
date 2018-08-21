@@ -1,4 +1,4 @@
-import {db} from '../../firebase'
+import {db} from '../../../firebase'
 import {toKey} from '..'
 
 export function deleteBlock(selected, scene, objects) {
