@@ -1,6 +1,15 @@
 import * as THREE from 'three'
 
-let x, y, z, headHeight, headWidth, bodyHeight, armWidth, bodyY
+let x,
+  y,
+  z,
+  bodyY,
+  headHeight,
+  headWidth,
+  bodyHeight,
+  bodyWidth,
+  armWidth,
+  legWidth
 
 const makeHead = color => {
   // body parts are positioned relative to head //
@@ -11,7 +20,7 @@ const makeHead = color => {
   headHeight = head.geometry.parameters.height
   headWidth = head.geometry.parameters.width
   x = 0
-  y = 2
+  y = 0
   z = 0
   head.position.set(x, y, z)
   return head
@@ -23,6 +32,7 @@ const makeBody = color => {
     new THREE.MeshBasicMaterial({color})
   )
   bodyHeight = body.geometry.parameters.height
+  bodyWidth = body.geometry.parameters.width
   const bodyX = x
   bodyY = y - headHeight / 2 - bodyHeight / 2
   const bodyZ = z
@@ -53,20 +63,33 @@ const makeArms = color => {
 }
 
 const makeLegs = color => {
-  const legs = new THREE.Mesh(
-    new THREE.BoxGeometry(0.3, 0.5, 0.3),
+  const leftLeg = new THREE.Mesh(
+    new THREE.BoxGeometry(0.18, 0.6, 0.15),
     new THREE.MeshLambertMaterial({color})
   )
-  const legX = x
-  const legY =
-    y - headHeight / 2 - bodyHeight - legs.geometry.parameters.height / 2
-  const legZ = z
-  legs.position.set(legX, legY, legZ)
-  return legs
+  legWidth = leftLeg.geometry.parameters.width
+  const lLegX = x - bodyWidth / 2 + legWidth / 2
+  const lLegY =
+    y - headHeight / 2 - bodyHeight - leftLeg.geometry.parameters.height / 2
+  const lLegZ = z
+  leftLeg.position.set(lLegX, lLegY, lLegZ)
+
+  const rightLeg = new THREE.Mesh(
+    new THREE.BoxGeometry(0.18, 0.6, 0.15),
+    new THREE.MeshLambertMaterial({color})
+  )
+  const rLegX = x + bodyWidth / 2 - legWidth / 2
+  const rLegY =
+    y - headHeight / 2 - bodyHeight - rightLeg.geometry.parameters.height / 2
+  const rLegZ = z
+  rightLeg.position.set(rLegX, rLegY, rLegZ)
+
+  return [leftLeg, rightLeg]
 }
 
 export const makeAvatar = color => {
-  const [head, body, legs] = [makeHead(color), makeBody(color), makeLegs(color)]
+  const [head, body] = [makeHead(color), makeBody(color)]
   const [leftArm, rightArm] = makeArms(color)
-  return [head, body, leftArm, rightArm, legs]
+  const [leftLeg, rightLeg] = makeLegs(color)
+  return [head, body, leftArm, rightArm, leftLeg, rightLeg]
 }
