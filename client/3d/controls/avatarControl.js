@@ -22,8 +22,7 @@ function avatarControl(worldId, yawObject, _scene) {
       avatar = addAvatar(
         new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
         _scene,
-        snapshot.val().color,
-        snapshot.val().rotation
+        snapshot.val().color
       )
     }
     disconnectRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
@@ -36,7 +35,6 @@ function avatarControl(worldId, yawObject, _scene) {
     let newRotation = snapshot.val().rotation
     if (snapshot.ref.key !== yawObject.uuid) {
       let avatarToUpdate = avatars[snapshot.ref.key]
-      console.log('avatar to update', avatarToUpdate)
       avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
       avatarToUpdate.rotation.set(newRotation.x, newRotation.y, newRotation.z)
     }
@@ -52,11 +50,21 @@ function avatarControl(worldId, yawObject, _scene) {
   window.addEventListener(
     'keydown',
     function() {
-      updateAvatarInDb(yawObject.position, worldId, yawObject.uuid, color, {
-        x: yawObject.rotation.x,
-        y: yawObject.rotation.y,
-        z: yawObject.rotation.z
-      })
+      if (
+        event.which === 87 ||
+        event.which === 83 ||
+        event.which === 65 ||
+        event.which === 68 ||
+        event.which === 69 ||
+        event.which === 81
+      ) {
+        console.log('fired')
+        updateAvatarInDb(yawObject.position, worldId, yawObject.uuid, color, {
+          x: yawObject.rotation.x,
+          y: yawObject.rotation.y,
+          z: yawObject.rotation.z
+        })
+      }
     },
     false
   )

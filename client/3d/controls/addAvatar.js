@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import {makeAvatar} from '../meshes'
 
-export const addAvatar = (position, scene, color, rotation) => {
+export const addAvatar = (position, scene, color) => {
   // build character //
   const [head, body, leftArm, rightArm, legs] = makeAvatar(color)
   // bring it to LIFE //
@@ -13,8 +13,6 @@ export const addAvatar = (position, scene, color, rotation) => {
   group.add(legs)
   const {x, y, z} = position
   group.position.set(x, y, z)
-  // console.log('rotation', rotation)
-  // if (rotation) group.lookAt(rotation)
   scene.add(group)
   return group
 }
