@@ -1,6 +1,6 @@
 import {db} from '../../../firebase'
 
-export function updateAvatarInDb(position, worldId, uniqueId, color) {
+export function updateAvatarInDb(position, worldId, uniqueId, color, rotation) {
   try {
     // create or replace current position with new position //
     const avatarsRef = db.ref(`/worlds/${worldId}/avatars/${uniqueId}`)
@@ -8,7 +8,8 @@ export function updateAvatarInDb(position, worldId, uniqueId, color) {
       x: position.x,
       y: position.y,
       z: position.z,
-      color
+      color,
+      rotation
     })
   } catch (error) {
     console.error(error)
