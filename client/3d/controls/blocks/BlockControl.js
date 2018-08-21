@@ -1,12 +1,11 @@
 import * as THREE from 'three'
-import {checkPositionOccupied} from './checkPositionOccupied'
-import {db} from '../../firebase'
-import selectBlock from './selectBlock'
+import {darken, checkPositionOccupied} from '../../utilities'
+import {db} from '../../../firebase'
+import {selectBlock} from './selectBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'
 import {addBlock, addBlockToDb} from './addBlock'
-import darken from '../utilities/darken'
 
-const BlockControl = function(
+export const BlockControl = function(
   essentials,
   currentUser,
   worldId,
@@ -244,5 +243,3 @@ const BlockControl = function(
   this.deactivate = deactivate
   this.dispose = dispose
 }
-
-export default BlockControl

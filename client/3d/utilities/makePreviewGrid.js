@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-function makePreviewGrid() {
+export function makePreviewGrid() {
   const grid = makeGridWithYaxisOffset(0)
   grid.visible = false
   const toggleVisibility = function() {
@@ -18,5 +18,3 @@ function makeGridWithYaxisOffset(offset) {
   gridHelper.position.set(0, offset, 0)
   return gridHelper
 }
-
-export default makePreviewGrid

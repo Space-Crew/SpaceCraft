@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import {makeAvatar} from '../meshes'
+import {makeAvatar} from './makeAvatar'
 
 export const addAvatar = (position, scene, color) => {
   // build character //

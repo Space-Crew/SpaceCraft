@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-const CameraControl = function(_camera, _domElement) {
+export const CameraControl = function(_camera, _domElement) {
   let pitchObject = new THREE.Object3D()
   pitchObject.add(_camera)
 
@@ -46,5 +46,3 @@ const CameraControl = function(_camera, _domElement) {
   this.deactivate = deactivate
   this.dispose = dispose
 }
-
-export default CameraControl

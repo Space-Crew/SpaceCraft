@@ -1,8 +1,7 @@
 import {db} from '../../firebase'
 import {GameFlowGraph} from './GameFlowGraph'
-// import {FlowGraph} from './waterGraph'
 import {makeWaterCube} from './makeWaterCube'
-import {toKey} from '..'
+import {toKey} from '../utilities'
 
 export function attachWaterToScene(scene, world) {
   const waterControls = initializeWaterControlsObject(world.water, world.cubes)

@@ -19,6 +19,7 @@ export default class EditWorld extends Component {
   constructor() {
     super()
     this.state = {
+      authorized: false,
       name: '',
       private: true,
       description: '',
@@ -31,6 +32,14 @@ export default class EditWorld extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.toggleRadio = this.toggleRadio.bind(this)
     this.handleClick = this.handleClick.bind(this)
+  }
+
+  async componentDidMount() {
+    const uri = '/worlds/' + this.props.match.params.id
+    const world = (await db.ref(uri).once('value')).val()
+    this.setState({
+      authorized: this.props.currentUser.displayName === world.author
+    })
   }
 
   handleSubmit(event) {
@@ -88,18 +97,15 @@ export default class EditWorld extends Component {
   render() {
     const {error, updateSuccess} = this.state
     return (
+      this.state.authorized ?
       <div className="login-form">
-        {/*
-      The styles below are necessary for the correct render of this Signup page.
-      All the elements up to the `Grid` below must have a height of 100%.
-    */}
-        <style>{`
-      body > div,
-      body > div > div,
-      body > div > div > div.login-form {
-        height: 100%;
-      }
-    `}</style>
+        <style>
+        {`
+          body > div,
+          body > div > div,
+          body > div > div > div.login-form {height: 100%;}
+        `}
+        </style>
         <Grid
           textAlign="center"
           style={{height: '100%'}}
@@ -169,6 +175,9 @@ export default class EditWorld extends Component {
             ) : null}
           </Grid.Column>
         </Grid>
+      </div> :
+      <div className="world-list">
+        <p>You have no authorization to edit this world.</p>
       </div>
     )
   }

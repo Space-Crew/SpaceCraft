@@ -1,8 +1,7 @@
 import * as THREE from 'three'
-import makePreviewGrid from '../utilities/makePreviewGrid'
-import {makeUnitCube} from '../meshes'
+import {makePreviewGrid, makeUnitCube} from '../../utilities'
 
-const PreviewControl = function(_scene) {
+export const PreviewControl = function(_scene) {
   const previewGrid = makePreviewGrid()
   const position = new THREE.Vector3(0, 0, 0)
   let previewBox = makeUnitCube(position, 0xb9c4c0, 0.3)
@@ -20,7 +19,7 @@ const PreviewControl = function(_scene) {
     window.addEventListener('keyup', onDocumentKeyUp, false)
   }
   function onDocumentKeyDown(event) {
-    if (event.which === 71)  {      //G
+    if (event.which === 71) {
       previewBox.togglePreviewGridVisibility()
     } else if (event.which === 16) {
       previewBox.visible = true
@@ -34,7 +33,7 @@ const PreviewControl = function(_scene) {
       previewBox.visible = false
     }
   }
-  
+
   function dispose() {
     deactivate()
   }
@@ -45,5 +44,3 @@ const PreviewControl = function(_scene) {
   this.deactivate = deactivate
   this.dispose = dispose
 }
-
-export default PreviewControl
