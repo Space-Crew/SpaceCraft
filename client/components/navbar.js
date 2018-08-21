@@ -12,6 +12,7 @@ class Navbar extends React.Component {
     }
     this.handleCreateWorld = this.handleCreateWorld.bind(this);
     this.redirect = this.redirect.bind(this);
+    this.signout = this.signout.bind(this);
   }
 
   async handleCreateWorld() {
@@ -48,6 +49,11 @@ class Navbar extends React.Component {
     document.getElementById('dropdown').style.display = 'none'
   }
 
+  signout(event) {
+    doSignOut();
+    this.props.history.push('/');
+  }
+
   render() {
     const currentUser = this.props.currentUser
     return (
@@ -78,11 +84,7 @@ class Navbar extends React.Component {
               <div className="link-item">Login</div>
             </Link> :
             (
-            <React.Fragment>
-              <Link to="/account">
-                <div className="link-item">Account</div>
-              </Link>
-            </React.Fragment>
+              <div className="link-item" onClick={this.signout}>SignOut</div>
             )
           }
         </div>
