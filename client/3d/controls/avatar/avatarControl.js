@@ -50,9 +50,6 @@ function avatarControl(worldId, yawObject, _scene) {
   window.addEventListener(
     'keydown',
     function() {
-<<<<<<< HEAD:client/3d/controls/avatar/avatarControl.js
-      updateAvatarInDb(yawObject.position, worldId, yawObject.uuid, color)
-=======
       if (
         event.which === 87 ||
         event.which === 83 ||
@@ -78,13 +75,9 @@ function avatarControl(worldId, yawObject, _scene) {
         y: yawObject.rotation.y,
         z: yawObject.rotation.z
       })
->>>>>>> f1ab9ad2cdef19eed63f0032517ed37b2d181dc1:client/3d/controls/avatarControl.js
     },
     false
   )
 }
-<<<<<<< HEAD:client/3d/controls/avatar/avatarControl.js
-=======
 
 export default avatarControl
->>>>>>> f1ab9ad2cdef19eed63f0032517ed37b2d181dc1:client/3d/controls/avatarControl.js
