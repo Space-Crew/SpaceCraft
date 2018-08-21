@@ -20,7 +20,6 @@ export const PreviewControl = function(_scene) {
   }
   function onDocumentKeyDown(event) {
     if (event.which === 71) {
-      //G
       previewBox.togglePreviewGridVisibility()
     } else if (event.which === 16) {
       previewBox.visible = true
