@@ -168,7 +168,7 @@ for (let i = 1; i < 6; i++) {
 // floating avatars //
 const [head, body, leftArm, rightArm, legs] = makeAvatar('white')
 const av1 = new THREE.Object3D()
-av1.position.set(15, 0, -10)
+av1.position.set(0, -10, -10)
 av1.add(body, head, leftArm, rightArm, legs)
 const av1Group = new THREE.Group()
 av1Group.add(av1)
@@ -185,7 +185,6 @@ scene.add(orbitDir)
 // renderer //
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
-// document.body.appendChild(renderer.domElement)
 const controls = new OrbitControls(camera, renderer.domElement)
 
 // load background texture //
@@ -207,7 +206,6 @@ backgroundScene.add(backgroundMesh)
 // render function //
 const renderThree = () => {
   controls.update()
-  av1Group.rotation.y += 0.0075
   av1Group.rotation.x += 0.008
   firstOrbit.rotation.y += 0.015
   secondOrbit.rotation.y += 0.02
