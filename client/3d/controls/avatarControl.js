@@ -58,13 +58,23 @@ function avatarControl(worldId, yawObject, _scene) {
         event.which === 69 ||
         event.which === 81
       ) {
-        console.log('fired')
         updateAvatarInDb(yawObject.position, worldId, yawObject.uuid, color, {
           x: yawObject.rotation.x,
           y: yawObject.rotation.y,
           z: yawObject.rotation.z
         })
       }
+    },
+    false
+  )
+  window.addEventListener(
+    'mousemove',
+    function() {
+      updateAvatarInDb(yawObject.position, worldId, yawObject.uuid, color, {
+        x: yawObject.rotation.x,
+        y: yawObject.rotation.y,
+        z: yawObject.rotation.z
+      })
     },
     false
   )
