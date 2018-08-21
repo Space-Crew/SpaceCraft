@@ -3,10 +3,12 @@ import * as THREE from 'three'
 import {db} from '../firebase'
 import BlockControl from '../3d/controls/blockControl'
 import PreviewControl from '../3d/controls/previewControl'
+
 import CameraControl from '../3d/controls/cameraControl'
 import MotionControl from '../3d/controls/motionControl'
 import avatarControl from '../3d/controls/avatarControl'
 import {GameFlowGraph} from '../3d/water'
+import UndoStack from '../3d/controls/UndoStack'
 
 /*********************************
  * Construct the Three World
@@ -51,6 +53,11 @@ function generateWorld(world, currentUser) {
   //create a new scene
   const scene = new THREE.Scene()
 
+  scene.objects = []
+  scene.worldId = world.id
+
+  scene.undoStack = new UndoStack(scene.worldId)
+
   const cameraControl = new CameraControl(camera, renderer.domElement)
   scene.add(cameraControl.getObject())
 
@@ -69,6 +76,7 @@ function generateWorld(world, currentUser) {
     essentials,
     currentUser,
     world.id,
+
     cameraControl.getObject(),
     previewBox,
     cubesToBeMoved
@@ -178,7 +186,8 @@ class World extends Component {
     }
   }
   componentWillUnmount() {
-    // window.removeEventListener('keydown', onSpaceBar, false)
+    // do not remove/comment out line below, this causes the pause-game functionality to work consistently //
+    window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
   render() {

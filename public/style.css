@@ -9,9 +9,6 @@ body {
   height: 100%;
   width: 100%;
   margin: 0;
-  background-image: url('./starrybackground.png');
-  background-repeat: repeat;
-  background-size: cover;
 }
 .world-list {
   margin-top: 80px;
@@ -93,18 +90,6 @@ nav a {
   margin: 1em;
 }
 
-/* .form {
-  margin-top: 100px;
-  font-size: 15px;
-  float: right;
-} */
-
-/* input {
-  border: 1px solid black;
-  width: auto;
-  height: 20px;
-} */
-
 #blocker {
   position: absolute;
   top: 0;
@@ -114,35 +99,16 @@ nav a {
   display: block;
   visibility: hidden;
 }
-
-#instructions {
-  font-family: comorant;
-  font-size: 20px;
-  width: 100%;
-  height: 100%;
-  display: -webkit-box;
-  display: -moz-box;
-  display: box;
-  -webkit-box-orient: horizontal;
-  -moz-box-orient: horizontal;
-  box-orient: horizontal;
-  -webkit-box-pack: center;
-  -moz-box-pack: center;
-  box-pack: center;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  box-align: center;
-  color: #ffffff;
-  text-align: center;
-  cursor: pointer;
+.movement {
+  width: 30%;
+  margin: 0 auto;
+  margin-top: 8%;
 }
 
-#instructionsHeader {
-  font-size: 40px;
-}
-.instructionsSub {
-  text-decoration: underline;
-  line-height: 30px;
+.building {
+  width: 25%;
+  margin: 0 auto;
+  margin-top: 2%;
 }
 
 #color-palette {
