@@ -172,10 +172,9 @@ const BlockControl = function(
         _objects
       )
       if (!isMovePositionOccupied && !_commandIsDown && !_shiftIsDown) {
-        _scene.undoStack.addDrag(
+        _scene.undoStack.startDrag(
           _selected.position,
-          _selected.material.color.getHex(),
-          'START_DRAG'
+          _selected.material.color.getHex()
         )
         const cubesRef = db.ref(`/worlds/${worldId}/cubes`)
         await cubesRef.child('temp' + currentUser.displayName).set({
@@ -195,7 +194,7 @@ const BlockControl = function(
     mouseVectorForBox.round()
     previewBox.position.copy(mouseVectorForBox)
   }
-  
+
   function onDocumentMouseDown(event) {
     event.preventDefault()
     _selected = selectBlock(_mouse, _camera, _objects)
@@ -210,14 +209,13 @@ const BlockControl = function(
     )
     if (!isAddPositionOccupied && _shiftIsDown) {
       addBlockToDb(previewBox.position, chosenColor, worldId)
-      _scene.undoStack.add(previewBox.position, chosenColor, 'ADD')
+      _scene.undoStack.stackPushAdd(previewBox.position, chosenColor)
     } else if (_selected && _commandIsDown) {
       _objects = deleteBlock(_selected, _scene, _objects)
       deleteBlockFromDb(_selected.position, worldId)
-      _scene.undoStack.add(
+      _scene.undoStack.stackPushDelete(
         _selected.position,
-        _selected.material.color.getHex(),
-        'DELETE'
+        _selected.material.color.getHex()
       )
     }
   }
@@ -225,7 +223,7 @@ const BlockControl = function(
   async function onDocumentMouseCancel(event) {
     event.preventDefault()
     if (_selected) {
-      _scene.undoStack.addDrag(_selected.position, null, 'END_DRAG')
+      _scene.undoStack.endDrag(_selected.position)
       _selected = null
     }
     const tempRef = db.ref(
