@@ -24,7 +24,8 @@ export default class Account extends Component {
       userWorldsRef.push(worldId)
     }
     newWorld.set({
-      id: worldId
+      id: worldId,
+      author: currentUser ? currentUser.displayName : 'guest'
     })
     this.props.history.push(`/worlds/${worldId}`)
   }
@@ -48,25 +49,31 @@ export default class Account extends Component {
       <div id="account">
         {this.state.user ? (
           <div>
-            <h3>Welcome, {this.state.user}</h3>
             {this.state.userWorlds.length ? (
               <div>
-                <h3>Your creations</h3>
                 <div className="world-list">
+                  <h4>Welcome, {this.state.user}</h4>
+                  <h4>Your creations</h4>
+                  <ul>
                   {this.state.userWorlds.map(worldId => {
                     return (
-                      <Link to={`/worlds/${worldId}`} key={worldId}>
-                        <div>{`${this.state.user}'s world: ${worldId}`}</div>
-                      </Link>
+                      <div key={worldId} className="center">
+                        <Link to={`/worlds/${worldId}`}>
+                          <li>{`${this.state.user}'s world: ${worldId}`}</li>
+                        </Link><Link to={`/worlds/${worldId}/edit`} className="edit">Edit</Link>
+                      </div>
                     )
                   })}
+                  </ul>
                 </div>
               </div>
             ) : (
-              <h3>
-                You have no creation now,{' '}
-                <a onClick={this.handleCreateWorld}>create</a> one now!
-              </h3>
+              <div className="world-list">
+                <h3>
+                  You have no creation,{' '}
+                  <a onClick={this.handleCreateWorld}>create</a> one now!
+                </h3>
+              </div>
             )}
           </div>
         ) : (
