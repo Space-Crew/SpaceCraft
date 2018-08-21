@@ -34,11 +34,7 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
   // event listener to check for any changes in avatar position //
   avatarsRef.on('child_changed', snapshot => {
     if (snapshot.ref.key !== username) {
-      let newPosition = new THREE.Vector3(
-        snapshot.val().x,
-        snapshot.val().y,
-        snapshot.val().z
-      )
+      let newPosition = snapshot.val()
       let newRotation = snapshot.val().rotation
       let avatarToUpdate = avatars[snapshot.ref.key]
       avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
