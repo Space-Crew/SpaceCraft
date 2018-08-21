@@ -22,13 +22,15 @@ export class GameFlowGraph extends FlowGraph {
   }
   spawnCubesFromSourcePositionsQuickly() {
     // const copy = new FlowGraph(this.sourcePositions, this.worldCubes)
-    this.spawnCubesFromSourcePositions()
+
+    return this.spawnCubesFromSourcePositions()
   }
   spawnCubesFromSourcePositions() {
-    super.spawnCubesFromSourcePositions()
-    Object.values(this.sourcePositions).forEach(sourcePosition => {
-      this.addWaterToSceneAt(sourcePosition)
+    const sources = super.spawnCubesFromSourcePositions()
+    sources.forEach(source => {
+      this.addWaterToScene(source)
     })
+    return sources
   }
   spawnLineageRecursion(currentGeneration) {
     setTimeout(() => {
@@ -53,16 +55,17 @@ export class GameFlowGraph extends FlowGraph {
     threeCube = undefined
   }
   createAndStoreChild(cube, position) {
-    this.addWaterToSceneAt(position)
-    return super.createAndStoreChild(cube, position)
+    const child = super.createAndStoreChild(cube, position)
+    this.addWaterToScene(child)
+    return child
   }
-  addWaterToSceneAt(position) {
-    const threeObject = makeWaterCube(position)
+  addWaterToScene(cube) {
+    const threeObject = makeWaterCube(cube)
     this.scene.add(threeObject)
-    if (this.threeMap[toKey(position)]) {
-      this.removeWaterFromSceneAt(position)
+    if (this.threeMap[toKey(cube.position)]) {
+      this.removeWaterFromSceneAt(cube.position)
     }
-    this.threeMap[toKey(position)] = threeObject
+    this.threeMap[toKey(cube.position)] = threeObject
   }
   listenForChangesToUpdateWater(worldId) {
     const cubesRef = db.ref(`/worlds/${worldId}/cubes/`)
@@ -87,7 +90,8 @@ export class GameFlowGraph extends FlowGraph {
   }
   //if you want to also spawn children, you'll need to call spawnSourceAt
   makeSourceAt(position) {
-    this.addWaterToSceneAt(position)
-    return super.makeSourceAt(position)
+    const source = super.makeSourceAt(position)
+    this.addWaterToScene(source)
+    return source
   }
 }

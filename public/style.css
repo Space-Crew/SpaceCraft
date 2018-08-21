@@ -1,4 +1,7 @@
 body {
+  background-image: url('/textures/deep-space.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
   height: 100%;
   width: 100%;
   font-family: sans-serif;
@@ -13,18 +16,29 @@ a {
   height: 100%;
   width: 100%;
   margin: 0;
-  background-image: url('./starrybackground.png');
-  background-repeat: repeat;
-  background-size: cover;
 }
 .world-list {
-  margin-top: 80px;
+  display: block;
+  width: 30%;
+  /* flex-direction: column; */
+  margin: 80px auto 0 auto;
+}
+.world-list > h3,
+p {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.world-list > p {
+  font-size: 1.5rem;
+  /* margin-bottom: 20px; */
 }
 #account {
   margin-top: 80px;
 }
-#worldList li {
-  padding: 10px;
+li {
+  margin: 10px;
+  list-style: none;
 }
 
 .center {
@@ -89,7 +103,10 @@ a {
     opacity: 0;
   }
 }
-a {
+
+a,
+h3,
+p {
   text-decoration: none;
   width: auto;
   color: rgb(198, 2222, 255);

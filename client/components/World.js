@@ -1,12 +1,14 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import {db} from '../firebase'
-import BlockControl from '../3d/controls/blockControl';
-import PreviewControl from '../3d/controls/previewControl';
+import BlockControl from '../3d/controls/blockControl'
+import PreviewControl from '../3d/controls/previewControl'
+
 import CameraControl from '../3d/controls/cameraControl'
+import MotionControl from '../3d/controls/motionControl'
 import avatarControl from '../3d/controls/avatarControl'
-import UndoStack from '../3d/controls/undoStack'
 import {GameFlowGraph} from '../3d/water'
+import UndoStack from '../3d/controls/UndoStack'
 
 /*********************************
  * Construct the Three World
@@ -21,6 +23,10 @@ function generateWorld(world, currentUser) {
   //container for all 3d objects that will be affected by event
   let objects = []
   const cubesToBeMoved = {}
+
+  /*********************************
+   * Renderer
+   ********************************/
   //renders the scene, camera, and cubes using webGL
   const renderer = new THREE.WebGLRenderer()
   const color = new THREE.Color(0x0f4260)
@@ -39,14 +45,24 @@ function generateWorld(world, currentUser) {
     0.1,
     1000
   )
-  // camera.controls = attachCameraControls(camera, renderer.domElement)
+
+  /*********************************
+   * Scene
+   ********************************/
+
   //create a new scene
   const scene = new THREE.Scene()
+
   scene.objects = []
-  scene.undoStack = new UndoStack(world.id)
+  scene.worldId = world.id
+
+  scene.undoStack = new UndoStack(scene.worldId)
 
   const cameraControl = new CameraControl(camera, renderer.domElement)
   scene.add(cameraControl.getObject())
+
+  const motionControl = new MotionControl(cameraControl.getObject())
+
   const previewControl = new PreviewControl(scene)
   const previewBox = previewControl.previewBox
   const essentials = {
@@ -55,6 +71,7 @@ function generateWorld(world, currentUser) {
     _camera: camera,
     _scene: scene
   }
+
   const blockControl = new BlockControl(
     essentials,
     currentUser,
@@ -63,21 +80,24 @@ function generateWorld(world, currentUser) {
     previewBox,
     cubesToBeMoved
   )
+
   avatarControl(world.id, cameraControl.getObject(), scene)
+
+  const water = new GameFlowGraph(world.water, world.cubes, scene)
+  water.connectToWorld(world.id)
+
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
   const pointLight = new THREE.PointLight(0xffffff, 0.8)
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  const water = new GameFlowGraph(world.water, world.cubes, scene)
-  water.connectToWorld(world.id)
-
   /*********************************
    * Render To Screen
    ********************************/
 
   function render() {
+    motionControl.updatePlayerPosition()
     renderer.render(scene, camera)
   }
   function animate() {
@@ -113,56 +133,15 @@ function generateWorld(world, currentUser) {
   }
   window.addEventListener('keydown', onSpaceBar, false)
 
+  /*********************************
+   * Dispose functions
+   ********************************/
+
   return function() {
     cameraControl.dispose()
     blockControl.dispose()
     previewControl.dispose()
-  }
-  // const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
-  // const disposeWorld = () => {
-  //   tearDownFunctions.forEach(func => func())
-  // }
-  // return disposeWorld
-}
-
-/*********************************
- * Helper functions
- ********************************/
-
-// function addCubesToScene(cubes, scene, objects) {
-//   if (cubes.length > 0) {
-//     cubes.forEach(cube => {
-//       addBlock(
-//         new THREE.Vector3(cube.x, cube.y, cube.z),
-//         cube.color,
-//         scene,
-//         objects
-//       )
-//     })
-//   } else {
-//     generateDefaultPlane(scene, objects)
-//   }
-// }
-
-// function generateDefaultPlane(scene, objects) {
-//   for (let z = -10; z < 10; z += 1) {
-//     for (let x = -10; x <= 10; x += 1) {
-//       const y = -1
-//       addBlock(new THREE.Vector3(x, y, z), 0xb9c4c0, scene, objects)
-//     }
-//   }
-// }
-
-const showInstructions = isPaused => {
-  blocker.style.visibility = 'visible'
-  if (isPaused) {
-    blocker.style.display = 'block'
-    blocker.style.zIndex = '99'
-    console.log('game paused', blocker.style.display)
-  } else {
-    blocker.style.display = 'none'
-    blocker.style.zIndex = ''
-    console.log('game unpaused', blocker.style.display)
+    motionControl.dispose()
   }
 }
 
