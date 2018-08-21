@@ -27,14 +27,14 @@ describe('Undo Stack', () => {
     expect(scene.children.length).to.equal(0)
   })
   it('takes position,color,type and adds it to the top of the stack', () => {
-    scene.undoStack.add(position, color, addType)
+    scene.undoStack.stackPushAdd(position, color)
     expect(scene.undoStack.stack.length).to.equal(1)
     expect(scene.undoStack.stack[0].position.x).to.equal(block.position.x)
     expect(scene.undoStack.stack[0].position.y).to.equal(block.position.y)
     expect(scene.undoStack.stack[0].position.z).to.equal(block.position.z)
     expect(scene.undoStack.stack[0].color).to.equal(color)
     expect(scene.undoStack.stack[0].type).to.equal(addType)
-    scene.undoStack.add(position2, color2, deleteType)
+    scene.undoStack.stackPushDelete(position2, color2, deleteType)
     expect(scene.undoStack.stack.length).to.equal(2)
     expect(scene.undoStack.stack[1].position.x).to.equal(position2.x)
     expect(scene.undoStack.stack[1].position.y).to.equal(position2.y)
@@ -48,8 +48,8 @@ describe('Undo Stack', () => {
     let deleteStub = sinon
       .stub(scene.undoStack, 'deleteBlockFromDb')
       .callsFake()
-    scene.undoStack.add(position, color, addType)
-    scene.undoStack.add(position2, color2, deleteType)
+    scene.undoStack.stackPushAdd(position, color)
+    scene.undoStack.stackPushDelete(position2, color2)
     const middlePointer = scene.undoStack.pointer
     scene.undoStack.undo()
     expect(addStub.calledWith(position2, color2, id)).to.be.true
