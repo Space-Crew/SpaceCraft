@@ -194,7 +194,7 @@ export const BlockControl = function(
     mouseVectorForBox.round()
     previewBox.position.copy(mouseVectorForBox)
   }
-
+  
   function onDocumentMouseDown(event) {
     event.preventDefault()
     _selected = selectBlock(_mouse, _camera, _objects)

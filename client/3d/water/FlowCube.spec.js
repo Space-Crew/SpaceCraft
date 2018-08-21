@@ -72,7 +72,6 @@ describe('FlowCube', () => {
     })
     it('resets the volume of the child', () => {
       let targetVolume = source.volume - 2
-      console.log(child.volume, targetVolume)
       expect(child.volume).to.equal(targetVolume)
       otherSource.linkChild(child)
       expect(child.volume).to.equal(otherSource.volume)
@@ -108,7 +107,6 @@ describe('FlowCube', () => {
     })
     it('unlinks the cube from its parents', () => {
       child.unlinkParents()
-      // console.log(`unlink`, child, parent1)
       expect(parent1.children).to.not.have.property('1,0,0')
       expect(parent2.children).to.not.have.property('1,0,0')
     })
