@@ -12,10 +12,9 @@ import {deleteAvatar} from './deleteAvatar'
 
 export function avatarControl(worldId, yawObject, _scene, currentUser) {
   let avatars = {}
-  let lastPosition
   let avatar, disconnectRef
   let color = '#' + Math.floor(Math.random() * 16777215).toString(16)
-  updateAvatarInDb(
+  /*   updateAvatarInDb(
     {x: 0, y: 0, z: 0},
     worldId,
     yawObject.uuid,
@@ -26,15 +25,25 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
       z: yawObject.rotation.z
     },
     currentUser.displayName
+  ) */
+  updateAvatarInDb(
+    {x: 0, y: 0, z: 0},
+    worldId,
+    currentUser.displayName,
+    color,
+    {
+      x: yawObject.rotation.x,
+      y: yawObject.rotation.y,
+      z: yawObject.rotation.z
+    }
   )
   // event listener to create and add avatar to scene //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
-    if (snapshot.ref.key !== yawObject.uuid) {
+    if (snapshot.ref.key !== currentUser.displayName) {
       avatar = addAvatar({x: 0, y: 0, z: 0}, _scene, snapshot.val().color)
     }
     avatars[snapshot.ref.key] = avatar
-    lastPosition = {x: 0, y: 0, z: 0}
     disconnectRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
   })
 
@@ -45,13 +54,12 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
       snapshot.val().y,
       snapshot.val().z
     )
-    if (snapshot.ref.key !== yawObject.uuid) {
+    if (snapshot.ref.key !== currentUser.displayName) {
       let newRotation = snapshot.val().rotation
       let avatarToUpdate = avatars[snapshot.ref.key]
       avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
       avatarToUpdate.rotation.set(newRotation.x, newRotation.y, newRotation.z)
     }
-    lastPosition = newPosition
     disconnectRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
   })
 
@@ -75,14 +83,13 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
         updateAvatarInDb(
           yawObject.position,
           worldId,
-          yawObject.uuid,
+          currentUser.displayName,
           color,
           {
             x: yawObject.rotation.x,
             y: yawObject.rotation.y,
             z: yawObject.rotation.z
-          },
-          currentUser.displayName
+          }
         )
       }
     },
@@ -94,14 +101,13 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
       updateAvatarInDb(
         yawObject.position,
         worldId,
-        yawObject.uuid,
+        currentUser.displayName,
         color,
         {
           x: yawObject.rotation.x,
           y: yawObject.rotation.y,
           z: yawObject.rotation.z
-        },
-        currentUser.displayName
+        }
       )
     },
     false
