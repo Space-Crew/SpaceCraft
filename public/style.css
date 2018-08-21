@@ -9,7 +9,15 @@ body {
 }
 
 a {
-  all: none;
+  display: block;
+  width: 200px;
+}
+
+a:hover {
+  display: block;
+  background-color: rgba(200, 255, 255, 0.445);
+  color: darkblue;
+  text-shadow: 0px 1px 9px rgb(47, 110, 97);
 }
 
 #homepage {
@@ -18,13 +26,15 @@ a {
   margin: 0;
 }
 .world-list {
+  font-family: Comorant;
   display: block;
-  width: 30%;
+  width: 20%;
   /* flex-direction: column; */
   margin: 80px auto 0 auto;
 }
 .world-list > h3,
 p {
+  font-family: Comorant;
   font-size: 3rem;
   margin-bottom: 20px;
   text-align: center;
@@ -33,6 +43,18 @@ p {
   font-size: 1.5rem;
   /* margin-bottom: 20px; */
 }
+
+ul {
+  padding: 0
+}
+
+.world-list li {
+  padding: 10px;
+  margin: 3px;
+  font-size: 1.2rem;
+  text-align: center
+}
+
 #account {
   margin-top: 80px;
 }

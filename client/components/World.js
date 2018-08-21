@@ -29,7 +29,7 @@ function generateWorld(world, currentUser) {
    ********************************/
   //renders the scene, camera, and cubes using webGL
   const renderer = new THREE.WebGLRenderer()
-  const color = new THREE.Color(0x0f4260)
+  const color = new THREE.Color(0x0d2135)
   //sets the world background color
   renderer.setClearColor(color)
   //sets the resolution of the view
