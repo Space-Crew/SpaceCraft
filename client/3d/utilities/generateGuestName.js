@@ -10,9 +10,9 @@ function getRandomInt(min, max) {
 
 export function generateGuestName() {
   const name =
-    capFirst(word1[getRandomInt(0, word1.length + 1)]) +
+    capFirst(word1[getRandomInt(0, word1.length - 1)]) +
     ' ' +
-    capFirst(word2[getRandomInt(0, word2.length + 1)])
+    capFirst(word2[getRandomInt(0, word2.length - 1)])
   return name
 }
 
