@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {db} from '../firebase'
-import {Button, Form, Grid, Header, Message, Segment, Radio} from 'semantic-ui-react'
+import {Button, Form, Grid, Header, Message, Segment, Radio, Input} from 'semantic-ui-react'
 
 /**
  * COMPONENT
@@ -10,26 +10,31 @@ export default class EditWorld extends Component {
   constructor() {
     super()
     this.state = {
-      user: '',
       name: '',
       private: true,
       description: '',
       error: '',
-      updateSuccess: false
+      updateSuccess: false,
+      addingCollaborators: false,
+      collaborator: ''
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.toggleRadio = this.toggleRadio.bind(this)
+    this.handleClick = this.handleClick.bind(this)
   }
 
-  async handleSubmit(event) {
+  handleSubmit(event) {
     try {
+      event.preventDefault();
       const uri = '/worlds/' + this.props.match.params.id
-      const worldRef = db.ref(uri).set({
-
+      db.ref(uri).update({
+        name: this.state.name,
+        private: this.state.private,
+        description: this.state.description
       })
     } catch (err) {
-      
+      console.error(err)
     }
   }
 
@@ -39,9 +44,33 @@ export default class EditWorld extends Component {
     })
   }
 
+  async handleClick(event) {
+    if (!this.state.addingCollaborators) {
+      this.setState({
+        addingCollaborators: true
+      })
+    } else {
+      try {
+        event.preventDefault();
+        const uri = '/worlds/' + this.props.match.params.id
+        const world = (await db.ref(uri).once('value')).val();
+        console.log(world)
+        db.ref(uri).update({
+          authorizedPlayers: [...world.authorizedPlayers, this.state.collaborator]
+        })
+        this.setState({
+          collaborator: '',
+          addingCollaborators: false
+        })
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }
+
   toggleRadio(event) {
     this.setState({
-      private: !this.this.state.private
+      private: !this.state.private
     })
   }
 
@@ -93,16 +122,16 @@ export default class EditWorld extends Component {
                   value={this.state.description}
                 />
                 <Radio
-                  label='Private'
+                  label='Public'
                   name='radioGroup'
-                  checked={this.state.private}
+                  checked={!this.state.private}
                   onClick={this.toggleRadio}
                 />
                 &nbsp;&nbsp;&nbsp;
                 <Radio
-                  label='Public'
+                  label='Private'
                   name='radioGroup'
-                  checked={!this.state.private}
+                  checked={this.state.private}
                   onClick={this.toggleRadio}
                 />
                 <Button
@@ -115,6 +144,28 @@ export default class EditWorld extends Component {
                 </Button>
               </Segment>
             </Form>
+              <div className="break"/>
+              <Button
+                color="teal"
+                size="large"
+                type="button"
+                onClick={this.handleClick}
+              >
+                Add Collaborator
+              </Button>
+              {
+                this.state.addingCollaborators ?
+                <Input
+                  icon="user plus"
+                  id="collab"
+                  placeholder="Enter username"
+                  type="text"
+                  onChange={this.handleChange}
+                  name="collaborator"
+                  value={this.state.collaborator}
+                /> :
+                null
+              }
           </Grid.Column>
         </Grid>
       </div>

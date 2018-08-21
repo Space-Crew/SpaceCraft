@@ -27,7 +27,8 @@ class Navbar extends React.Component {
       id: worldId,
       author: currentUser ? currentUser.displayName : 'guest',
       name: currentUser ? `${currentUser.displayName}'s world: ${worldId}` : `Guest's world: ${worldId}`,
-      private: !!currentUser
+      private: !!currentUser,
+      authorizedPlayers: [currentUser.displayName]
     })
     this.props.history.push(`/worlds/${worldId}`);
   }

@@ -89,7 +89,6 @@ a {
     opacity: 0;
   }
 }
-
 a {
   text-decoration: none;
   width: auto;
@@ -145,4 +144,13 @@ nav a {
   top: 53px;
   right: 328px;
   background-color: rgba(127, 255, 212, 0.363);
+}
+
+#collab {
+  width: 230px;
+  margin-left: 15px;
+}
+
+.break {
+  padding-top: 30px;
 }

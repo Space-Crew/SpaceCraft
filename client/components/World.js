@@ -1,22 +1,12 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import {db} from '../firebase'
-<<<<<<< HEAD
 import BlockControl from '../3d/controls/blockControl';
 import PreviewControl from '../3d/controls/previewControl';
 import CameraControl from '../3d/controls/cameraControl'
 import avatarControl from '../3d/controls/avatarControl'
 import UndoStack from '../3d/controls/undoStack'
 import {GameFlowGraph} from '../3d/water'
-=======
-import BlockControl from '../3d/controls/blockControl'
-import PreviewControl from '../3d/controls/previewControl'
-import {makeWaterCube} from '../3d/meshes'
-import FlowGraph from '../3d/meshes/WaterGraph'
-import CameraControl from '../3d/controls/cameraControl'
-import avatarControl from '../3d/controls/avatarControl'
-import UndoStack from '../3d/controls/UndoStack'
->>>>>>> 427fc833217628d2767f454287743bd54759d05a
 
 /*********************************
  * Construct the Three World
@@ -53,14 +43,8 @@ function generateWorld(world, currentUser) {
   //create a new scene
   const scene = new THREE.Scene()
   scene.objects = []
-<<<<<<< HEAD
-  scene.worldId = world.id
   scene.undoStack = new UndoStack(world.id)
 
-=======
-  scene.worldId = worldId
-  scene.undoStack = new UndoStack(scene.worldId)
->>>>>>> 427fc833217628d2767f454287743bd54759d05a
   const cameraControl = new CameraControl(camera, renderer.domElement)
   scene.add(cameraControl.getObject())
   const previewControl = new PreviewControl(scene)
@@ -79,16 +63,7 @@ function generateWorld(world, currentUser) {
     previewBox,
     cubesToBeMoved
   )
-<<<<<<< HEAD
   avatarControl(world.id, cameraControl.getObject(), scene)
-  // scene.addDragControls = function() {
-  //   this.dragControl = new DragControls(camera, renderer.domElement, this)
-  //   this.add(this.dragControl.getObject())
-  // }
-  // scene.addDragControls()
-=======
-  avatarControl(worldId, cameraControl.getObject(), scene)
->>>>>>> 427fc833217628d2767f454287743bd54759d05a
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
   const pointLight = new THREE.PointLight(0xffffff, 0.8)
