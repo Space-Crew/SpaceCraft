@@ -20,7 +20,7 @@ let onSpaceBar
 const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
-function generateWorld(world, currentUser) {
+function generateWorld(world, currentUser, guestAvatar) {
   //container for all 3d objects that will be affected by event
   let objects = []
   const cubesToBeMoved = {}
@@ -75,7 +75,8 @@ function generateWorld(world, currentUser) {
     cubesToBeMoved
   )
 
-  avatarControl(world.id, cameraControl.getObject(), scene, currentUser)
+  let avatarUser = currentUser ? currentUser : guestAvatar
+  avatarControl(world.id, cameraControl.getObject(), scene, avatarUser)
 
   const water = new GameFlowGraph(world.water, world.cubes, scene)
   water.connectToWorld(world.id)
@@ -166,7 +167,11 @@ class World extends Component {
           this.setState({
             authorized: true
           })
-          this.unsubscribe = generateWorld(world, this.props.currentUser)
+          this.unsubscribe = generateWorld(
+            world,
+            this.props.currentUser,
+            this.props.guestAvatar
+          )
         }
       }
     } catch (error) {

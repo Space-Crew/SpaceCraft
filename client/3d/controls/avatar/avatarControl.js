@@ -4,44 +4,28 @@ import {updateAvatarInDb} from './updateAvatarInDb'
 import {addAvatar} from './addAvatar'
 import {deleteAvatar} from './deleteAvatar'
 
-// store last position
-// when user navigates away then back
-// check if there's an avatar in the db
-// if there is, check if its position matches last position
-// if it does, don't create a new avatar
-
 export function avatarControl(worldId, yawObject, _scene, currentUser) {
+  let username =
+    typeof currentUser === 'string' ? currentUser : currentUser.displayName
   let avatars = {}
   let avatar, disconnectRef
   let color = '#' + Math.floor(Math.random() * 16777215).toString(16)
-  /*   updateAvatarInDb(
-    {x: 0, y: 0, z: 0},
-    worldId,
-    yawObject.uuid,
-    color,
-    {
-      x: yawObject.rotation.x,
-      y: yawObject.rotation.y,
-      z: yawObject.rotation.z
-    },
-    currentUser.displayName
-  ) */
-  updateAvatarInDb(
-    {x: 0, y: 0, z: 0},
-    worldId,
-    currentUser.displayName,
-    color,
-    {
-      x: yawObject.rotation.x,
-      y: yawObject.rotation.y,
-      z: yawObject.rotation.z
-    }
-  )
+
+  updateAvatarInDb({x: 0, y: 0, z: 0}, worldId, username, color, {
+    x: yawObject.rotation.x,
+    y: yawObject.rotation.y,
+    z: yawObject.rotation.z
+  })
   // event listener to create and add avatar to scene //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
-    if (snapshot.ref.key !== currentUser.displayName) {
-      avatar = addAvatar({x: 0, y: 0, z: 0}, _scene, snapshot.val().color)
+    let avatarPosition = snapshot.val()
+    if (snapshot.ref.key !== username) {
+      avatar = addAvatar(
+        new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
+        _scene,
+        snapshot.val().color
+      )
     }
     avatars[snapshot.ref.key] = avatar
     disconnectRef = db.ref(`/worlds/${worldId}/avatars/${snapshot.ref.key}`)
@@ -54,7 +38,7 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
       snapshot.val().y,
       snapshot.val().z
     )
-    if (snapshot.ref.key !== currentUser.displayName) {
+    if (snapshot.ref.key !== username) {
       let newRotation = snapshot.val().rotation
       let avatarToUpdate = avatars[snapshot.ref.key]
       avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
@@ -80,17 +64,11 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
         event.which === 69 ||
         event.which === 81
       ) {
-        updateAvatarInDb(
-          yawObject.position,
-          worldId,
-          currentUser.displayName,
-          color,
-          {
-            x: yawObject.rotation.x,
-            y: yawObject.rotation.y,
-            z: yawObject.rotation.z
-          }
-        )
+        updateAvatarInDb(yawObject.position, worldId, username, color, {
+          x: yawObject.rotation.x,
+          y: yawObject.rotation.y,
+          z: yawObject.rotation.z
+        })
       }
     },
     false
@@ -98,17 +76,11 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
   window.addEventListener(
     'mousemove',
     function() {
-      updateAvatarInDb(
-        yawObject.position,
-        worldId,
-        currentUser.displayName,
-        color,
-        {
-          x: yawObject.rotation.x,
-          y: yawObject.rotation.y,
-          z: yawObject.rotation.z
-        }
-      )
+      updateAvatarInDb(yawObject.position, worldId, username, color, {
+        x: yawObject.rotation.x,
+        y: yawObject.rotation.y,
+        z: yawObject.rotation.z
+      })
     },
     false
   )
