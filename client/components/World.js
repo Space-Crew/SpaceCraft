@@ -6,7 +6,7 @@ import PreviewControl from '../3d/controls/previewControl'
 
 import CameraControl from '../3d/controls/cameraControl'
 import MotionControl from '../3d/controls/motionControl'
-import avatarControl from '../3d/controls/avatarControl'
+import avatarControl from '../3d/avatar/avatarControl'
 import {GameFlowGraph} from '../3d/water'
 import UndoStack from '../3d/controls/UndoStack'
 
