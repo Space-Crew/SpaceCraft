@@ -36,6 +36,7 @@
   "author": "Fullstack Academy of Code",
   "license": "MIT",
   "dependencies": {
+    "ajv": "^6.5.3",
     "axios": "^0.15.3",
     "chai-as-promised": "^7.1.1",
     "compression": "^1.7.3",

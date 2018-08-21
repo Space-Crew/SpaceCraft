@@ -7,7 +7,7 @@ import {
   Home,
   World,
   WorldList,
-  Avatar
+  EditWorld
 } from './components'
 
 /**
@@ -27,15 +27,22 @@ export default class Routes extends Component {
           )}
         />
         <Route
+          exact
           path="/worlds/:id"
           render={props => (
             <World currentUser={this.props.currentUser} {...props} />
           )}
         />
-        <Route path="/worldlist" component={WorldList} />
+        <Route
+          exact
+          path="/worlds/:id/edit"
+          render={props => (
+            <EditWorld currentUser={this.props.currentUser} {...props} />
+          )}
+        />
+        <Route exact path="/worldlist" component={WorldList} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
-        <Route path="/avatar" component={Avatar} />
         <Route
           exact
           path="/account"

@@ -31,7 +31,6 @@ export class FlowCube {
       }
       return this.sourceVolume
     }
-    // console.log(Object.values(this.parents))
     return Math.max(...Object.values(this.parents).map(parent => parent.volume))
   }
   findVolumeBasedOnParents() {
