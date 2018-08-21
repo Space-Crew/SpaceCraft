@@ -8,6 +8,10 @@ body {
   margin: 0;
 }
 
+a {
+  all: none;
+}
+
 #homepage {
   height: 100%;
   width: 100%;
@@ -47,7 +51,7 @@ li {
   top: 0;
   margin-left: 2%;
   margin-right: 2%;
-  height: 53px;
+  height: 47px;
   width: 96%;
   background-color: rgba(127, 255, 212, 0.363);
   border-bottom-left-radius: 5px;
@@ -58,7 +62,7 @@ li {
 
 #logo {
   font-size: 32px;
-  padding: 6px 20px;
+  padding: 12px 20px;
   background-color: transparent;
   color: rgb(52, 60, 71);
   text-shadow: 0px 1px 9px white;
@@ -77,9 +81,18 @@ li {
 .link-item {
   margin: 0;
   padding: 14px 10px;
-  width: auto;
+  width: 150px;
+  cursor: pointer;
 }
+
+.link-item:hover {
+  background-color: rgba(200, 255, 255, 0.781);
+  color: darkblue;
+  text-shadow: 0px 1px 9px rgb(47, 110, 97);
+}
+
 #nav-instructions {
+  padding: 14px 10px;
   font-size: 20px;
   color: rgb(198, 2222, 255);
   text-shadow: 0px 0.5px 3px rgb(0, 0, 0);
@@ -106,7 +119,6 @@ label {
 
 nav a {
   display: inline-block;
-  margin: 1em;
 }
 
 #blocker {
@@ -134,4 +146,28 @@ nav a {
   position: absolute;
   bottom: 5px;
   right: 10px;
+}
+
+.dropdown:hover {
+  cursor: pointer;
+}
+
+#dropdown {
+  flex-direction: column;
+  display: none;
+  position: relative;
+  font-family: comorant;
+  position: fixed;
+  top: 53px;
+  right: 328px;
+  background-color: rgba(127, 255, 212, 0.363);
+}
+
+#collab {
+  width: 230px;
+  margin-left: 15px;
+}
+
+.break {
+  padding-top: 30px;
 }

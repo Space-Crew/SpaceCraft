@@ -29,23 +29,23 @@ export default class Account extends Component {
     this.props.history.push(`/worlds/${worldId}`)
   }
 
-  componentDidMount() {
-    const currentUser = this.props.currentUser
+  async componentDidMount() {
+    const currentUser = this.props.currentUser;
     if (currentUser) {
-      db
-        .ref(`/users/${currentUser.uid}`)
-        .once('value')
-        .then(snapshot => {
-          if (snapshot.val().worlds) {
-            this.setState({
-              user: currentUser.displayName,
-              userWorlds: Object.values(snapshot.val().worlds)
-            })
-          }
+      const snapshot = await db.ref(`/users/${currentUser.uid}`).once('value');
+      
+      if (snapshot.val().worlds) {
+        this.setState({
+          user: currentUser.displayName,
+          userWorlds: Object.values(snapshot.val().worlds)
         })
+      }
     }
   }
+
   render() {
+    console.log(this.props.currentUser)
+    console.log(this.state.user)
     return (
       <div id="account">
         {this.state.user ? (
@@ -58,7 +58,7 @@ export default class Account extends Component {
                   {this.state.userWorlds.map(worldId => {
                     return (
                       <Link to={`/worlds/${worldId}`} key={worldId}>
-                        <div>{`${this.state.user}'s world - ${worldId}`}</div>
+                        <div>{`${this.state.user}'s world: ${worldId}`}</div>
                       </Link>
                     )
                   })}
