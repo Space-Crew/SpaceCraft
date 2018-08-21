@@ -1,11 +1,14 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
-import DragControls from '../3d/controls/DragControls'
 import {db} from '../firebase'
-import {makeWaterCube} from '../3d/meshes'
-import FlowGraph from '../3d/meshes/WaterGraph'
-import {addBlock} from '../3d/controls/addBlock'
-import {attachCameraControls} from '../3d/controls/cameraControls'
+import BlockControl from '../3d/controls/blockControl'
+import PreviewControl from '../3d/controls/previewControl'
+
+import CameraControl from '../3d/controls/cameraControl'
+import MotionControl from '../3d/controls/motionControl'
+import avatarControl from '../3d/controls/avatarControl'
+import {GameFlowGraph} from '../3d/water'
+import UndoStack from '../3d/controls/UndoStack'
 
 /*********************************
  * Construct the Three World
@@ -16,7 +19,14 @@ let onSpaceBar
 const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
-function generateWorld(cubes, worldId, water, rawWorldCubes) {
+function generateWorld(world, currentUser) {
+  //container for all 3d objects that will be affected by event
+  let objects = []
+  const cubesToBeMoved = {}
+
+  /*********************************
+   * Renderer
+   ********************************/
   //renders the scene, camera, and cubes using webGL
   const renderer = new THREE.WebGLRenderer()
   const color = new THREE.Color(0x0f4260)
@@ -25,6 +35,9 @@ function generateWorld(cubes, worldId, water, rawWorldCubes) {
   //sets the resolution of the view
   renderer.setSize(window.innerWidth, window.innerHeight)
 
+  /*********************************
+   * Camera
+   ********************************/
   //create a perspective camera (field-of-view, aspect ratio, min distance, max distance)
   const camera = new THREE.PerspectiveCamera(
     75,
@@ -32,18 +45,47 @@ function generateWorld(cubes, worldId, water, rawWorldCubes) {
     0.1,
     1000
   )
-  camera.controls = attachCameraControls(camera, renderer.domElement)
+
+  /*********************************
+   * Scene
+   ********************************/
+
   //create a new scene
   const scene = new THREE.Scene()
 
   scene.objects = []
-  scene.worldId = worldId
-  //allows for adding, deleting, and moving 3d objects with mouse drag
-  scene.addDragControls = function() {
-    this.dragControl = new DragControls(camera, renderer.domElement, this)
-    this.add(this.dragControl.getObject())
+  scene.worldId = world.id
+
+  scene.undoStack = new UndoStack(scene.worldId)
+
+  const cameraControl = new CameraControl(camera, renderer.domElement)
+  scene.add(cameraControl.getObject())
+
+  const motionControl = new MotionControl(cameraControl.getObject())
+
+  const previewControl = new PreviewControl(scene)
+  const previewBox = previewControl.previewBox
+  const essentials = {
+    _domElement: renderer.domElement,
+    _objects: objects,
+    _camera: camera,
+    _scene: scene
   }
-  scene.addDragControls()
+
+  const blockControl = new BlockControl(
+    essentials,
+    currentUser,
+    world.id,
+
+    cameraControl.getObject(),
+    previewBox,
+    cubesToBeMoved
+  )
+
+  avatarControl(world.id, cameraControl.getObject(), scene)
+
+  const water = new GameFlowGraph(world.water, world.cubes, scene)
+  water.connectToWorld(world.id)
 
   const light = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(light)
@@ -51,16 +93,12 @@ function generateWorld(cubes, worldId, water, rawWorldCubes) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  scene.addWaterSources = function(waterSources, worldCubes) {
-    const waterGraph = new FlowGraph(waterSources, worldCubes)
-    const waterCubes = Object.values(waterGraph.flowCubes)
-    waterCubes.forEach(waterCube => {
-      this.add(makeWaterCube(waterCube.position))
-    })
-  }
-  scene.addWaterSources(water, rawWorldCubes)
+  /*********************************
+   * Render To Screen
+   ********************************/
 
   function render() {
+    motionControl.updatePlayerPosition()
     renderer.render(scene, camera)
   }
   function animate() {
@@ -71,7 +109,9 @@ function generateWorld(cubes, worldId, water, rawWorldCubes) {
   document.getElementById('plane').appendChild(renderer.domElement)
   animate()
 
-  // pause the world //
+  /*********************************
+   * Pause The World
+   ********************************/
 
   onSpaceBar = event => {
     if (event.which === 32) {
@@ -80,85 +120,73 @@ function generateWorld(cubes, worldId, water, rawWorldCubes) {
       animate()
     }
   }
-  window.addEventListener('keydown', onSpaceBar, false)
-  const tearDownFunctions = [scene.dragControl.dispose, camera.controls.dispose]
-  const disposeWorld = () => {
-    tearDownFunctions.forEach(func => func())
-  }
-  return disposeWorld
-}
-
-/*********************************
- * Helper functions
- ********************************/
-
-function addCubesToScene(cubes, scene, objects) {
-  if (cubes.length > 0) {
-    cubes.forEach(cube => {
-      addBlock(
-        new THREE.Vector3(cube.x, cube.y, cube.z),
-        cube.color,
-        scene,
-        objects
-      )
-    })
-  } else {
-    generateDefaultPlane(scene, objects)
-  }
-}
-
-function generateDefaultPlane(scene, objects) {
-  for (let z = -10; z < 10; z += 1) {
-    for (let x = -10; x <= 10; x += 1) {
-      const y = -1
-      addBlock(new THREE.Vector3(x, y, z), 0xb9c4c0, scene, objects)
+  const showInstructions = isPaused => {
+    blocker.style.visibility = 'visible'
+    if (isPaused) {
+      blocker.style.display = 'block'
+      blocker.style.zIndex = '99'
+      instructions.style.display = ''
+    } else {
+      blocker.style.display = 'none'
+      blocker.style.zIndex = ''
+      instructions.style.display = 'none'
     }
   }
-}
+  window.addEventListener('keydown', onSpaceBar, false)
 
-const showInstructions = isPaused => {
-  blocker.style.visibility = 'visible'
-  if (isPaused) {
-    blocker.style.display = 'block'
-    blocker.style.zIndex = '99'
-    instructions.style.display = ''
-  } else {
-    blocker.style.display = 'none'
-    blocker.style.zIndex = ''
-    instructions.style.display = 'none'
+  /*********************************
+   * Dispose functions
+   ********************************/
+
+  return function() {
+    cameraControl.dispose()
+    blockControl.dispose()
+    previewControl.dispose()
+    motionControl.dispose()
   }
 }
 
 /*********************************
- * Render the world
+ * Render Component
  ********************************/
 
 class World extends Component {
+  constructor() {
+    super()
+    this.state = {
+      //TODO
+      currentWorldId: null,
+      players: [],
+      authorizedPlayers: [],
+      author: ''
+    }
+  }
   async componentDidMount() {
     try {
-      let cubes = []
-      let worldId
-      let water
-      let rawWorldCubes
+      let world
       if (this.props.match && this.props.match.params.id) {
         const uri = '/worlds/' + this.props.match.params.id
         const worldRef = db.ref(uri)
-        const world = (await worldRef.once('value')).val()
-        if (!world.cubes) {
-          cubes = []
-        } else {
-          cubes = Object.values(world.cubes)
-        }
-        worldId = world.id
-        water = world.water
-        rawWorldCubes = world.cubes
+        world = (await worldRef.once('value')).val()
+      } else {
+        world = await this.getDefaultWorld()
       }
-      this.unsubscribe = generateWorld(cubes, worldId, water, rawWorldCubes)
+      this.unsubscribe = generateWorld(world, this.props.currentUser)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async getDefaultWorld() {
+    try {
+      const uri = '/worlds/0'
+      const worldRef = db.ref(uri)
+      return (await worldRef.once('value')).val()
     } catch (error) {
       console.log(error)
     }
   }
   componentWillUnmount() {
+    // do not remove/comment out line below, this causes the pause-game functionality to work consistently //
     window.removeEventListener('keydown', onSpaceBar, false)
     this.unsubscribe()
   }
@@ -171,5 +199,4 @@ class World extends Component {
   }
 }
 
-//water flow by doing BFS from source
 export default World

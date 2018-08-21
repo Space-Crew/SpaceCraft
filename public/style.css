@@ -1,4 +1,7 @@
 body {
+  background-image: url('/textures/deep-space.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
   height: 100%;
   width: 100%;
   font-family: sans-serif;
@@ -9,15 +12,29 @@ body {
   height: 100%;
   width: 100%;
   margin: 0;
-  background-image: url('./starrybackground.png');
-  background-repeat: repeat;
-  background-size: cover;
 }
-#worldList {
+.world-list {
+  display: block;
+  width: 30%;
+  /* flex-direction: column; */
+  margin: 80px auto 0 auto;
+}
+.world-list > h3,
+p {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.world-list > p {
+  font-size: 1.5rem;
+  /* margin-bottom: 20px; */
+}
+#account {
   margin-top: 80px;
 }
-#worldList li {
-  padding: 10px;
+li {
+  margin: 10px;
+  list-style: none;
 }
 
 .center {
@@ -74,7 +91,9 @@ body {
   }
 }
 
-a {
+a,
+h3,
+p {
   text-decoration: none;
   width: auto;
   color: rgb(198, 2222, 255);
@@ -90,18 +109,6 @@ nav a {
   margin: 1em;
 }
 
-/* .form {
-  margin-top: 100px;
-  font-size: 15px;
-  float: right;
-} */
-
-/* input {
-  border: 1px solid black;
-  width: auto;
-  height: 20px;
-} */
-
 #blocker {
   position: absolute;
   top: 0;
@@ -111,35 +118,16 @@ nav a {
   display: block;
   visibility: hidden;
 }
-
-#instructions {
-  font-family: comorant;
-  font-size: 20px;
-  width: 100%;
-  height: 100%;
-  display: -webkit-box;
-  display: -moz-box;
-  display: box;
-  -webkit-box-orient: horizontal;
-  -moz-box-orient: horizontal;
-  box-orient: horizontal;
-  -webkit-box-pack: center;
-  -moz-box-pack: center;
-  box-pack: center;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  box-align: center;
-  color: #ffffff;
-  text-align: center;
-  cursor: pointer;
+.movement {
+  width: 30%;
+  margin: 0 auto;
+  margin-top: 8%;
 }
 
-#instructionsHeader {
-  font-size: 40px;
-}
-.instructionsSub {
-  text-decoration: underline;
-  line-height: 30px;
+.building {
+  width: 25%;
+  margin: 0 auto;
+  margin-top: 2%;
 }
 
 #color-palette {
