@@ -1,6 +1,15 @@
 import React, {Component} from 'react'
 import {db} from '../firebase'
-import {Button, Form, Grid, Header, Message, Segment, Radio, Input} from 'semantic-ui-react'
+import {
+  Button,
+  Form,
+  Grid,
+  Header,
+  Message,
+  Segment,
+  Radio,
+  Input
+} from 'semantic-ui-react'
 
 /**
  * COMPONENT
@@ -26,7 +35,7 @@ export default class EditWorld extends Component {
 
   handleSubmit(event) {
     try {
-      event.preventDefault();
+      event.preventDefault()
       const uri = '/worlds/' + this.props.match.params.id
       db.ref(uri).update({
         name: this.state.name,
@@ -51,12 +60,14 @@ export default class EditWorld extends Component {
       })
     } else {
       try {
-        event.preventDefault();
+        event.preventDefault()
         const uri = '/worlds/' + this.props.match.params.id
-        const world = (await db.ref(uri).once('value')).val();
-        console.log(world)
+        const world = (await db.ref(uri).once('value')).val()
         db.ref(uri).update({
-          authorizedPlayers: [...world.authorizedPlayers, this.state.collaborator]
+          authorizedPlayers: [
+            ...world.authorizedPlayers,
+            this.state.collaborator
+          ]
         })
         this.setState({
           collaborator: '',
@@ -75,10 +86,7 @@ export default class EditWorld extends Component {
   }
 
   render() {
-    const {
-      error,
-      updateSuccess
-    } = this.state
+    const {error, updateSuccess} = this.state
     return (
       <div className="login-form">
         {/*
@@ -122,50 +130,43 @@ export default class EditWorld extends Component {
                   value={this.state.description}
                 />
                 <Radio
-                  label='Public'
-                  name='radioGroup'
+                  label="Public"
+                  name="radioGroup"
                   checked={!this.state.private}
                   onClick={this.toggleRadio}
                 />
                 &nbsp;&nbsp;&nbsp;
                 <Radio
-                  label='Private'
-                  name='radioGroup'
+                  label="Private"
+                  name="radioGroup"
                   checked={this.state.private}
                   onClick={this.toggleRadio}
                 />
-                <Button
-                  color="teal"
-                  fluid
-                  size="large"
-                  type="submit"
-                >
+                <Button color="teal" fluid size="large" type="submit">
                   Submit
                 </Button>
               </Segment>
             </Form>
-              <div className="break"/>
-              <Button
-                color="teal"
-                size="large"
-                type="button"
-                onClick={this.handleClick}
-              >
-                Add Collaborator
-              </Button>
-              {
-                this.state.addingCollaborators ?
-                <Input
-                  icon="user plus"
-                  id="collab"
-                  placeholder="Enter username"
-                  type="text"
-                  onChange={this.handleChange}
-                  name="collaborator"
-                  value={this.state.collaborator}
-                /> :
-                null
-              }
+            <div className="break" />
+            <Button
+              color="teal"
+              size="large"
+              type="button"
+              onClick={this.handleClick}
+            >
+              Add Collaborator
+            </Button>
+            {this.state.addingCollaborators ? (
+              <Input
+                icon="user plus"
+                id="collab"
+                placeholder="Enter username"
+                type="text"
+                onChange={this.handleChange}
+                name="collaborator"
+                value={this.state.collaborator}
+              />
+            ) : null}
           </Grid.Column>
         </Grid>
       </div>

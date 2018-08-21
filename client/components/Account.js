@@ -30,10 +30,10 @@ export default class Account extends Component {
   }
 
   async componentDidMount() {
-    const currentUser = this.props.currentUser;
+    const currentUser = this.props.currentUser
     if (currentUser) {
-      const snapshot = await db.ref(`/users/${currentUser.uid}`).once('value');
-      
+      const snapshot = await db.ref(`/users/${currentUser.uid}`).once('value')
+
       if (snapshot.val().worlds) {
         this.setState({
           user: currentUser.displayName,
@@ -44,8 +44,6 @@ export default class Account extends Component {
   }
 
   render() {
-    console.log(this.props.currentUser)
-    console.log(this.state.user)
     return (
       <div id="account">
         {this.state.user ? (
