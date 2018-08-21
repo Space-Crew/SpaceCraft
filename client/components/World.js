@@ -85,9 +85,6 @@ function generateWorld(world, currentUser) {
   pointLight.position.set(0, 15, 0)
   scene.add(pointLight)
 
-  const water = new GameFlowGraph(world.water, world.cubes, scene)
-  water.connectToWorld(world.id)
-
   /*********************************
    * Render To Screen
    ********************************/
