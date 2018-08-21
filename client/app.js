@@ -14,7 +14,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    //for avatar guest names //
     const username = generateGuestName()
     this.unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {

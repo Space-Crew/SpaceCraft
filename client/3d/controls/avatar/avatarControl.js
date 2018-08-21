@@ -19,8 +19,8 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
   // event listener to create and add avatar to scene //
   const avatarsRef = db.ref(`/worlds/${worldId}/avatars`)
   avatarsRef.on('child_added', snapshot => {
-    let avatarPosition = snapshot.val()
     if (snapshot.ref.key !== username) {
+      let avatarPosition = snapshot.val()
       avatar = addAvatar(
         new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
         _scene,
@@ -33,12 +33,12 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
 
   // event listener to check for any changes in avatar position //
   avatarsRef.on('child_changed', snapshot => {
-    let newPosition = new THREE.Vector3(
-      snapshot.val().x,
-      snapshot.val().y,
-      snapshot.val().z
-    )
     if (snapshot.ref.key !== username) {
+      let newPosition = new THREE.Vector3(
+        snapshot.val().x,
+        snapshot.val().y,
+        snapshot.val().z
+      )
       let newRotation = snapshot.val().rotation
       let avatarToUpdate = avatars[snapshot.ref.key]
       avatarToUpdate.position.set(newPosition.x, newPosition.y, newPosition.z)
