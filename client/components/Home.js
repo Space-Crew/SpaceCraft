@@ -206,7 +206,6 @@ backgroundScene.add(backgroundMesh)
 // render function //
 const renderThree = () => {
   controls.update()
-  // av1Group.rotation.y += 0.0075
   av1Group.rotation.x += 0.008
   firstOrbit.rotation.y += 0.015
   secondOrbit.rotation.y += 0.02
