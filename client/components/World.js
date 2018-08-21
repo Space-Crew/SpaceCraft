@@ -4,6 +4,7 @@ import {db} from '../firebase'
 import BlockControl from '../3d/controls/blockControl'
 import PreviewControl from '../3d/controls/previewControl'
 import CameraControl from '../3d/controls/cameraControl'
+import MotionControl from '../3d/controls/motionControl'
 import avatarControl from '../3d/controls/avatarControl'
 import {GameFlowGraph} from '../3d/water'
 
@@ -17,7 +18,6 @@ const blocker = document.getElementById('blocker')
 const instructions = document.getElementById('instructions')
 
 function generateWorld(world, currentUser) {
-  // function generateWorld(worldId, currentUser, water, rawWorldCubes) {
   //container for all 3d objects that will be affected by event
   let objects = []
   const cubesToBeMoved = {}
@@ -54,6 +54,8 @@ function generateWorld(world, currentUser) {
   const cameraControl = new CameraControl(camera, renderer.domElement)
   scene.add(cameraControl.getObject())
 
+  const motionControl = new MotionControl(cameraControl.getObject())
+
   const previewControl = new PreviewControl(scene)
   const previewBox = previewControl.previewBox
   const essentials = {
@@ -88,7 +90,7 @@ function generateWorld(world, currentUser) {
    ********************************/
 
   function render() {
-    cameraControl.updatePlayerPosition()
+    motionControl.updatePlayerPosition()
     renderer.render(scene, camera)
   }
   function animate() {
@@ -127,10 +129,12 @@ function generateWorld(world, currentUser) {
   /*********************************
    * Dispose functions
    ********************************/
+
   return function() {
     cameraControl.dispose()
     blockControl.dispose()
     previewControl.dispose()
+    motionControl.dispose()
   }
 }
 
