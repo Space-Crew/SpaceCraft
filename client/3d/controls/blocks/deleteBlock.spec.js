@@ -1,6 +1,7 @@
 import {expect} from 'chai'
 import * as THREE from 'three'
 import {deleteBlock} from './deleteBlock'
+
 const position = new THREE.Vector3(1, 6, 9)
 const color = 0x4286f4
 const scene = new THREE.Scene()
@@ -11,6 +12,7 @@ const material = new THREE.MeshLambertMaterial({
 })
 const block = new THREE.Mesh(geometry, material)
 block.position.copy(position)
+
 describe('Delete Block', () => {
   it('scene has a key called children and type array', () => {
     expect(scene).to.have.property('children')

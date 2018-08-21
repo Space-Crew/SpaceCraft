@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import * as THREE from 'three'
 import OrbitControls from 'three-orbitcontrols'
-import {makeAvatar} from '../3d/meshes/makeAvatar'
+import {makeAvatar} from '../3d/controls/avatar'
 
 // main scene //
 const scene = new THREE.Scene()

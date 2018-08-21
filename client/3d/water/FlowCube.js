@@ -1,4 +1,4 @@
-import {toKey} from '..'
+import {toKey} from '../utilities'
 
 export class FlowCube {
   constructor(
@@ -17,12 +17,6 @@ export class FlowCube {
   /*************
    * Volume
    *************/
-  // get volume() {
-  //   if (this.storedVolume != undefined) return this.storedVolume
-  //   if (this.isSource) return this.sourceVolume
-  //   this.storedVolume = this.findVolumeBasedOnParents()
-  //   return this.storedVolume
-  // }
   get maxVolumeOfParents() {
     if (Object.values(this.parents).length === 0) {
       if (!this.isSource) {

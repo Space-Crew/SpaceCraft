@@ -1,4 +1,3 @@
-// import {makeUnitCube} from './'
 import * as THREE from 'three'
 
 export function makeWaterCube(flowCube) {

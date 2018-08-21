@@ -1,5 +1,5 @@
 export {makeWaterCube} from './makeWaterCube'
-export {FlowGraph} from './WaterGraph'
-export {FlowCube} from './water'
+export {FlowGraph} from './FlowGraph'
+export {FlowCube} from './FlowCube'
 export {initializeWaterControls, attachWaterToScene} from './waterControls'
 export {GameFlowGraph} from './GameFlowGraph'
