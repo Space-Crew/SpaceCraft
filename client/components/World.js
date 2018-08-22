@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {withRouter} from 'react-router'
 import * as THREE from 'three'
 import {db} from '../firebase'
 import {GameFlowGraph} from '../3d/water'
@@ -56,7 +57,7 @@ function generateWorld(world, currentUser, guestAvatar) {
   )
 
   let avatarUser = currentUser ? currentUser : guestAvatar
-  avatarControl(world.id, cameraControl.getObject(), scene, avatarUser)
+  const avatarcontrol = new avatarControl(world.id, cameraControl.getObject(), scene, avatarUser)
 
   const water = new GameFlowGraph(world.water, world.cubes, scene)
   water.connectToWorld(world.id)
@@ -116,6 +117,7 @@ function generateWorld(world, currentUser, guestAvatar) {
     previewControl.dispose()
     motionControl.dispose()
     horizonControl.dispose()
+    avatarcontrol.dispose()
     disposeOfResize()
   }
 }
@@ -164,18 +166,9 @@ class World extends Component {
     if (this.unsubscribe) {
       window.removeEventListener('keydown', onSpaceBar, false)
       this.unsubscribe()
-      this.removeAvatarFromWorld(this.props.currentUser)
     }
   }
-  removeAvatarFromWorld() {
-    if (this.props.match && this.props.match.params.id) {
-      const uri = `/worlds/${this.props.match.params.id}/avatars/${
-        this.props.currentUser.displayName
-      }`
-      const avatarRef = db.ref(uri)
-      avatarRef.remove()
-    }
-  }
+  
   render() {
     return this.state.authorized ? (
       <div id="plane">
@@ -189,4 +182,4 @@ class World extends Component {
   }
 }
 
-export default World
+export default withRouter(World)
