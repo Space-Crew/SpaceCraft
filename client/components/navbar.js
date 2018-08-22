@@ -43,7 +43,7 @@ class Navbar extends React.Component {
       author: currentUser ? currentUser.displayName : 'guest',
       name: worldName,
       private: !!currentUser,
-      authorizedPlayers: [currentUser.displayName]
+      authorizedPlayers: [currentUser ? currentUser.displayName : 'guest']
     })
     this.props.history.push(`/worlds/${worldId}`)
     document.getElementById('dropdown').style.display = 'none'
