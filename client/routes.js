@@ -30,7 +30,11 @@ export default class Routes extends Component {
           exact
           path="/worlds/:id"
           render={props => (
-            <World currentUser={this.props.currentUser} {...props} />
+            <World
+              currentUser={this.props.currentUser}
+              guestAvatar={this.props.guestAvatar}
+              {...props}
+            />
           )}
         />
         <Route
