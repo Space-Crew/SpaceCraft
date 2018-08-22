@@ -8,7 +8,6 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
   //check if user is guest or logged in //
   let username =
     typeof currentUser === 'string' ? currentUser : currentUser.displayName
-  console.log(username)
   let avatars = {}
   let avatar, disconnectRef
   let color = '#' + Math.floor(Math.random() * 16777215).toString(16)
