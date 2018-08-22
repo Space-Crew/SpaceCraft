@@ -32,25 +32,23 @@ class CollaboratorWorldList extends Component {
   }
 
   render() {
-    return this.state.worldsId.length ? (
-      <div className="world-list">
-        <h4>Your Collaborators' Creation</h4>
-        <ul>
-          {this.state.worldsId.map((worldId, i) => {
-            return (
-              <div className="single-world" key={worldId}>
-                <Link to={`/worlds/${worldId}`}>
-                  <li>{this.state.worldsName[i]}</li>
-                </Link>
-              </div>
-            )
-          })}
-        </ul>
-      </div>
-    ) : (
-      <div className="world-list">
-        <h4>No collaborators!</h4>
-      </div>
+    return (
+      this.state.worldsId.length && (
+        <div className="world-list">
+          <h4>Your Collaborators' Creation</h4>
+          <ul>
+            {this.state.worldsId.map((worldId, i) => {
+              return (
+                <div className="single-world" key={worldId}>
+                  <Link to={`/worlds/${worldId}`}>
+                    <li>{this.state.worldsName[i]}</li>
+                  </Link>
+                </div>
+              )
+            })}
+          </ul>
+        </div>
+      )
     )
   }
 }

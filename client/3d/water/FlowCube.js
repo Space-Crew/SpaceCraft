@@ -1,4 +1,4 @@
-import {toKey} from '../utilities'
+import {toKey} from '../../utilities'
 
 export class FlowCube {
   constructor(
@@ -50,7 +50,7 @@ export class FlowCube {
   /*****************
    * Public methods
    *****************/
-  isFlowingDown() {
+  hasParentAbove() {
     return Object.values(this.parents).some(parent => {
       return this.samePosition(parent.position, this.up)
     })
@@ -84,6 +84,13 @@ export class FlowCube {
     const result = this.clonePosition()
     result.y += 1
     return result
+  }
+  tryToBecomeParentOf(child) {
+    const oldVolume = child.volume
+    this.linkChild(child)
+    return child.becameBigger(oldVolume) || child.hasParentAbove()
+      ? child
+      : null
   }
   /*****************
    * Private methods

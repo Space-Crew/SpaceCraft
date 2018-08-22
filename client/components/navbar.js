@@ -41,7 +41,7 @@ class Navbar extends React.Component {
             </Link>
           ) : (
             <div className="link-item" onClick={this.signout}>
-              SignOut
+              Logout
             </div>
           )}
         </div>

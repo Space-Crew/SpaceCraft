@@ -1,6 +1,6 @@
 import React, {Fragment, Component} from 'react'
 import {db} from '../firebase'
-import {generateName} from '../3d/utilities/randomNameGenerator'
+import {generateName} from '../utilities/randomNameGenerator'
 import {withRouter} from 'react-router-dom'
 
 class CreateButton extends Component {
@@ -36,7 +36,7 @@ class CreateButton extends Component {
       author: currentUser ? currentUser.displayName : 'guest',
       name: worldName,
       private: !!currentUser,
-      authorizedPlayers: [currentUser.displayName]
+      authorizedPlayers: currentUser ? [currentUser.displayName] : []
     })
     this.props.history.push(`/worlds/${worldId}`)
     document.getElementById('dropdown').style.display = 'none'

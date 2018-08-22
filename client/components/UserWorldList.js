@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {db} from '../firebase'
-import {generateName} from '../3d/utilities/randomNameGenerator'
+import {generateName} from '../utilities/randomNameGenerator'
 import {Link} from 'react-router-dom'
 import {withRouter} from 'react-router'
 
@@ -86,8 +86,8 @@ class UserWorldList extends Component {
     return this.state.userWorldsId.length ? (
       <div>
         <div className="world-list">
-          <h4>Welcome, {this.props.currentUser.displayName}</h4>
-          <h4>Your creations</h4>
+          <h1>Welcome, {this.props.currentUser.displayName}</h1>
+          <h1 className="center">Your creations</h1>
           <ul>
             {this.state.userWorldsId.map((worldId, i) => {
               return (

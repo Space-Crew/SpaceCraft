@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import {makePreviewGrid, makeUnitCube} from '../../utilities'
+import {makePreviewGrid, makeUnitCube} from '../../../utilities'
 
 export const PreviewControl = function(_scene) {
   const previewGrid = makePreviewGrid()

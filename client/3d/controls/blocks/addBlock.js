@@ -1,5 +1,5 @@
 import {db} from '../../../firebase'
-import {makeUnitCube, toKey} from '../../utilities'
+import {makeUnitCube, toKey} from '../../../utilities'
 
 export function addBlockToDb(position, color = 0xb9c4c0, worldId) {
   try {

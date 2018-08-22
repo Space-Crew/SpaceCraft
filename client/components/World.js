@@ -13,6 +13,7 @@ import {
   HorizonControl
 } from '../3d/controls'
 import {configureRenderer} from '../3d/configure'
+import {showInstructions} from '../utilities'
 
 /*********************************
  * Construct the Three World
@@ -20,7 +21,6 @@ import {configureRenderer} from '../3d/configure'
 
 let isPaused = false
 let onSpaceBar
-const blocker = document.getElementById('blocker')
 
 function generateWorld(world, currentUser, guestAvatar) {
   //container for all 3d objects that will be affected by event
@@ -100,16 +100,7 @@ function generateWorld(world, currentUser, guestAvatar) {
       animate()
     }
   }
-  const showInstructions = isPaused => {
-    blocker.style.visibility = 'visible'
-    if (isPaused) {
-      blocker.style.display = 'block'
-      blocker.style.zIndex = '99'
-    } else {
-      blocker.style.display = 'none'
-      blocker.style.zIndex = ''
-    }
-  }
+
   window.addEventListener('keydown', onSpaceBar, false)
 
   /*********************************
@@ -171,6 +162,10 @@ class World extends Component {
     if (this.unsubscribe) {
       window.removeEventListener('keydown', onSpaceBar, false)
       this.unsubscribe()
+      if (isPaused) {
+        isPaused = !isPaused
+        showInstructions(isPaused)
+      }
     }
   }
 
