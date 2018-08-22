@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom'
 
 class CollaboratorWorldList extends Component {
   constructor() {
-    super();
+    super()
     this.state = {
       worldsId: [],
       worldsName: []
@@ -12,14 +12,17 @@ class CollaboratorWorldList extends Component {
   }
 
   async componentDidMount() {
-    const userRef = await db.ref(`/users/${this.props.currentUser.uid}`).once('value')
-    const collabWorlds = userRef.val().collaboratingWorlds;
-    console.log(collabWorlds)
+    const userRef = await db
+      .ref(`/users/${this.props.currentUser.uid}`)
+      .once('value')
+    const collabWorlds = userRef.val().collaboratingWorlds
     if (collabWorlds) {
-      let collabWorld = await Promise.all(collabWorlds.map(id => {
-        const world = db.ref(`/worlds/${id}`).once('value')
-        return world
-      }))
+      let collabWorld = await Promise.all(
+        collabWorlds.map(id => {
+          const world = db.ref(`/worlds/${id}`).once('value')
+          return world
+        })
+      )
       let collabNames = collabWorld.map(world => world.val().name)
       this.setState({
         worldsId: collabWorlds,
@@ -29,11 +32,10 @@ class CollaboratorWorldList extends Component {
   }
 
   render() {
-    return (
-      this.state.worldsId.length ? (
-        <div className="world-list">
-          <h4>Your Collaborators' Creation</h4>
-          <ul>
+    return this.state.worldsId.length ? (
+      <div className="world-list">
+        <h4>Your Collaborators' Creation</h4>
+        <ul>
           {this.state.worldsId.map((worldId, i) => {
             return (
               <div className="single-world" key={worldId}>
@@ -43,15 +45,12 @@ class CollaboratorWorldList extends Component {
               </div>
             )
           })}
-          </ul>
-        </div>
-      ) : (
-        <div className="world-list">
-          <h4>
-            No collaborators!
-          </h4>
-        </div>
-      )
+        </ul>
+      </div>
+    ) : (
+      <div className="world-list">
+        <h4>No collaborators!</h4>
+      </div>
     )
   }
 }

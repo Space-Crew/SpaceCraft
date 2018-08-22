@@ -8,7 +8,7 @@ import {
   PreviewControl,
   CameraControl,
   MotionControl,
-  avatarControl,
+  AvatarControl,
   UndoStack,
   HorizonControl
 } from '../3d/controls'
@@ -57,7 +57,12 @@ function generateWorld(world, currentUser, guestAvatar) {
   )
 
   let avatarUser = currentUser ? currentUser : guestAvatar
-  const avatarcontrol = new avatarControl(world.id, cameraControl.getObject(), scene, avatarUser)
+  const avatarControl = new AvatarControl(
+    world.id,
+    cameraControl.getObject(),
+    scene,
+    avatarUser
+  )
 
   const water = new GameFlowGraph(world.water, world.cubes, scene)
   water.connectToWorld(world.id)
@@ -117,7 +122,7 @@ function generateWorld(world, currentUser, guestAvatar) {
     previewControl.dispose()
     motionControl.dispose()
     horizonControl.dispose()
-    avatarcontrol.dispose()
+    avatarControl.dispose()
     disposeOfResize()
   }
 }
@@ -168,7 +173,7 @@ class World extends Component {
       this.unsubscribe()
     }
   }
-  
+
   render() {
     return this.state.authorized ? (
       <div id="plane">

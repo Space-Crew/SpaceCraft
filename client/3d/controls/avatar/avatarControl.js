@@ -4,7 +4,7 @@ import {updateAvatarInDb} from './updateAvatarInDb'
 import {addAvatar} from './addAvatar'
 import {deleteAvatar} from './deleteAvatar'
 
-export function avatarControl(worldId, yawObject, _scene, currentUser) {
+export function AvatarControl(worldId, yawObject, _scene, currentUser) {
   //check if user is guest or logged in //
   let username =
     typeof currentUser === 'string' ? currentUser : currentUser.displayName
@@ -24,7 +24,11 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
       if (snapshot.ref.key !== username) {
         let avatarPosition = snapshot.val()
         avatar = addAvatar(
-          new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
+          new THREE.Vector3(
+            avatarPosition.x,
+            avatarPosition.y,
+            avatarPosition.z
+          ),
           _scene,
           snapshot.val().color,
           snapshot.ref.key
@@ -51,30 +55,14 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
       let avatarToDelete = avatars[snapshot.ref.key]
       deleteAvatar(_scene, avatarToDelete)
     })
-    window.addEventListener(
-      'keydown',
-      onKeyDown,
-      false
-    )
-    window.addEventListener(
-      'mousemove',
-      onMousemove,
-      false
-    )
+    window.addEventListener('keydown', onKeyDown, false)
+    window.addEventListener('mousemove', onMousemove, false)
   }
 
   function deactivate() {
     disconnectRef.remove()
-    window.removeEventListener(
-      'keydown',
-      onKeyDown,
-      false
-    )
-    window.removeEventListener(
-      'mousemove',
-      onMousemove,
-      false
-    )
+    window.removeEventListener('keydown', onKeyDown, false)
+    window.removeEventListener('mousemove', onMousemove, false)
   }
 
   function onMousemove() {
