@@ -15,10 +15,12 @@ class UserWorldList extends Component {
     this.handleDelete = this.handleDelete.bind(this)
   }
   handleDelete(event, worldId) {
-    const worldRef = db.ref(`/worlds/${worldId}`);
-    worldRef.remove();
-    const userWorldRef = db.ref(`/users/${this.props.currentUser.uid}/worlds/${worldId}`);
-    userWorldRef.remove();
+    const worldRef = db.ref(`/worlds/${worldId}`)
+    worldRef.remove()
+    const userWorldRef = db.ref(
+      `/users/${this.props.currentUser.uid}/worlds/${worldId}`
+    )
+    userWorldRef.remove()
   }
 
   async handleCreateWorld() {
@@ -29,7 +31,7 @@ class UserWorldList extends Component {
     const worldName = generateName()
     if (currentUser) {
       const userRef = await db.ref(`/users/${currentUser.uid}`).once('value')
-      const userData = userRef.val();
+      const userData = userRef.val()
       if (userData.worlds) {
         const userWorldsRef = db.ref(`/users/${currentUser.uid}/worlds`)
         userWorldsRef.update({
@@ -50,14 +52,14 @@ class UserWorldList extends Component {
       private: !!currentUser,
       authorizedPlayers: [currentUser.displayName]
     })
-    this.props.history.push(`/worlds/${worldId}`);
+    this.props.history.push(`/worlds/${worldId}`)
     document.getElementById('dropdown').style.display = 'none'
   }
 
   async componentDidMount() {
     const currentUser = this.props.currentUser
     if (currentUser) {
-      const userWorldsRef = db.ref(`/users/${currentUser.uid}`);
+      const userWorldsRef = db.ref(`/users/${currentUser.uid}`)
       userWorldsRef.on('child_changed', snapshot => {
         this.setState({
           userWorldsName: Object.values(snapshot.val()),
@@ -75,13 +77,12 @@ class UserWorldList extends Component {
   }
 
   render() {
-    return (
-      this.state.userWorldsId.length ? (
-        <div>
-          <div className="world-list">
-            <h4>Welcome, {this.props.currentUser.displayName}</h4>
-            <h4>Your creations</h4>
-            <ul>
+    return this.state.userWorldsId.length ? (
+      <div>
+        <div className="world-list">
+          <h1>Welcome, {this.props.currentUser.displayName}</h1>
+          <h1 className="center">Your creations</h1>
+          <ul>
             {this.state.userWorldsId.map((worldId, i) => {
               return (
                 <div className="single-world" key={worldId}>
@@ -90,22 +91,23 @@ class UserWorldList extends Component {
                   </Link>
                   <div className="option">
                     <Link to={`/worlds/${worldId}/edit`}>Edit</Link>
-                    <a onClick={(event) => this.handleDelete(event, worldId)}>Delete</a>
+                    <a onClick={event => this.handleDelete(event, worldId)}>
+                      Delete
+                    </a>
                   </div>
                 </div>
               )
             })}
-            </ul>
-          </div>
+          </ul>
         </div>
-      ) : (
-        <div className="world-list">
-          <h3>
-            You have no creation,{' '}
-            <a onClick={this.handleCreateWorld}>create</a> one now!
-          </h3>
-        </div>
-      )
+      </div>
+    ) : (
+      <div className="world-list">
+        <h3>
+          You have no creation, <a onClick={this.handleCreateWorld}>create</a>{' '}
+          one now!
+        </h3>
+      </div>
     )
   }
 }

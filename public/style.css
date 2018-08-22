@@ -5,6 +5,7 @@ body {
   height: 90%;
   width: 100%;
   font-family: sans-serif;
+  color: rgba(127, 255, 212, 0.363);
   margin: 0;
   background-attachment: fixed;
 }
@@ -46,6 +47,9 @@ p {
 .world-list > p {
   font-size: 1.5rem;
   /* margin-bottom: 20px; */
+}
+.center {
+  text-align: center;
 }
 
 ul {
