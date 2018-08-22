@@ -24,9 +24,11 @@ export default class EditWorld extends Component {
       private: true,
       description: '',
       error: '',
-      updateSuccess: false,
+      worldUpdateSuccess: false,
       addingCollaborators: false,
-      collaborator: ''
+      collabUpdateSuccess: false,
+      collaborator: '',
+      currentWorldName: ''
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
@@ -38,22 +40,33 @@ export default class EditWorld extends Component {
     const uri = '/worlds/' + this.props.match.params.id
     const world = (await db.ref(uri).once('value')).val()
     this.setState({
-      authorized: this.props.currentUser.displayName === world.author
+      authorized: this.props.currentUser.displayName === world.author,
+      currentWorldName: world.name,
+      private: world.private
     })
   }
 
   handleSubmit(event) {
     try {
       event.preventDefault()
+      let {name, description, currentWorldName} = this.state
+      // prevent accidentally submitting an empty string as new world name //
+      name = name ? name : currentWorldName
       const uri = '/worlds/' + this.props.match.params.id
       db.ref(uri).update({
-        name: this.state.name,
+        name: name,
         private: this.state.private,
-        description: this.state.description
+        description: description
       })
       db.ref(`/users/${this.props.currentUser.uid}/worlds`).update({
-        [this.props.match.params.id]: this.state.name
+        [this.props.match.params.id]: name
       })
+      this.setState({
+        worldUpdateSuccess: true,
+        name: '',
+        description: ''
+      })
+      setTimeout(() => this.props.history.push('/account'), 1000)
     } catch (err) {
       console.error(err)
     }
@@ -75,16 +88,22 @@ export default class EditWorld extends Component {
         event.preventDefault()
         const uri = '/worlds/' + this.props.match.params.id
         const world = (await db.ref(uri).once('value')).val()
-        db.ref(uri).update({
-          authorizedPlayers: [
-            ...world.authorizedPlayers,
-            this.state.collaborator
-          ]
-        })
-        this.setState({
-          collaborator: '',
-          addingCollaborators: false
-        })
+        if (this.state.collaborator) {
+          db.ref(uri).update({
+            authorizedPlayers: [
+              ...world.authorizedPlayers,
+              this.state.collaborator
+            ]
+          })
+          this.setState({
+            collaborator: '',
+            addingCollaborators: false,
+            collabUpdateSuccess: true
+          })
+          setTimeout(() => {
+            this.setState({collabUpdateSuccess: false})
+          }, 1500)
+        }
       } catch (err) {
         console.error(err)
       }
@@ -98,12 +117,19 @@ export default class EditWorld extends Component {
   }
 
   render() {
-    const {error, updateSuccess} = this.state
-    return (
-      this.state.authorized ?
+    const {
+      error,
+      worldUpdateSuccess,
+      currentWorldName,
+      collabUpdateSuccess
+    } = this.state
+    let successText = worldUpdateSuccess
+      ? 'World successfully updated!'
+      : 'Collaborator successfully added!'
+    return this.state.authorized ? (
       <div className="login-form">
         <style>
-        {`
+          {`
           body > div,
           body > div > div,
           body > div > div > div.login-form {height: 100%;}
@@ -115,17 +141,17 @@ export default class EditWorld extends Component {
           verticalAlign="middle"
         >
           <Grid.Column style={{maxWidth: 450}}>
-            {updateSuccess && (
-              <Message color="teal">Account successfully created!</Message>
+            {(worldUpdateSuccess || collabUpdateSuccess) && (
+              <Message color="teal">{successText}</Message>
             )}
             {error && <Message negative>{error}</Message>}
-            <Header as="h2" color="teal" textAlign="center">
-              Your World
-            </Header>
             <Form size="large" onSubmit={this.handleSubmit}>
               <Segment stacked>
+                <Header as="h2" color="teal" textAlign="center">
+                  Modifying World {`"${currentWorldName}"`}
+                </Header>
                 <Form.Input
-                  placeholder="Name"
+                  placeholder="New name"
                   name="name"
                   type="text"
                   onChange={this.handleChange}
@@ -165,7 +191,7 @@ export default class EditWorld extends Component {
             >
               Add Collaborator
             </Button>
-            {this.state.addingCollaborators ? (
+            {this.state.addingCollaborators && (
               <Input
                 icon="user plus"
                 id="collab"
@@ -175,12 +201,13 @@ export default class EditWorld extends Component {
                 name="collaborator"
                 value={this.state.collaborator}
               />
-            ) : null}
+            )}
           </Grid.Column>
         </Grid>
-      </div> :
+      </div>
+    ) : (
       <div className="world-list">
-        <p>You have no authorization to edit this world.</p>
+        <p>You are not authorized to edit this world.</p>
       </div>
     )
   }
