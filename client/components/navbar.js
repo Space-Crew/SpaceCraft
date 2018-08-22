@@ -2,7 +2,7 @@ import React from 'react'
 import {doSignOut} from '../firebase/auth'
 import {withRouter} from 'react-router'
 import {Link} from 'react-router-dom'
-import {CreateButton} from './CreateButton'
+import CreateButton from './CreateButton'
 
 class Navbar extends React.Component {
   constructor() {

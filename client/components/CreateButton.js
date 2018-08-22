@@ -74,4 +74,4 @@ class CreateButton extends Component {
   }
 }
 
-export const CreateButtonWithRouter = withRouter(CreateButton)
+export default withRouter(CreateButton)
