@@ -37,7 +37,7 @@ export const login = (email, password) => dispatch => {
       if (user) {
         dispatch(loginUser(user));
       } else {
-        dispatch(logoutUser);
+        dispatch(logoutUser());
       }
     });
 	}
