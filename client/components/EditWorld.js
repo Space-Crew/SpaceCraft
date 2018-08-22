@@ -95,6 +95,23 @@ export default class EditWorld extends Component {
               this.state.collaborator
             ]
           })
+          db.ref('/users').orderByChild('username').equalTo(this.state.collaborator).once('value', snapshot => {
+            const collaboratorId = Object.keys(snapshot.val())[0];
+            const existingCollaboratingWorlds = snapshot.val()[collaboratorId].collaboratingWorlds;
+            if (existingCollaboratingWorlds) {
+              db.ref(`/users/${collaboratorId}`).update({
+                collaboratingWorlds: [
+                  ...existingCollaboratingWorlds, this.props.match.params.id
+                ]
+              })
+            } else {
+              db.ref(`/users/${collaboratorId}`).update({
+                collaboratingWorlds: [
+                  this.props.match.params.id
+                ]
+              })
+            }
+          });
           this.setState({
             collaborator: '',
             addingCollaborators: false,
