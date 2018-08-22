@@ -138,7 +138,6 @@ class World extends Component {
         if (
           !world.private ||
           (this.props.currentUser &&
-            world.authorizedPlayers &&
             world.authorizedPlayers.includes(
               this.props.currentUser.displayName
             ))
