@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {db, auth} from '../firebase'
+import {db} from '../firebase'
 import {Link} from 'react-router-dom'
 import {generateName} from '../3d/utilities/randomNameGenerator'
 
@@ -7,6 +7,7 @@ export default class Account extends Component {
   constructor() {
     super()
     this.state = {
+      currentUser: null,
       userWorldsName: [],
       userWorldsId: []
     }
@@ -21,7 +22,7 @@ export default class Account extends Component {
   }
 
   async handleCreateWorld() {
-    const currentUser = this.props.currentUser
+    const currentUser = this.state.currentUser
     const worldsRef = db.ref('/worlds')
     const newWorld = worldsRef.push()
     const worldId = newWorld.key
@@ -56,7 +57,7 @@ export default class Account extends Component {
   async componentDidMount() {
     const currentUser = this.props.currentUser;
     if (currentUser) {
-      const userWorldsRef = db.ref(`/users/${this.props.currentUser.uid}`);
+      const userWorldsRef = db.ref(`/users/${currentUser.uid}`);
       userWorldsRef.on('child_changed', snapshot => {
         this.setState({
           userWorldsName: Object.values(snapshot.val()),
@@ -69,6 +70,29 @@ export default class Account extends Component {
           userWorldsName: Object.values(snapshot.val().worlds),
           userWorldsId: Object.keys(snapshot.val().worlds)
         })
+      }
+    }
+  }
+
+  async componentDidUpdate(prevProps) {
+    // only update chart if the data has changed
+    if (prevProps.currentUser !== this.props.currentUser) {
+      const currentUser = this.props.currentUser
+      if (currentUser) {
+        const userWorldsRef = db.ref(`/users/${currentUser.uid}`);
+        userWorldsRef.on('child_changed', snapshot => {
+          this.setState({
+            userWorldsName: Object.values(snapshot.val()),
+            userWorldsId: Object.keys(snapshot.val())
+          })
+        })
+        const snapshot = await db.ref(`/users/${currentUser.uid}`).once('value')
+        if (snapshot.val().worlds) {
+          this.setState({
+            userWorldsName: Object.values(snapshot.val().worlds),
+            userWorldsId: Object.keys(snapshot.val().worlds)
+          })
+        }
       }
     }
   }
@@ -98,6 +122,7 @@ export default class Account extends Component {
                     )
                   })}
                   </ul>
+                  <h4>Collaborators' creations</h4>
                 </div>
               </div>
             ) : (
