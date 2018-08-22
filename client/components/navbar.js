@@ -1,9 +1,10 @@
 import React from 'react'
-import {doSignOut} from '../firebase/auth'
+import {logout} from '../store'
 import {db} from '../firebase'
 import {withRouter} from 'react-router'
 import {Link} from 'react-router-dom'
 import {generateName} from '../3d/utilities/randomNameGenerator'
+import {connect} from 'react-redux';
 
 class Navbar extends React.Component {
   constructor() {
@@ -65,7 +66,7 @@ class Navbar extends React.Component {
   }
 
   signout(event) {
-    doSignOut();
+    this.props.logout();
     this.props.history.push('/');
   }
 
@@ -108,4 +109,16 @@ class Navbar extends React.Component {
   }
 }
 
-export default withRouter(Navbar)
+const mapState = state => {
+  return {
+    currentUser: state.currentUser
+  }
+}
+
+const mapDispatch = dispatch => {
+  return {
+    logout: () => dispatch(logout())
+  }
+}
+
+export default withRouter(connect(mapState, mapDispatch)(Navbar))

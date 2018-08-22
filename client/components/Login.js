@@ -2,6 +2,8 @@ import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
 import {doSignInWithEmailAndPassword} from '../firebase/auth'
 import {Button, Form, Grid, Header, Message, Segment} from 'semantic-ui-react'
+import {login} from '../store'
+import {connect} from 'react-redux'
 
 /**
  * COMPONENT
@@ -14,7 +16,7 @@ const initialState = {
   loginSuccess: false
 }
 
-export default class AuthForm extends Component {
+class Login extends Component {
   constructor() {
     super()
     this.state = initialState
@@ -25,7 +27,7 @@ export default class AuthForm extends Component {
     try {
       event.preventDefault()
       const {email, password} = this.state
-      await doSignInWithEmailAndPassword(email, password)
+      await this.props.login(email, password)
       this.setState({
         error: '',
         loginSuccess: true
@@ -116,3 +118,9 @@ export default class AuthForm extends Component {
     )
   }
 }
+
+const mapDispatch = (dispatch) => ({
+  login: (email, password) => dispatch(login(email, password))
+})
+
+export default connect(null, mapDispatch)(Login)

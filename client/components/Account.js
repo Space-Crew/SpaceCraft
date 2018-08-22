@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
-import {db, auth} from '../firebase'
+import {db} from '../firebase'
 import {Link} from 'react-router-dom'
 import {generateName} from '../3d/utilities/randomNameGenerator'
+import {connect} from 'react-redux';
 
-export default class Account extends Component {
+class Account extends Component {
   constructor() {
     super()
     this.state = {
@@ -122,3 +123,12 @@ export default class Account extends Component {
     )
   }
 }
+
+
+const mapState = state => {
+  return {
+    currentUser: state.currentUser
+  }
+}
+
+export default connect(mapState)(Account)

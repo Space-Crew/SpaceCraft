@@ -19,35 +19,13 @@ export default class Routes extends Component {
       <Switch>
         {/* Routes placed here are available to all visitors */}
         <Route exact path="/" component={Home} />
-        <Route
-          exact
-          path="/worlds"
-          render={props => (
-            <World currentUser={this.props.currentUser} {...props} />
-          )}
-        />
-        <Route
-          exact
-          path="/worlds/:id"
-          render={props => (
-            <World currentUser={this.props.currentUser} {...props} />
-          )}
-        />
-        <Route
-          exact
-          path="/worlds/:id/edit"
-          render={props => (
-            <EditWorld currentUser={this.props.currentUser} {...props} />
-          )}
-        />
+        <Route exact path="/worlds" component={World} />
+        <Route exact path="/worlds/:id" component={World} />
+        <Route exact path="/worlds/:id/edit" component={EditWorld} />
         <Route exact path="/worldlist" component={WorldList} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
-        <Route
-          exact
-          path="/account"
-          render={() => <Account currentUser={this.props.currentUser} />}
-        />
+        <Route exact path="/account" component={Account} />
       </Switch>
     )
   }
