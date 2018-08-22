@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {db} from '../firebase'
-import {generateName} from '../3d/utilities/randomNameGenerator'
+import {generateName} from '../utilities/randomNameGenerator'
 import {Link} from 'react-router-dom'
 import {withRouter} from 'react-router'
 

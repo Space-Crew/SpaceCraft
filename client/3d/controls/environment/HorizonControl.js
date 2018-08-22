@@ -1,4 +1,4 @@
-import {makeHorizonGrid} from '../../utilities'
+import {makeHorizonGrid} from '../../../utilities'
 
 export const HorizonControl = function(_scene) {
   const horizon = makeHorizonGrid()

@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import {darken, checkPositionOccupied} from '../../utilities'
+import {darken, checkPositionOccupied} from '../../../utilities'
 import {db} from '../../../firebase'
 import {selectBlock} from './selectBlock'
 import {deleteBlock, deleteBlockFromDb} from './deleteBlock'

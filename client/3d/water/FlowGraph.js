@@ -1,5 +1,5 @@
 import {FlowCube} from './FlowCube'
-import {toKey} from '../utilities'
+import {toKey} from '../../utilities'
 
 export class FlowGraph {
   constructor(sourcePositions = {}, worldCubes = {}) {
