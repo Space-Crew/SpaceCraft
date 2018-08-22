@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {db} from '../firebase'
 import {generateName} from '../3d/utilities/randomNameGenerator'
 import {Link} from 'react-router-dom'
+import {withRouter} from 'react-router'
 
 class UserWorldList extends Component {
   constructor() {
@@ -21,13 +22,13 @@ class UserWorldList extends Component {
   }
 
   async handleCreateWorld() {
-    const currentUser = this.state.currentUser
+    const currentUser = this.props.currentUser
     const worldsRef = db.ref('/worlds')
     const newWorld = worldsRef.push()
     const worldId = newWorld.key
     const worldName = generateName()
     if (currentUser) {
-      const userRef = await db.ref(`/users/${currentUser.uid}`)
+      const userRef = await db.ref(`/users/${currentUser.uid}`).once('value')
       const userData = userRef.val();
       if (userData.worlds) {
         const userWorldsRef = db.ref(`/users/${currentUser.uid}/worlds`)
@@ -35,7 +36,7 @@ class UserWorldList extends Component {
           [worldId]: worldName
         })
       } else {
-        userRef.update({
+        db.ref(`/users/${currentUser.uid}`).update({
           worlds: {
             [worldId]: worldName
           }
@@ -109,4 +110,4 @@ class UserWorldList extends Component {
   }
 }
 
-export default UserWorldList
+export default withRouter(UserWorldList)
