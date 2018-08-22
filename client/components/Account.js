@@ -55,11 +55,9 @@ export default class Account extends Component {
 
   async componentDidMount() {
     const currentUser = this.props.currentUser;
-    console.log('component did mount!', this.props.currentUser)
     if (currentUser) {
       const userWorldsRef = db.ref(`/users/${this.props.currentUser.uid}`);
       userWorldsRef.on('child_changed', snapshot => {
-        console.log('a world is removed!', snapshot.val())
         this.setState({
           userWorldsName: Object.values(snapshot.val()),
           userWorldsId: Object.keys(snapshot.val())
@@ -76,7 +74,6 @@ export default class Account extends Component {
   }
 
   render() {
-    console.log(this.props.currentUser)
     return (
       <div id="account">
         {this.props.currentUser ? (
