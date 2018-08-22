@@ -1,66 +1,102 @@
 import React, {Component} from 'react'
-import {db} from '../firebase'
+import {db, auth} from '../firebase'
 import {Link} from 'react-router-dom'
+import {generateName} from '../3d/utilities/randomNameGenerator'
 
 export default class Account extends Component {
   constructor() {
     super()
     this.state = {
-      user: '',
-      userWorlds: []
+      userWorldsName: [],
+      userWorldsId: []
     }
     this.handleCreateWorld = this.handleCreateWorld.bind(this)
+    this.handleDelete = this.handleDelete.bind(this)
+  }
+  handleDelete(event, worldId) {
+    const worldRef = db.ref(`/worlds/${worldId}`);
+    worldRef.remove();
+    const userWorldRef = db.ref(`/users/${this.props.currentUser.uid}/worlds/${worldId}`);
+    userWorldRef.remove();
   }
 
-  handleCreateWorld() {
+  async handleCreateWorld() {
     const currentUser = this.props.currentUser
     const worldsRef = db.ref('/worlds')
-    const newWorld = worldsRef.push({
-      author: currentUser ? currentUser.displayName : 'guest'
-    })
+    const newWorld = worldsRef.push()
     const worldId = newWorld.key
+    const worldName = generateName()
     if (currentUser) {
-      const userWorldsRef = db.ref(`users/${currentUser.uid}/worlds`)
-      userWorldsRef.push(worldId)
+      const userRef = await db.ref(`/users/${currentUser.uid}`)
+      const userData = userRef.val();
+      if (userData.worlds) {
+        const userWorldsRef = db.ref(`/users/${currentUser.uid}/worlds`)
+        userWorldsRef.update({
+          [worldId]: worldName
+        })
+      } else {
+        userRef.update({
+          worlds: {
+            [worldId]: worldName
+          }
+        })
+      }
     }
     newWorld.set({
       id: worldId,
-      author: currentUser ? currentUser.displayName : 'guest'
+      author: currentUser ? currentUser.displayName : 'guest',
+      name: worldName,
+      private: !!currentUser,
+      authorizedPlayers: [currentUser.displayName]
     })
-    this.props.history.push(`/worlds/${worldId}`)
+    this.props.history.push(`/worlds/${worldId}`);
+    document.getElementById('dropdown').style.display = 'none'
   }
 
   async componentDidMount() {
-    const currentUser = this.props.currentUser
+    const currentUser = this.props.currentUser;
+    console.log('component did mount!', this.props.currentUser)
     if (currentUser) {
+      const userWorldsRef = db.ref(`/users/${this.props.currentUser.uid}`);
+      userWorldsRef.on('child_changed', snapshot => {
+        console.log('a world is removed!', snapshot.val())
+        this.setState({
+          userWorldsName: Object.values(snapshot.val()),
+          userWorldsId: Object.keys(snapshot.val())
+        })
+      })
       const snapshot = await db.ref(`/users/${currentUser.uid}`).once('value')
-
       if (snapshot.val().worlds) {
         this.setState({
-          user: currentUser.displayName,
-          userWorlds: Object.values(snapshot.val().worlds)
+          userWorldsName: Object.values(snapshot.val().worlds),
+          userWorldsId: Object.keys(snapshot.val().worlds)
         })
       }
     }
   }
 
   render() {
+    console.log(this.props.currentUser)
     return (
       <div id="account">
-        {this.state.user ? (
+        {this.props.currentUser ? (
           <div>
-            {this.state.userWorlds.length ? (
+            {this.state.userWorldsId.length ? (
               <div>
                 <div className="world-list">
-                  <h4>Welcome, {this.state.user}</h4>
+                  <h4>Welcome, {this.props.currentUser.displayName}</h4>
                   <h4>Your creations</h4>
                   <ul>
-                  {this.state.userWorlds.map(worldId => {
+                  {this.state.userWorldsId.map((worldId, i) => {
                     return (
-                      <div key={worldId} className="center">
+                      <div className="single-world" key={worldId}>
                         <Link to={`/worlds/${worldId}`}>
-                          <li>{`${this.state.user}'s world: ${worldId}`}</li>
-                        </Link><Link to={`/worlds/${worldId}/edit`} className="edit">Edit</Link>
+                          <li>{this.state.userWorldsName[i]}</li>
+                        </Link>
+                        <div className="option">
+                          <Link to={`/worlds/${worldId}/edit`}>Edit</Link>
+                          <a onClick={(event) => this.handleDelete(event, worldId)}>Delete</a>
+                        </div>
                       </div>
                     )
                   })}

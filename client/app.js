@@ -12,6 +12,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log('app component did mount!')
     this.unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
         this.setState({currentUser: user})
