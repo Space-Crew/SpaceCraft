@@ -103,6 +103,7 @@ li {
   justify-content: flex-end;
   color: rgb(198, 2222, 255);
   text-shadow: 0px 0.5px 3px rgb(0, 0, 0);
+  text-align: center;
 }
 
 .link-item {
