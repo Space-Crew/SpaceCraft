@@ -164,6 +164,16 @@ class World extends Component {
     if (this.unsubscribe) {
       window.removeEventListener('keydown', onSpaceBar, false)
       this.unsubscribe()
+      this.removeAvatarFromWorld(this.props.currentUser)
+    }
+  }
+  removeAvatarFromWorld() {
+    if (this.props.match && this.props.match.params.id) {
+      const uri = `/worlds/${this.props.match.params.id}/avatars/${
+        this.props.currentUser.displayName
+      }`
+      const avatarRef = db.ref(uri)
+      avatarRef.remove()
     }
   }
   render() {
