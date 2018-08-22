@@ -39,7 +39,6 @@ export default class EditWorld extends Component {
   async componentDidMount() {
     const uri = '/worlds/' + this.props.match.params.id
     const world = (await db.ref(uri).once('value')).val()
-    console.log(world)
     this.setState({
       authorized: this.props.currentUser.displayName === world.author,
       currentWorldName: world.name,
