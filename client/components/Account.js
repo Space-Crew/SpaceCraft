@@ -54,6 +54,26 @@ export default class Account extends Component {
     document.getElementById('dropdown').style.display = 'none'
   }
 
+  async componentDidMount() {
+    const currentUser = this.props.currentUser
+    if (currentUser) {
+      const userWorldsRef = db.ref(`/users/${currentUser.uid}`);
+      userWorldsRef.on('child_changed', snapshot => {
+        this.setState({
+          userWorldsName: Object.values(snapshot.val()),
+          userWorldsId: Object.keys(snapshot.val())
+        })
+      })
+      const snapshot = await db.ref(`/users/${currentUser.uid}`).once('value')
+      if (snapshot.val().worlds) {
+        this.setState({
+          userWorldsName: Object.values(snapshot.val().worlds),
+          userWorldsId: Object.keys(snapshot.val().worlds)
+        })
+      }
+    }
+  }
+
   async componentDidUpdate(prevProps) {
     // only update chart if the data has changed
     if (prevProps.currentUser !== this.props.currentUser) {
