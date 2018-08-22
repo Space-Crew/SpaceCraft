@@ -3,7 +3,7 @@ import {doSignOut} from '../firebase/auth'
 import {db} from '../firebase'
 import {withRouter} from 'react-router'
 import {Link} from 'react-router-dom'
-import {generateName} from '../3d/utilities/randomNameGenerator'
+import {generateName} from '../utilities/randomNameGenerator'
 
 class Navbar extends React.Component {
   constructor() {
@@ -50,6 +50,7 @@ class Navbar extends React.Component {
   }
 
   toggleDropdown(event) {
+    console.log('navbar clicked')
     const dropdown = event.target.nextElementSibling
     if (dropdown.style.display === 'none' || dropdown.style.display === '') {
       dropdown.style.display = 'flex'
@@ -71,8 +72,8 @@ class Navbar extends React.Component {
   render() {
     const currentUser = this.props.currentUser
     return (
-      <div id="navbar">
-        <Link to="/">
+      <div id="navbar" style={{zIndex: 100}}>
+        <Link to="/" onClick={() => this.props.updatePaused()}>
           <div id="logo">SpaceCraft</div>
         </Link>
         {this.props.location.pathname.indexOf('/worlds') === 0 && (

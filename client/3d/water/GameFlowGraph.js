@@ -1,5 +1,5 @@
 import {FlowGraph} from './FlowGraph'
-import {toKey} from '../utilities'
+import {toKey} from '../../utilities'
 import {makeWaterCube} from './makeWaterCube'
 import {db} from '../../firebase'
 
