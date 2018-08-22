@@ -17,7 +17,7 @@ export function makeWaterCube(flowCube) {
 }
 
 function getHeight(flowCube) {
-  if (flowCube.isFlowingDown()) {
+  if (flowCube.hasParentAbove()) {
     return 1
   }
   return flowCube.volume / flowCube.sourceVolume
