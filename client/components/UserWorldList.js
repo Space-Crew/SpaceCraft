@@ -14,7 +14,7 @@ class UserWorldList extends Component {
     this.handleCreateWorld = this.handleCreateWorld.bind(this)
     this.handleDelete = this.handleDelete.bind(this)
   }
-  handleDelete(event, worldId) {
+  handleDelete(worldId) {
     const worldRef = db.ref(`/worlds/${worldId}`)
     worldRef.remove()
     const userWorldRef = db.ref(
@@ -66,6 +66,12 @@ class UserWorldList extends Component {
           userWorldsId: Object.keys(snapshot.val())
         })
       })
+      userWorldsRef.on('child_removed', snapshot => {
+        this.setState({
+          userWorldsName: [],
+          userWorldsId: []
+        })
+      })
       const userRef = await db.ref(`/users/${currentUser.uid}`).once('value')
       if (userRef.val().worlds) {
         this.setState({
@@ -91,9 +97,7 @@ class UserWorldList extends Component {
                   </Link>
                   <div className="option">
                     <Link to={`/worlds/${worldId}/edit`}>Edit</Link>
-                    <a onClick={event => this.handleDelete(event, worldId)}>
-                      Delete
-                    </a>
+                    <a onClick={() => this.handleDelete(worldId)}>Delete</a>
                   </div>
                 </div>
               )

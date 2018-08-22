@@ -21,16 +21,10 @@ export default class Routes extends Component {
         <Route exact path="/" component={Home} />
         <Route
           exact
-          path="/worlds"
-          render={props => (
-            <World currentUser={this.props.currentUser} {...props} />
-          )}
-        />
-        <Route
-          exact
           path="/worlds/:id"
           render={props => (
             <World
+              key={props.match.params.id}
               currentUser={this.props.currentUser}
               guestAvatar={this.props.guestAvatar}
               {...props}

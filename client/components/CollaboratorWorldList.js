@@ -16,7 +16,6 @@ class CollaboratorWorldList extends Component {
       .ref(`/users/${this.props.currentUser.uid}`)
       .once('value')
     const collabWorlds = userRef.val().collaboratingWorlds
-    console.log(collabWorlds)
     if (collabWorlds) {
       let collabWorld = await Promise.all(
         collabWorlds.map(id => {
