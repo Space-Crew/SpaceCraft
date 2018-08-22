@@ -20,7 +20,7 @@ import {showInstructions} from '../utilities'
  ********************************/
 
 let isPaused = false
-let onSpaceBar
+let onEsc
 
 function generateWorld(world, currentUser, guestAvatar) {
   //container for all 3d objects that will be affected by event
@@ -93,15 +93,15 @@ function generateWorld(world, currentUser, guestAvatar) {
    * Pause The World
    ********************************/
 
-  onSpaceBar = event => {
-    if (event.which === 32) {
+  onEsc = event => {
+    if (event.which === 27) {
       isPaused = !isPaused
       showInstructions(isPaused)
       animate()
     }
   }
 
-  window.addEventListener('keydown', onSpaceBar, false)
+  window.addEventListener('keydown', onEsc, false)
 
   /*********************************
    * Dispose functions
@@ -160,7 +160,7 @@ class World extends Component {
 
   componentWillUnmount() {
     if (this.unsubscribe) {
-      window.removeEventListener('keydown', onSpaceBar, false)
+      window.removeEventListener('keydown', onEsc, false)
       this.unsubscribe()
       if (isPaused) {
         isPaused = !isPaused
