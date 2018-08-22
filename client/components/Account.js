@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {db, auth} from '../firebase'
+import {db} from '../firebase'
 import {Link} from 'react-router-dom'
 import {generateName} from '../3d/utilities/randomNameGenerator'
 
@@ -54,7 +54,7 @@ export default class Account extends Component {
     document.getElementById('dropdown').style.display = 'none'
   }
 
-  async componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(prevProps) {
     // only update chart if the data has changed
     if (prevProps.currentUser !== this.props.currentUser) {
       const currentUser = this.props.currentUser
@@ -102,6 +102,7 @@ export default class Account extends Component {
                     )
                   })}
                   </ul>
+                  <h4>Collaborators' creations</h4>
                 </div>
               </div>
             ) : (
