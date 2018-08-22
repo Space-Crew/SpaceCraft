@@ -17,10 +17,8 @@ class UserWorldList extends Component {
   handleDelete(event, worldId) {
     const worldRef = db.ref(`/worlds/${worldId}`);
     worldRef.remove();
-    console.log('world remove', worldId)
     const userWorldRef = db.ref(`/users/${this.props.currentUser.uid}/worlds/${worldId}`);
     userWorldRef.remove();
-    console.log('user world remove')
   }
 
   async handleCreateWorld() {
