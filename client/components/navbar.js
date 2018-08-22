@@ -27,7 +27,7 @@ class Navbar extends React.Component {
         </Link>
         {this.props.location.pathname.indexOf('/worlds') === 0 && (
           <span id="nav-instructions" style={{display: this.state.style}}>
-            Instructions? Press Space Bar
+            Instructions? Press Escape
           </span>
         )}
         <div id="menu">
