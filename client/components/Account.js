@@ -55,7 +55,7 @@ export default class Account extends Component {
   }
 
   async componentDidMount() {
-    const currentUser = this.props.currentUser
+    const currentUser = this.props.currentUser;
     if (currentUser) {
       const userWorldsRef = db.ref(`/users/${currentUser.uid}`);
       userWorldsRef.on('child_changed', snapshot => {
