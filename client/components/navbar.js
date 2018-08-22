@@ -21,8 +21,8 @@ class Navbar extends React.Component {
   render() {
     const currentUser = this.props.currentUser
     return (
-      <div id="navbar" style={{zIndex: 100}}>
-        <Link to="/" onClick={() => this.props.updatePaused()}>
+      <div id="navbar">
+        <Link to="/">
           <div id="logo">SpaceCraft</div>
         </Link>
         {this.props.location.pathname.indexOf('/worlds') === 0 && (

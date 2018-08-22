@@ -84,6 +84,7 @@ li {
   border-bottom-right-radius: 5px;
   display: flex;
   justify-content: space-between;
+  z-index: 100;
 }
 
 #logo {
