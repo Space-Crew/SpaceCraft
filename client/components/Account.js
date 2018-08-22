@@ -3,7 +3,6 @@ import UserWorldList from './UserWorldList'
 import CollaboratorWorldList from './CollaboratorWorldList'
 
 export default class Account extends Component {
-
   render() {
     return (
       <div id="account">

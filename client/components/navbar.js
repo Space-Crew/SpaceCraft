@@ -11,9 +11,9 @@ class Navbar extends React.Component {
     this.state = {
       style: 'block'
     }
-    this.handleCreateWorld = this.handleCreateWorld.bind(this);
-    this.redirect = this.redirect.bind(this);
-    this.signout = this.signout.bind(this);
+    this.handleCreateWorld = this.handleCreateWorld.bind(this)
+    this.redirect = this.redirect.bind(this)
+    this.signout = this.signout.bind(this)
   }
 
   async handleCreateWorld() {
@@ -24,7 +24,7 @@ class Navbar extends React.Component {
     const worldName = generateName()
     if (currentUser) {
       const userRef = await db.ref(`/users/${currentUser.uid}`).once('value')
-      const userData = userRef.val();
+      const userData = userRef.val()
       if (userData.worlds) {
         const userWorldsRef = db.ref(`/users/${currentUser.uid}/worlds`)
         userWorldsRef.update({
@@ -45,18 +45,17 @@ class Navbar extends React.Component {
       private: !!currentUser,
       authorizedPlayers: [currentUser.displayName]
     })
-    this.props.history.push(`/worlds/${worldId}`);
+    this.props.history.push(`/worlds/${worldId}`)
     document.getElementById('dropdown').style.display = 'none'
   }
 
   toggleDropdown(event) {
-    const dropdown = event.target.nextElementSibling;
-    if (dropdown.style.display === 'none') {
-      dropdown.style.display = 'flex';
+    const dropdown = event.target.nextElementSibling
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+      dropdown.style.display = 'flex'
     } else {
-      dropdown.style.display = 'none';
+      dropdown.style.display = 'none'
     }
-
   }
 
   redirect(event) {
@@ -65,8 +64,8 @@ class Navbar extends React.Component {
   }
 
   signout(event) {
-    doSignOut();
-    this.props.history.push('/');
+    doSignOut()
+    this.props.history.push('/')
   }
 
   render() {
@@ -77,31 +76,34 @@ class Navbar extends React.Component {
           <div id="logo">SpaceCraft</div>
         </Link>
         {this.props.location.pathname.indexOf('/worlds') === 0 && (
-          <span
-            id="nav-instructions"
-            style={{display: this.state.style}}
-          >
+          <span id="nav-instructions" style={{display: this.state.style}}>
             Instructions? Press Space Bar
           </span>
         )}
         <div id="menu">
-          <div className="link-item dropdown" onClick={this.toggleDropdown}>Create</div>
+          <div className="link-item dropdown" onClick={this.toggleDropdown}>
+            Create
+          </div>
           <div id="dropdown">
-            <div className="link-item" onClick={this.handleCreateWorld}>New world</div>
-            <div className="link-item" onClick={this.redirect}>Your creations</div>
+            <div className="link-item" onClick={this.handleCreateWorld}>
+              New world
+            </div>
+            <div className="link-item" onClick={this.redirect}>
+              Your creations
+            </div>
           </div>
           <Link to="/worldlist">
             <div className="link-item">Explore</div>
           </Link>
-          {
-            !currentUser || !currentUser.displayName?
+          {!currentUser || !currentUser.displayName ? (
             <Link to="/login">
               <div className="link-item">Login</div>
-            </Link> :
-            (
-              <div className="link-item" onClick={this.signout}>SignOut</div>
-            )
-          }
+            </Link>
+          ) : (
+            <div className="link-item" onClick={this.signout}>
+              SignOut
+            </div>
+          )}
         </div>
       </div>
     )
