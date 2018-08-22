@@ -20,7 +20,6 @@ import {showInstructions} from '../utilities'
 
 let isPaused = false
 let onSpaceBar
-const blocker = document.getElementById('blocker')
 
 function generateWorld(world, currentUser, guestAvatar) {
   //container for all 3d objects that will be affected by event
@@ -157,7 +156,8 @@ class World extends Component {
       window.removeEventListener('keydown', onSpaceBar, false)
       this.unsubscribe()
       if (isPaused) {
-        showInstructions(false)
+        isPaused = !isPaused
+        showInstructions(isPaused)
       }
     }
   }

@@ -30,13 +30,8 @@ class UserWorldList extends Component {
     const worldId = newWorld.key
     const worldName = generateName()
     if (currentUser) {
-<<<<<<< HEAD
-      const userRef = await db.ref(`/users/${currentUser.uid}`)
-      const userData = userRef.val()
-=======
       const userRef = await db.ref(`/users/${currentUser.uid}`).once('value')
-      const userData = userRef.val();
->>>>>>> master
+      const userData = userRef.val()
       if (userData.worlds) {
         const userWorldsRef = db.ref(`/users/${currentUser.uid}/worlds`)
         userWorldsRef.update({
@@ -117,8 +112,4 @@ class UserWorldList extends Component {
   }
 }
 
-<<<<<<< HEAD
-export default UserWorldList
-=======
 export default withRouter(UserWorldList)
->>>>>>> master
