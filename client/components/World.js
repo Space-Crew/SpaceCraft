@@ -49,7 +49,7 @@ function generateWorld(world, currentUser, guestAvatar) {
 
   const blockControl = new BlockControl(
     essentials,
-    currentUser,
+    currentUser ? currentUser : {displayName: guestAvatar},
     world.id,
     cameraControl.getObject(),
     previewBox,

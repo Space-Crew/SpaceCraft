@@ -41,7 +41,7 @@ export class FlowGraph {
   produceChildrenFor(cube) {
     return this.findSpacesToFlowFor(cube)
       .map(position => {
-        return this.makeCubeFlowTo(cube, position)
+        return this.tryToMakeCubeFlowTo(cube, position)
       })
       .filter(child => child !== null)
   }
@@ -68,12 +68,10 @@ export class FlowGraph {
   hasWorldCubeAt(position) {
     return !!this.worldCubes[toKey(position)]
   }
-  makeCubeFlowTo(cube, position) {
+  tryToMakeCubeFlowTo(cube, position) {
     if (this.hasCubeAt(position)) {
       const child = this.flowCubes[toKey(position)]
-      const oldVolume = child.volume
-      cube.linkChild(child)
-      return this.shouldRespawn(child, oldVolume) ? child : null
+      return cube.tryToBecomeParentOf(child)
     } else {
       return this.createAndStoreChild(cube, position)
     }
