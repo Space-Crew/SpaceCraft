@@ -7,6 +7,7 @@ export default class Account extends Component {
   constructor() {
     super()
     this.state = {
+      currentUser: null,
       userWorldsName: [],
       userWorldsId: []
     }
@@ -21,7 +22,7 @@ export default class Account extends Component {
   }
 
   async handleCreateWorld() {
-    const currentUser = this.props.currentUser
+    const currentUser = this.state.currentUser
     const worldsRef = db.ref('/worlds')
     const newWorld = worldsRef.push()
     const worldId = newWorld.key
@@ -53,30 +54,30 @@ export default class Account extends Component {
     document.getElementById('dropdown').style.display = 'none'
   }
 
-  async componentDidMount() {
-    const currentUser = this.props.currentUser;
-    console.log('component did mount!', this.props.currentUser)
-    if (currentUser) {
-      const userWorldsRef = db.ref(`/users/${this.props.currentUser.uid}`);
-      userWorldsRef.on('child_changed', snapshot => {
-        console.log('a world is removed!', snapshot.val())
-        this.setState({
-          userWorldsName: Object.values(snapshot.val()),
-          userWorldsId: Object.keys(snapshot.val())
+  async componentDidUpdate(prevProps, prevState) {
+    // only update chart if the data has changed
+    if (prevProps.currentUser !== this.props.currentUser) {
+      const currentUser = this.props.currentUser
+      if (currentUser) {
+        const userWorldsRef = db.ref(`/users/${currentUser.uid}`);
+        userWorldsRef.on('child_changed', snapshot => {
+          this.setState({
+            userWorldsName: Object.values(snapshot.val()),
+            userWorldsId: Object.keys(snapshot.val())
+          })
         })
-      })
-      const snapshot = await db.ref(`/users/${currentUser.uid}`).once('value')
-      if (snapshot.val().worlds) {
-        this.setState({
-          userWorldsName: Object.values(snapshot.val().worlds),
-          userWorldsId: Object.keys(snapshot.val().worlds)
-        })
+        const snapshot = await db.ref(`/users/${currentUser.uid}`).once('value')
+        if (snapshot.val().worlds) {
+          this.setState({
+            userWorldsName: Object.values(snapshot.val().worlds),
+            userWorldsId: Object.keys(snapshot.val().worlds)
+          })
+        }
       }
     }
   }
 
   render() {
-    console.log(this.props.currentUser)
     return (
       <div id="account">
         {this.props.currentUser ? (
