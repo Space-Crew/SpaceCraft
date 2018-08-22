@@ -8,7 +8,8 @@ import {
   CameraControl,
   MotionControl,
   avatarControl,
-  UndoStack
+  UndoStack,
+  HorizonControl
 } from '../3d/controls'
 import {configureRenderer} from '../3d/configure'
 
@@ -27,13 +28,14 @@ function generateWorld(world, currentUser, guestAvatar) {
 
   const {renderer, camera, scene, disposeOfResize} = configureRenderer()
 
-  scene.objects = []
   scene.undoStack = new UndoStack(world.id)
 
   const cameraControl = new CameraControl(camera, renderer.domElement)
   scene.add(cameraControl.getObject())
 
   const motionControl = new MotionControl(cameraControl.getObject())
+
+  const horizonControl = new HorizonControl(scene)
 
   const previewControl = new PreviewControl(scene)
   const previewBox = previewControl.previewBox
@@ -113,6 +115,7 @@ function generateWorld(world, currentUser, guestAvatar) {
     blockControl.dispose()
     previewControl.dispose()
     motionControl.dispose()
+    horizonControl.dispose()
     disposeOfResize()
   }
 }

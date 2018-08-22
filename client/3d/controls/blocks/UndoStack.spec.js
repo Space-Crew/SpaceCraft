@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import * as THREE from 'three'
-import UndoStack from './UndoStack'
+import {UndoStack} from './UndoStack'
 import sinon from 'sinon'
 const position = new THREE.Vector3(5, 3, 11)
 const position2 = new THREE.Vector3(1, 8, -5)
