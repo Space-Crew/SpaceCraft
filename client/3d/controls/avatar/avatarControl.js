@@ -5,6 +5,7 @@ import {addAvatar} from './addAvatar'
 import {deleteAvatar} from './deleteAvatar'
 
 export function avatarControl(worldId, yawObject, _scene, currentUser) {
+  //check if user is guest or logged in //
   let username =
     typeof currentUser === 'string' ? currentUser : currentUser.displayName
   let avatars = {}
@@ -24,7 +25,8 @@ export function avatarControl(worldId, yawObject, _scene, currentUser) {
       avatar = addAvatar(
         new THREE.Vector3(avatarPosition.x, avatarPosition.y, avatarPosition.z),
         _scene,
-        snapshot.val().color
+        snapshot.val().color,
+        snapshot.ref.key
       )
     }
     avatars[snapshot.ref.key] = avatar

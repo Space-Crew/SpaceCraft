@@ -19,7 +19,6 @@ import {configureRenderer} from '../3d/configure'
 let isPaused = false
 let onSpaceBar
 const blocker = document.getElementById('blocker')
-const instructions = document.getElementById('instructions')
 
 function generateWorld(world, currentUser, guestAvatar) {
   //container for all 3d objects that will be affected by event
