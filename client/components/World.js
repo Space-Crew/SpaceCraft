@@ -10,6 +10,7 @@ import {
   avatarControl,
   UndoStack
 } from '../3d/controls'
+import {configureRenderer} from '../3d/configure'
 
 /*********************************
  * Construct the Three World
@@ -18,37 +19,14 @@ import {
 let isPaused = false
 let onSpaceBar
 const blocker = document.getElementById('blocker')
-const instructions = document.getElementById('instructions')
 
-function generateWorld(world, currentUser) {
+function generateWorld(world, currentUser, guestAvatar) {
   //container for all 3d objects that will be affected by event
   let objects = []
   const cubesToBeMoved = {}
 
-  /*********************************
-   * Renderer
-   ********************************/
-  //renders the scene, camera, and cubes using webGL
-  const renderer = new THREE.WebGLRenderer()
-  const color = new THREE.Color(0x0d2135)
-  //sets the world background color
-  renderer.setClearColor(color)
-  //sets the resolution of the view
-  renderer.setSize(window.innerWidth, window.innerHeight)
+  const {renderer, camera, scene, disposeOfResize} = configureRenderer()
 
-  /*********************************
-   * Camera
-   ********************************/
-  //create a perspective camera (field-of-view, aspect ratio, min distance, max distance)
-  const camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  )
-  // camera.controls = attachCameraControls(camera, renderer.domElement)
-  //create a new scene
-  const scene = new THREE.Scene()
   scene.objects = []
   scene.undoStack = new UndoStack(world.id)
 
@@ -75,7 +53,8 @@ function generateWorld(world, currentUser) {
     cubesToBeMoved
   )
 
-  avatarControl(world.id, cameraControl.getObject(), scene)
+  let avatarUser = currentUser ? currentUser : guestAvatar
+  avatarControl(world.id, cameraControl.getObject(), scene, avatarUser)
 
   const water = new GameFlowGraph(world.water, world.cubes, scene)
   water.connectToWorld(world.id)
@@ -134,6 +113,7 @@ function generateWorld(world, currentUser) {
     blockControl.dispose()
     previewControl.dispose()
     motionControl.dispose()
+    disposeOfResize()
   }
 }
 
@@ -165,7 +145,11 @@ class World extends Component {
           this.setState({
             authorized: true
           })
-          this.unsubscribe = generateWorld(world, this.props.currentUser)
+          this.unsubscribe = generateWorld(
+            world,
+            this.props.currentUser,
+            this.props.guestAvatar
+          )
         }
       }
     } catch (error) {
