@@ -166,10 +166,10 @@ for (let i = 1; i < 6; i++) {
 }
 
 // floating avatars //
-const [head, body, leftArm, rightArm, legs] = makeAvatar('white')
+const [head, body, leftArm, rightArm, leftLeg, rightLeg] = makeAvatar('white')
 const av1 = new THREE.Object3D()
 av1.position.set(0, -10, -10)
-av1.add(body, head, leftArm, rightArm, legs)
+av1.add(body, head, leftArm, rightArm, leftLeg, rightLeg)
 const av1Group = new THREE.Group()
 av1Group.add(av1)
 
