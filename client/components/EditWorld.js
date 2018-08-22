@@ -51,6 +51,9 @@ export default class EditWorld extends Component {
         private: this.state.private,
         description: this.state.description
       })
+      db.ref(`/users/${this.props.currentUser.uid}/worlds`).update({
+        [this.props.match.params.id]: this.state.name
+      })
     } catch (err) {
       console.error(err)
     }

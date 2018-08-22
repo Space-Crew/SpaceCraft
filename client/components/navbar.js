@@ -3,6 +3,7 @@ import {doSignOut} from '../firebase/auth'
 import {db} from '../firebase'
 import {withRouter} from 'react-router'
 import {Link} from 'react-router-dom'
+import {generateName} from '../3d/utilities/randomNameGenerator'
 
 class Navbar extends React.Component {
   constructor() {
@@ -17,21 +18,35 @@ class Navbar extends React.Component {
 
   async handleCreateWorld() {
     const currentUser = this.props.currentUser
-    const worldsRef = db.ref('/worlds');
-    const newWorld = await worldsRef.push()
-    const worldId = newWorld.key;
+    const worldsRef = db.ref('/worlds')
+    const newWorld = worldsRef.push()
+    const worldId = newWorld.key
+    const worldName = generateName()
     if (currentUser) {
-      const userRef = db.ref(`users/${currentUser.uid}/worlds`);
-      userRef.push(worldId);
+      const userRef = await db.ref(`/users/${currentUser.uid}`).once('value')
+      const userData = userRef.val();
+      if (userData.worlds) {
+        const userWorldsRef = db.ref(`/users/${currentUser.uid}/worlds`)
+        userWorldsRef.update({
+          [worldId]: worldName
+        })
+      } else {
+        db.ref(`/users/${currentUser.uid}`).update({
+          worlds: {
+            [worldId]: worldName
+          }
+        })
+      }
     }
     newWorld.set({
       id: worldId,
       author: currentUser ? currentUser.displayName : 'guest',
-      name: currentUser ? `${currentUser.displayName}'s world: ${worldId}` : `Guest's world: ${worldId}`,
+      name: worldName,
       private: !!currentUser,
       authorizedPlayers: [currentUser.displayName]
     })
     this.props.history.push(`/worlds/${worldId}`);
+    document.getElementById('dropdown').style.display = 'none'
   }
 
   toggleDropdown(event) {
