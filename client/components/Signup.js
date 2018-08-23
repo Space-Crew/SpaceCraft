@@ -49,7 +49,7 @@ export default class Signup extends Component {
       )
       this.setState({error: '', signupSuccess: true})
       doDisplayNameUpdate(this.state.username)
-      setTimeout(() => this.props.history.push('/worlds'), 1500)
+      setTimeout(() => this.props.history.push('/account'), 1500)
     } catch (err) {
       this.setState({error: 'There was a problem creating an account'})
       console.log('there is an error', err)
