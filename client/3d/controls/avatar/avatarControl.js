@@ -51,6 +51,7 @@ export function AvatarControl(worldId, yawObject, _scene, currentUser) {
     })
 
     // remove avatar from db and scene when they dissconnect //
+     disconnectRef.onDisconnect().remove()
     avatarsRef.on('child_removed', snapshot => {
       let avatarToDelete = avatars[snapshot.ref.key]
       deleteAvatar(_scene, avatarToDelete)
