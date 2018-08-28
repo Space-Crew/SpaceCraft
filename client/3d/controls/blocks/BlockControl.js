@@ -138,7 +138,7 @@ export const BlockControl = function(
     if (event.which === 16) {
       _shiftIsDown = true
     }
-    if (event.which === 91) {
+    if (event.which === 17 || event.which === 91) {
       _commandIsDown = true
     }
     if (event.which === 90) {
@@ -150,7 +150,7 @@ export const BlockControl = function(
     if (event.which === 16) {
       _shiftIsDown = false
     }
-    if (event.which === 91) {
+    if (event.which === 17 || event.which === 91) {
       _commandIsDown = false
     }
   }
