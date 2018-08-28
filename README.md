@@ -9,7 +9,7 @@ SpaceCraft is an in-browser, multiplayer block building game, inspired by Lego a
 - Selecting from a range of colors for a block
 - First person movement controls (W,A,S,D) 
 - Camera rotation via mouse movement
-- Multiplayer
+- Real-time multiplayer
 - Sharing and adding collaborators to worlds
 - User sign-up/login
 
@@ -27,6 +27,7 @@ To use this application please follow these steps:
 
 1. Fork or clone this repository
 2. Run the following command
+`npm install`
 `npm run start-dev`
 
 ## Developers
